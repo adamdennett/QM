@@ -375,7 +375,7 @@ england_school_2022_23 <- england_ks4final %>%
 -   You will probably find yourself iteratively plotting, filtering, plotting again, switching variables, plotting again, over and over again until you are happy with the data you have. This is all part of the Exploratory Data Analysis Process and vital before applying any other methods to your data!
 -   If you recall from the lecture, the histogram of attainment 8 in the whole of England dataset looked a bit odd:
 
-::: multicode
+::: {.multicode}
 #### ![](L6_images/python-logo-only.png){width="30"}
 
 ```{python}
