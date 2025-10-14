@@ -7,7 +7,7 @@ format:
 filters:
   - qna
   - quarto
-  - multicode
+  - multicode.lua
 ---
 
 ```{r}
