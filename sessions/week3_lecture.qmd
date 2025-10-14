@@ -44,18 +44,33 @@ This week we look at how to properly ask the research question, and how to answe
 
 ## The scientific method 
 
+:::: {.columns}
+
+::: {.column width="60%"}
+
 <div style="text-align:center;">
-  <img src="L3_images/scientific_method.png" alt="The scientific method" style="max-width:60%">
+  <img src="L3_images/scientific_method.png" alt="The scientific method" style="max-width:100%">
 </div>
+
+:::
+
+::: {.column width="40%"}
+
+Statistical tests:
+- formal way to define a threshold of what is an interesting result
+- and hence evaluate the hypothesis 
+
+:::
+
+::::
+
 
 ::: {.notes}
 Last week we looked at exploratory data analysis - now the formal process of coming up with and evaluating questions - very much part of the scientific method.
 
-This lecture thinking about posing and answering research questions. Research science is all about coming up with hypotheses and evaluating them!
+Why is this important? 
 
 We see stories in the news, how do we know what to believe and what not to believe? This is where having an understanding of statistical tests can help us - we can evaluate claims to try and figure out which are/ aren't statistically significant.
-
-Statisitical tests are frequently used in science to figure out if our findings are important or not - essentially a way to formally define a threshold of what is an interesting result vs, what isn't an interesting result. 
 
 A clearly defined, and reproducible way to evaluate findings. 
 :::
@@ -78,6 +93,8 @@ By the end of this lecture you should be able to:
 A research *question* focuses on a specific problem.
 
 . . .
+
+<br>
 
 [**Hypothesis**]{style="color:#49a0c4"} 
 
@@ -109,7 +126,9 @@ The hypothesis is a statement you can explicitly test. It can either be true or 
 What do you think is the hypothesis here? 
 
 ::: {.notes}
-WHich of these is something you can test? 
+Ask the class. 
+
+Hint: which of these is something you can actually test? 
 :::
 
 ## The hypothesis
@@ -134,8 +153,37 @@ The hypothesis is that it is a fair coin. </div>
 
 ::::
 
+:::{.notes}
+Question for the class - whats the evidence?
 
-## What research question can you ask?
+The 10 coin flips and the observation of 7 heads is the evidence
+:::
+
+## The evidence
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- You have a coin. 
+- You think it's a fair coin.
+- [You toss it 10 times.]{style="color:#49a0c4"} 
+- [It comes up heads 7 times.]{style="color:#49a0c4"} 
+
+:::
+
+::: {.column width="50%"}
+
+<br>
+<div style="background-color:#2e6260; color:white; padding:8px; border-radius:5px; margin-top:10px;"> 
+The observations are the evidence. </div>
+
+:::
+
+::::
+
+
+## What question can you ask?
 
 :::: {.columns}
 
@@ -167,8 +215,12 @@ If the coin is fair, how likely would it be to see 7 heads out of 10 flips?
 
 ::::
 
+:::{.notes}
+All these questions are difficult to evaluate. 
+:::
 
-## What research question should you ask?
+
+## What question should you ask?
 
 :::: {.columns}
 
@@ -195,7 +247,7 @@ If the coin is fair, how likely would it be to see 7 heads out of 10 flips *or a
 Interested in the probability of seeing the event or something even more extreme. 
 :::
 
-# Establishing and evaluating a Hypothesis 
+# Establishing and evaluating a hypothesis 
 In [five]{style="color:#49a0c4"} simple steps. 
 
 ## Step 1
@@ -242,7 +294,7 @@ Decide what "too unlikely" means **before you do the test**
 ::: {.column width="60%"}
 
 <div style="text-align:center;">
-  <img src="L3_images/warning_sign.png" alt="Don't be an idiot." style="max-width:90%">
+  <img src="L3_images/warning_sign.jpg" alt="Don't be an idiot." style="max-width:90%">
 </div>
 
 :::
@@ -284,6 +336,7 @@ The evidence needs to be suitable to answer the question - think about biased/re
 
 ## Step 4
 **Calculate the p-value**
+
 [*The p-value is the probability of seeing the evidence, or something even more extreme, if the null hypothesis is true.*]{style="color:#49a0c4"}
 
 ::: {.incremental}
@@ -365,6 +418,8 @@ Whilst the tests are good they're not 100% accurate.
 
 ## Example: Screening outcomes 
 
+The hypothesis: 
+
 $H_0:$ The individual doesn't have breast cancer. 
 
 $H_1:$ The individual does have breast cancer. 
@@ -373,25 +428,29 @@ $H_1:$ The individual does have breast cancer.
 
 From [NHS digital](https://digital.nhs.uk/data-and-information/publications/statistical/breast-screening-programme/england---2020-21/qualitystatement3).
 
-[False positive]{style="color:#abc766"} 
+[Type I error: false positive]{style="color:#abc766"} 
 
-- In 2020-2021, $4.0%$ of those screened had an abnormal results and were referred for assessment. 
-- Of these, $77.1%$ were found to not have breast cancer at follow up assessment. 
-- Leading to a **false positive rate of $3.1%$.**
+- In 2020-2021, 4.0% of those screened had an abnormal results and were referred for assessment. 
+- Of these, 77.1% were found to not have breast cancer at follow up assessment. 
+- Leading to a **false positive rate of 3.1%.**
+
+:::{.notes}
+This false positive rate is calculated as 4% times 77.1%
+
+False positive is bad as you might pursue a healthcare treatment which is actually unecessary for the patient.
+:::
 
 ## Example: Evaluating the evidence
 
 From [NHS digital](https://digital.nhs.uk/data-and-information/publications/statistical/breast-screening-programme/england---2020-21/qualitystatement3).
 
-[False negative]{style="color:#abc766"} 
+[Type II error: false negative]{style="color:#abc766"} 
 
 - Those who had a negative screening but did in fact have breast cancer.
 - Harder to calculate the false negative rate, as they might be diagnosed with breast cancer at any later point in time. 
-- Studies suggest the false negative rate could be as high as $20%$. 
+- Studies suggest the false negative rate could be as high as 20%. 
 
 ::: {.notes}
-False positive is bad as you might pursue a healthcare treatment which is unecessary.
-
 False negative - in healthcare context this is the worst outcome - as goes undiagnosed and hence untreated. 
 :::
 
@@ -406,7 +465,7 @@ Possible outcomes form a matrix. Have two good outcomes, and two bad outcomes wh
 
 This is something to bear in mind when we look at evaluating our hypotheses. How good is our data, so how reliable is our outcome? 
 
-Often this language is used when evaluating the outcomes of an ML classification model. Where we report the quality of a model in terms of its rate of false positives and false negatives. 
+Often this language is used when evaluating the outcomes of an ML classification model. Where we report the quality of a supervised model in terms of its rate of false positives and false negatives. 
 :::
 
 # A good hypothesis or a bad hypothesis? 
@@ -431,11 +490,15 @@ It's important to not make unethical assumptions in choosing the hypothesis.
 
 **Example** 
 
-[Police profiling](https://www.amnesty.org.uk/press-releases/uk-police-forces-supercharging-racism-crime-predicting-tech-new-report) - assumes a correlation between ethnicity and crime
+[Police profiling](https://www.amnesty.org.uk/press-releases/uk-police-forces-supercharging-racism-crime-predicting-tech-new-report) - assumes a correlation between appearance and crime
 
 - Use contextual knowledge
 - Is this causation? 
 - Or correlation linked to other factors?
+
+:::{.notes}
+There is an assumption that theres a link between how someone looks and what crime they are likley to commit - leading to potentially racist police profiling - as assuming a link between ethnicity and likelihood to commit a crime. 
+:::
 
 ## Correlation vs. Causation 
 
@@ -473,21 +536,27 @@ It's a dumb example but it's quite easy to find nonsense correlations between ra
 
 
 ## Correlation **IS NOT** causation 
-You might not know whether events are correlated, or causing each other. 
+You might not know whether events are correlated, or causing each other
 
 . . .
 
 <br>
+
 **BUT**
 
 . . .
 
 <br>
 
-The point of the hypothesis test is to test your idea – but you should use your contextual understanding to come up with plausible (and ethical) initial questions.
+you should use your contextual understanding to come up with plausible (and ethical) initial questions.
 
 :::{.notes}
-Will return to looking at the correlation between variables in week 5. 
+
+Sometimes it's hard to figure out if two variables are correlated or causational. There can be all sorts of complexities - like confounding factors, which can be hard to spot. The point is to do your best to come up with plausible and ethical intial questions. 
+
+And then the point of hypothesis testing is figuring out whether the evidence you have is siginificant enough to support you hypothesis. 
+
+Will return to looking at the mathematical correlation between variables in week 5. 
 :::
 
 ## The point of the scientific method
@@ -518,30 +587,11 @@ It's a process
 
 ::::
 
-<!-- # Example: Height of students 
-What is the probability of someone at UCL being over 6ft?
+:::{.notes}
+Returning to the idea of the scientific method is that it's iterative. 
 
-## Example - step 1
-**Define the null and alternative hypothesis**
-
-H0: Probability of injury has not changed. 
-
-H1: Probability of injury has changed. 
-
-## Example - step 2
-**Set your significance level**
-
-𝜶 = 0.05 
-
-## Example - step 3
-**Identify the evidence**
-
-Dataset: heights of students 
-
-## Example - step 4
-**Calculate the p-value**
-
-Aha! -->
+Maybe we initially made the wrong assumptions but we can repeat, and update our ideas. 
+:::
 
 
 # Example: students height
@@ -551,28 +601,9 @@ Are male and female students similar heights?
 [*Research hypothesis*]{style="color:#49a0c4"}  
 Male and female students are different heights on average.
 
-<!-- ## Example - context 
-
-:::: {.columns}
-
-::: {.column width="60%"}
-
-<div style="text-align: center;">
-![](L3_images/timmy_bike.jpg){width="700"}
-</div>
-
+:::{.notes}
+Going to look at applying the five steps of hypothesis testing to a specific example. 
 :::
-
-::: {.column width="40%"}
-
-::: {.incremental}
-- UK gov reports cycling fatalities per year 
-- Lime bikes introduced to the UK in 2021 
-:::
-
-:::
-
-:::: -->
 
 
 ## Example - step 1
@@ -587,6 +618,7 @@ $H_1$: The mean height of male and female students is different.
 
 
 ## Example - step 2
+
 **Set your significance level**
 
 . . .
@@ -594,6 +626,7 @@ $H_1$: The mean height of male and female students is different.
 $\alpha = 0.05$ 
 
 ## Example - step 3
+
 **Identify the evidence**
 
 . . .
@@ -617,6 +650,8 @@ $\bar{x}_2 = 180$, $s_2 = 6$, $n_2 = 103$ -->
 ## Example - step 4
 **Calculate the p-value**
 
+. . .
+
 Aha!
 
 . . .
@@ -625,6 +660,7 @@ Aha!
 How do we do this? We need to know what statistical test to use! 
 
 # Statistical tests 
+Numerically testing whether the data supports the hypothesis. 
 
 ## Parametric vs. Non-parametric tests
 
@@ -640,14 +676,28 @@ How do we do this? We need to know what statistical test to use!
 
 **Non-parametric tests**
 
-- Typcially less assumptions on the distribution 
+- Typically less assumptions on the distribution 
 - Continuous or discrete data 
+
+:::{.notes}
+Two main categories of test. 
+:::
 
 ## Deciding on a test 
 
-Sometimes it can be hard to figure out which statistical test to use. 
+- It can be hard to figure out what test to use. 
+- Going to cover some common tests
+- Might also find these useful:
+  - [flowchart](https://www.brookes.ac.uk/getmedia/bede726d-771d-461f-900b-a3526fc7e199/stats-flow-chart.pdf)
+  - [table](https://stats.oarc.ucla.edu/other/mult-pkg/whatstat/)
 
-We're going to cover common tests useful in data analysis. But you might find this [flowchart](https://www.brookes.ac.uk/getmedia/bede726d-771d-461f-900b-a3526fc7e199/stats-flow-chart.pdf) or this [table](https://stats.oarc.ucla.edu/other/mult-pkg/whatstat/) helpful for understanding how different tests can be applied.
+:::{.notes}
+Sometimes its clear what test to use, but sometimes it's not. All sorts of obscure statistical tests from different disciplines. 
+
+Focusing on a few tests which might be useful for the types of data we're likely to come across. 
+
+Additional resources for identifying tests - typically based on flowchart of whether assumptions are met or not. 
+:::
 
 # Parametric tests 
 
@@ -656,6 +706,7 @@ We're going to cover common tests useful in data analysis. But you might find th
 :::: {.columns}
 
 ::: {.column width="50%"}
+
 [*Student's T-test is used to compare the mean of a dataset.*]{style="color:#49a0c4"} 
 
 ::: {.incremental}
@@ -687,7 +738,8 @@ William Gosset was working for Guinness brewing company when he came up with the
 ## Student's T-test: steps 
 
 Calculate: 
-:::{incremental}
+
+::: {.incremental}
 - test statistic (called the t value)
   - [*The test statistic is a number that summarises the data so as to determine whether to reject the null hypothesis.*]{style="color:#49a0c4"} 
 - degrees of freedom 
@@ -698,6 +750,10 @@ Calculate:
 
 Which we use to identify the p value - typically using a 'look up table'. 
 
+::: {.notes}
+Use the test statistic and the degrees of freedom to get the p-value. Might remember look up tables from maths at school - instead we'll be using python. 
+:::
+
 ## Student's T-test: types 
 
 <div style="text-align:center;">
@@ -707,6 +763,10 @@ Which we use to identify the p value - typically using a 'look up table'.
     
   </div>
 </div>
+
+::: {.notes}
+3 main types of test depending on what we're interested in. 
+:::
 
 ## Student's T-test: one sample
 [*Tests whether the population mean is equal to a specific value or not*]{style="color:#49a0c4"} 
@@ -823,16 +883,9 @@ Tests can be one-tailed or two-tailed - which you want is determined when you de
 
 *Two tailed:* if you care about the mean being different regardless of direction 
 
-<!-- ## Regression T-tests
-
-Is the gradient non-zero?
-
-This indicates a correlation between the two variables. 
-
-...
-
-This will be covered further in lecture X on linear regression.  -->
-
+::: {.notes}
+Soemthing else to consider - this becomes relevant when we look up the p-value 
+:::
 
 # Non-parametric tests 
 
@@ -867,6 +920,7 @@ Named after two Russian soviet mathematicians working in the mid 20th century
 
 
 ## K-S test: one sample test
+[*Tests if a sample dataset came from a known distribution.*]{style="color:#49a0c4"} 
 
 The Kolmogorov–Smirnov test statistic is:
 
@@ -887,6 +941,12 @@ where
 
 \n '$sup$' is the suprenum - think of it as the smallest upper bound. </div>
 
+:::{.notes}
+'sup' is a maths - don't need to know what it means - just intuitively its measuirng the smallest upper bound on the difference between the two distirbutions. 
+
+Thinking back to last week we might use the K-S test to determine if a dataset is drawn from a noraml distirbution by comapring to the normal cumulative distribution function. 
+:::
+
 ## K-S: empirical distribution function 
 
 The empirical distribution function (EDF) is:  
@@ -904,6 +964,7 @@ where
 - $1_{(-\infty ,x]}(X_{i})$ is an indicator function (1 if $X_i \leq x$, else 0)
 
 ## K-S test: two sample test 
+[*Tests if the underlying distributions of two sample datasets are the same.*]{style="color:#49a0c4"} 
 
 For the two-sample test:
 ```{=tex}
@@ -915,6 +976,7 @@ where
 
 - $F_n(x)$ and $G_m(x)$ are the EDFs of the two samples.
 
+
 ## K-S test: decision rule
 
 The hypotheses would be: 
@@ -925,6 +987,10 @@ The hypotheses would be:
 . . .
 
 Larger values of the test statistic $D$ is stronger evidence against $H_0$. 
+
+::: {.notes}
+How do we use the K-S test is practise? 
+:::
 
 ## Kernel density estimate (KDE)
 
@@ -971,7 +1037,11 @@ y_vals = kde(x_vals)
 ::: {.incremental}
 - fit the KDE to two sample datasets
 - compare visually 
-- carry out non-parametric test - such as Kolmogorov-Smirnov
+- carry out a non-parametric test - such as Kolmogorov-Smirnov
+:::
+
+::: {.notes}
+How might we use a KDE in practise? 
 :::
 
 # Example: students height
@@ -999,14 +1069,20 @@ $\bar{x}_1 = 170$, $s_1 = 5$, $n_1$ = 95
 Group 2 – male students  
 $\bar{x}_2 = 180$, $s_2 = 6$, $n_2$ = 103
 
+::: {.notes}
+Any questions about the steps up to this point? 
+:::
+
 ## Example - step 4
 **Calculate the p-value**
 
+::: {.incremental}
 - Use Student's T-test: two sample
-  - don't care if students are taller or shorter - so use two-tailed test 
-- Calculate the t value 
-- Calculate the degress of freedom 
-- Get the p value 
+  - Don't care if students are taller or shorter - so use two-tailed test 
+  - Calculate the t value 
+  - Calculate the degrees of freedom 
+  - Get the p value 
+:::
 
 ## Example - step 4 - calculate the t value
 
@@ -1057,7 +1133,7 @@ df = 18
 # Two-tailed p-value
 p_value_two_tailed = 2 * (1 - stats.t.cdf(abs(t_val), df))
 
-print("Two-tailed p-value:", p_value_two_tailed.round(2))
+print("Two-tailed p-value:", p_value_two_tailed)
 ```
 
 ## Example - step 4 - *simplified* 
@@ -1069,7 +1145,7 @@ We can do all the previous calulations in one step using the `scipy' library - w
 
 Now we need to compare the p-value to our siginificance level. 
 
-p-value = $2.8x10^{-10} < 0.05$ = alpha
+p-value = $2.0151302848603336e-10 < 0.05$ = alpha
 
 . . .
 
@@ -1078,6 +1154,8 @@ p-value = $2.8x10^{-10} < 0.05$ = alpha
 . . .
 
 And conclude that male and female students have significantly different heights.
+
+## Questions? 
 
 # Overview 
 We've covered: 
