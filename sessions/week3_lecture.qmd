@@ -1166,7 +1166,7 @@ We've covered:
 
 
 # Practical 
-The practical will focus on establishing and evaluating a research hypothesis. 
+The practical will focus on establishing and evaluating a research hypothesis in python. 
 
 . . .
 
