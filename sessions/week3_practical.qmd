@@ -163,8 +163,8 @@ The statistical test we're using here is Student's T-test for two samples. We ca
 Strictly, Student's T-test for two-samples assumes both samples have equal standard deviations. However, practically the test is robust as long as the standard deviations are similar - a heuristic being that as long as neither standard deviation is double the other, we're ok to use the test.  
 
 ```{python}
-London_std = df_London['EBACCAPS'].mean()
-notLondon_std = df_notLondon['EBACCAPS'].mean()
+London_std = df_London['EBACCAPS'].std()
+notLondon_std = df_notLondon['EBACCAPS'].std()
 
 # Calculate the ratio of standard deviations 
 std_ratio = London_std/notLondon_std
