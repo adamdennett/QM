@@ -330,7 +330,12 @@ There are two outputs from the function `scipy.stats.ks_2samp`: the **test stati
 #### Question
 
 ``` python
-ks_stat, ks_p_value = ?? 
+
+# first define dataset so as to ignore 'na' values
+df_girls = df[df['EBACCAPS_GIRLS'].notna()]['EBACCAPS_GIRLS']
+df_boys = df[df['EBACCAPS_BOYS'].notna()]['EBACCAPS_BOYS']
+
+ks_stat, ks_p_value = sps.ks_2samp(??, ??) 
 
 print("KS test statistic = ", ks_stat)
 print("KS p-value =", ks_p_value)
@@ -339,7 +344,12 @@ print("KS p-value =", ks_p_value)
 #### Answer
 
 ```{python}
-ks_stat, ks_p_value = sps.ks_2samp(df['EBACCAPS_GIRLS'].notna(), df['EBACCAPS_BOYS'].notna()) 
+
+# first define dataset so as to ignore 'na' values
+df_girls = df[df['EBACCAPS_GIRLS'].notna()]['EBACCAPS_GIRLS']
+df_boys = df[df['EBACCAPS_BOYS'].notna()]['EBACCAPS_BOYS']
+
+ks_stat, ks_p_value = sps.ks_2samp(df_girls, df_boys) 
 
 print("KS test statistic = ", ks_stat)
 print("KS p-value =", ks_p_value)
