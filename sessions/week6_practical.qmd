@@ -6,8 +6,9 @@ format:
   ipynb: default
 filters:
   - qna
-  - quarto
-  - multicode.lua
+  - multicode
+  - quarto # keep Quarto’s built-ins as the last filter or it won't work
+
 ---
 
 ```{r}
@@ -470,7 +471,7 @@ ggplot(england_school_2022_23, aes(x = ATT8SCR)) +
 
 -   You may also recall from the lecture that this odd distribution was related to different types of school in the system. We can create a similar visualisation here:
 
-::: qna
+::: {.multicode}
 #### ![](L6_images/python-logo-only.png){width="30"}
 
 ```{python}
@@ -699,7 +700,7 @@ leeds_sub <- england_filtered %>%
 Just from looking at your plots: - How do you expect the intercepts (baseline Y) to differ between your London and non-London local authority (if at all)? Which is higher and which is lower? - How do you think the slope values (influence of X on Y) are different (if at all)?
 :::
 
-::: qna
+::: {.multicode}
 #### ![](L6_images/python-logo-only.png){width="30"}
 
 ```{python}
@@ -764,7 +765,7 @@ ggplot(combined_data, aes(x = PTFSM6CLA1A, y = ATT8SCR)) +
 -   Maps are great, they help you understand all kinds of things if your data have a spatial identifier. Try some maps out here!
 -   You might find R is a bit better at mapping things. Just saying.
 
-::: qna
+::: {.multicode}
 #### ![](L6_images/python-logo-only.png){width="30"}
 
 ```{python}
@@ -930,7 +931,7 @@ leaflet(sf_df) %>%
 You will notice that in the plots below I have used a log10() transformation, but you could also use the natural log() or a range of other possible transformations. If you want to understand a bit more about transformations for normalisng your data, you should explore Tukey's Ladder of Powers - <https://onlinestatbook.com/2/transformations/tukey.html> - in R (and probably in Python too) there are packages to apply appropriate Tukey transformations so your data gets a little closer to a normal distribution.
 :::
 
-::: qna
+::: {.multicode}
 #### ![](L6_images/python-logo-only.png){width="30"}
 
 ```{python}
@@ -986,7 +987,7 @@ ggplot(england_filtered, aes(x = log10(PTFSM6CLA1A), y = log10(ATT8SCR), colour 
 ```
 :::
 
-::: qna
+::: {.multicode}
 #### ![](L6_images/python-logo-only.png){width="30"}
 
 ```{python}
@@ -1102,7 +1103,7 @@ ggplot(england_filtered, aes(x = PTFSM6CLA1A, y = gor_name, fill = gor_name)) +
 
 #### Running the Model for the first (London) local authority
 
-::: qna
+::: {.multicode}
 #### ![](L6_images/python-logo-only.png){width="30"}
 
 ```{python}
@@ -1136,7 +1137,7 @@ summary(camden_model1)
 
 #### Running the Model for the second local authority
 
-::: qna
+::: {.multicode}
 #### ![](L6_images/python-logo-only.png){width="30"}
 
 ```{python}
@@ -1175,7 +1176,7 @@ summary(leeds_model1)
 
 #### Running the Model for all Schools in England
 
-::: qna
+::: {.multicode}
 #### ![](L6_images/python-logo-only.png){width="30"}
 
 ```{python}
@@ -1577,7 +1578,7 @@ class LinearRegDiagnostic:
 
 ### Linearity
 
-::: qna
+::: {.multicode}
 #### ![](L6_images/python-logo-only.png){width="30"}
 
 ```{python}
@@ -1600,7 +1601,7 @@ check_model(england_model1,
 
 ### Homoscedasticity (Constant variance)?
 
-::: qna
+::: {.multicode}
 #### ![](L6_images/python-logo-only.png){width="30"}
 
 ```{python}
@@ -1620,7 +1621,7 @@ check_model(england_model1,
 
 ### Normality of Residuals
 
-::: qna
+::: {.multicode}
 #### ![](L6_images/python-logo-only.png){width="30"}
 
 ```{python}
@@ -1639,7 +1640,7 @@ check_model(england_model1,
 
 ### Influence of Outliers
 
-::: qna
+::: {.multicode}
 #### ![](L6_images/python-logo-only.png){width="30"}
 
 ```{python}
@@ -1663,7 +1664,7 @@ check_model(england_model1,
 You might notice that R is a bit better at things like manipulating model outputs than Python!
 :::
 
-::: qna
+::: {.multicode}
 #### ![](L6_images/python-logo-only.png){width="30"}
 
 ```{python}
