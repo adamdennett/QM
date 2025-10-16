@@ -1,21 +1,27 @@
 ---
 format: html
 date: last-modified
-author: "XXX"
-title: "Week XXX"
+author: "Adam Dennett"
+title: "Week 7 - Prof D's Regression Sessions Vol 2"
 ---
+
+![](L6_images/regression2.PNG)
 
 ## Introduction
 
-This week will introduce XXX.
+This week will build on last week's introduction to Linear Regression, extending the model into deep space and beyond. Sorry, that's the Progression Sessions Vol 2 (this week's recommended listening on the practical pages!). No, we won't quite get that far, but we will be extending our regression model into multiple dimensions to really start to unpick what might be influencing our 
+
+Because of its popularity, regression is also one of the most widely misused models in the spatial data scientist's toolbox. Therefore, understanding the basics is absolutely fundamental. If you understand the basics, then you stand a better chance of understanding what the more sophisticated methods related to standard linear regression bring to the table.
 
 ## Learning Objectives
 
-By the end of this week, you will be able to:
+By the end of this week, you will:
 
-1. XXX
-2. XXX
-3. XXX
+1.  Understand what basic bivariate regression model is and how it might be used to explore / describe the relationship between two continuous variables
+2.  Understand the absolutely fundamental importance of visualising your data and your model first
+3.  Be able to interpret the various outputs from a statistical regression model - knowing what each means and how not to rely just on things like p-values and R-Squared to determine how good your model is
+4.  Appreciate how the coefficients in a model will likely vary depending on your study population and how representative it is of the wider population you are making inferences about. In doing this, you will understand why 'degrees of freedom' are important
+5.  Be ready to go beyond the basics and take your regression modelling further in next week's Regression Session. 
 
 ## Lecture 
 

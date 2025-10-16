@@ -1,41 +1,928 @@
 ---
-title: "XXX"
-subtitle: "XXX"
+title: "Prof D's Regression Sessions - Vol 2"
+subtitle: "Time to go even deeper!"
 author: 
-  - name: "XXX"
-email: "XXX"
-date-as-string: "12 September 2025"
+  - name: "Adam Dennett"
+email: "a.dennett@ucl.ac.uk"
+date-as-string: "1st August 2024"
+other: "CASA0007 Quantitative Methods"
 from: markdown+emoji
-format: revealjs
+format:
+  revealjs: 
+    logo: "L6_images/CASA_logo.svg"
+    template-partials: 
+      - title-slide.html
+    transition: none
+    slide-number: TRUE
+    preview-links: auto
+    theme: casa-slides
+    
+filters:
+ - code-visibility
+lightbox: auto
+title-slide-attributes:
+    data-background-image: "L6_images/regression.png"
+    data-background-size: stretch
+    data-background-opacity: "0.08"
+    data-background-color: "#4e3c56"
 ---
-# This week 
 
-## Understanding and describing data 
+```{r}
+#| label: load-data
+#| message: false
+#| warning: false
+#| include: false
 
-- Quantitative research is the process of collecting and analysing **numerical data** to describe, model, and predict variables of interest.
+#casaviz::view_palette(casaviz::casa_palettes$default, n_colours = 10)
 
-- Garbage in, garbage out.
+##before we do anything else, let's load the packages we need and the data we require
 
-::: {.notes}
-This lecture focuses on understanding and describing data. 
+library(casaviz)
+library(tidyverse)
+library(sf)
+library(plotly)
+library(leaflet)
+library(rgl)
+library(dplyr)
+library(here)
+library(stringr)
+library(dplyr)
+library(purrr)
+library(janitor)
+library(readxl)
+library(tibble)
+library(ggrepel)
+library(gganimate)
+#library(easystats)
 
+#all england schools
+edubase_schools <- read_csv("https://www.dropbox.com/scl/fi/fhzafgt27v30lmmuo084y/edubasealldata20241003.csv?rlkey=uorw43s44hnw5k9js3z0ksuuq&raw=1") %>% 
+  clean_names() %>% 
+  mutate(urn = as.character(urn))
+
+#all england schools
+#edubase_schools <- read.csv("C:/Users/Adam/Dropbox/Public/edubasealldata20241003.csv") %>% 
+#  clean_names() %>% 
+#  mutate(urn = as.character(urn))
+
+england_abs <- read_csv(here("sessions", "L6_data", "Performancetables_130242", "2022-2023", "england_abs.csv"), na = c("", "NA", "SUPP", "NP", "NE")) %>%
+  mutate(URN = as.character(URN))
+england_census <- read_csv(here("sessions", "L6_data", "Performancetables_130242", "2022-2023", "england_census.csv"), na = c("", "NA", "SUPP", "NP", "NE")) %>%
+  mutate(URN = as.character(URN)) %>%
+  mutate(across(5:23, ~ parse_number(as.character(.))))
+england_ks4_mats_performance <- read_csv(
+  here("sessions", "L6_data", "Performancetables_130242", "2022-2023", "england_ks4-mats-performance.csv"),
+  na = c("", "NA", "SUPPMAT", "NP", "NE")
+) %>%
+  mutate(
+    TRUST_UID = as.character(TRUST_UID),
+    P8_BANDING = as.character(P8_BANDING),
+    INSTITUTIONS_INMAT = as.character(INSTITUTIONS_INMAT)
+  ) %>%
+  mutate(across(
+    .cols = names(.)[11:ncol(.)][!names(.)[11:ncol(.)] %in% c("P8_BANDING", "INSTITUTIONS_INMAT")],
+    .fns = ~ parse_number(as.character(.))
+  ))
+
+england_ks4_pupdest <- read_csv(here("sessions", "L6_data", "Performancetables_130242", "2022-2023", "england_ks4-pupdest.csv"), na = c("", "NA", "SUPP", "NP", "NE", "SP", "SN")) %>%
+  mutate(URN = as.character(URN)) %>%
+  mutate(across(8:82, ~ parse_number(as.character(.))))
+
+england_ks4final <- read_csv(here("sessions", "L6_data", "Performancetables_130242", "2022-2023", "england_ks4final.csv"), na = c("", "NA", "SUPP", "NP", "NE", "SP", "LOWCOV", "NEW")) %>%
+  mutate(URN = as.character(URN)) %>%
+  mutate(across(TOTPUPS:PTOTENT_E_COVID_IMPACTED_PTQ_EE, ~ parse_number(as.character(.))))
+
+england_school_information <- read_csv(
+  here("sessions", "L6_data", "Performancetables_130242", "2022-2023", "england_school_information.csv"),
+  na = c("", "NA", "SUPP", "NP", "NE", "SP"),
+  col_types = cols(
+    URN = col_character(),
+    OFSTEDLASTINSP = col_date(format = "%d-%m-%Y")  # Adjust format if needed
+  )
+)
+
+
+abs_meta <- read_csv(here("sessions", "L6_data",  "Performancetables_130249", "2022-2023", "abs_meta.csv"), na = c("", "NA", "SUPP", "NP", "NE")) %>% 
+  clean_names()
+census_meta <- read_csv(here("sessions", "L6_data",  "Performancetables_130249", "2022-2023", "census_meta.csv"), na = c("", "NA", "SUPP", "NP", "NE")) %>% 
+  clean_names()
+ks4_mats_performance_meta <- read_csv(here("sessions", "L6_data",  "Performancetables_130249", "2022-2023", "ks4-mats-performance_meta.csv"), na = c("", "NA", "SUPP", "NP", "NE")) %>% 
+  clean_names()
+ks4_pupdest_meta <- read_csv(here("sessions", "L6_data",  "Performancetables_130249", "2022-2023", "ks4-pupdest_meta.csv"), na = c("", "NA", "SUPP", "NP", "NE")) %>% 
+  clean_names()
+ks4final_meta <- read_xlsx(here("sessions", "L6_data",  "Performancetables_130249", "2022-2023", "ks4_meta.xlsx"), na = c("", "NA", "SUPP", "NP", "NE")) %>% 
+  clean_names()
+school_information_meta <- read_csv(here("sessions", "L6_data",  "Performancetables_130249", "2022-2023", "la_and_region_codes_meta.csv"), na = c("", "NA", "SUPP", "NP", "NE")) %>% 
+  clean_names()
+la_and_region_codes_meta <- read_csv(here("sessions", "L6_data",  "Performancetables_130249", "2022-2023", "la_and_region_codes_meta.csv"), na = c("", "NA", "SUPP", "NP", "NE")) %>% 
+  clean_names()
+school_information_meta <- read_csv(here("sessions", "L6_data",  "Performancetables_130249", "2022-2023", "school_information_meta.csv"), na = c("", "NA", "SUPP", "NP", "NE")) %>% 
+  clean_names()
+
+# str(england_abs)
+# str(england_census)
+# str(england_ks4_mats_performance)
+# str(england_ks4_pupdest)
+# str(england_ks4final)
+# str(england_school_information)
+# str(abs_meta)
+# str(census_meta)
+# str(ks4_mats_performance_meta)
+# str(ks4_pupdest_meta)
+# str(ks4final_meta)
+# str(school_information_meta)
+# str(la_and_region_codes_meta)
+
+
+```
+
+```{r}
+
+# Custom join function to drop duplicate columns (except URN)
+# safe_left_join <- function(x, y) {
+#   common_cols <- intersect(names(x), names(y))
+#   common_cols <- setdiff(common_cols, "URN")  # keep URN
+#   y_clean <- y |> select(-all_of(common_cols))
+#   left_join(x, y_clean, by = "URN")
+# }
+
+# Perform sequential joins
+# england_school_2022_23 <- safe_left_join(england_ks4final) |>
+#   safe_left_join(england_abs) |>
+#   safe_left_join(england_census) |>
+#   safe_left_join(england_ks4_pupdest) |>
+#   safe_left_join(england_school_information)
+
+# Left join england_ks4final with england_abs
+england_school_2022_23 <- england_ks4final %>%
+  left_join(england_abs, by = "URN") %>%
+  left_join(england_census, by = "URN") %>%
+  left_join(england_school_information, by = "URN")
+
+# Filter out special schools and those with ADMPOL (admissions policy) = "NSE" (non-selective)
+
+england_school_2022_23 <- england_school_2022_23 |>
+  left_join(edubase_schools, by = c("URN" = "urn"))
+
+england_school_2022_23_not_special <- england_school_2022_23 %>%
+  filter(MINORGROUP != "Special school")
+
+#column_headers_df <- tibble(column_name = names(england_school_2022_23))
+  
+```
+
+## This week's Session - Foundations {transition="convex-in none-out" transition-speed="fast"}
+
+```{r, echo=FALSE}
+# This makes the fonts play nicely within the figures
+knitr::opts_chunk$set(dev = "ragg_png")
+
+```
+
+```{css}
+/* This sits here, because it allows us to use images from within the L6_images/ folder. Otherwise, the file structure gets a lot more involved! */
+.reveal::after {
+  background-image: url('L6_images/light-background.png');
+}
+```
+
+```{r}
+#| label: Load Data
+#| include: false
+
+library(reactable)
+library(casaviz)# assuming casa_reactable_theme is defined here
+library(sf)
+library(dplyr)
+
+england_school_2022_23 %>% 
+  filter(LANAME == "Brighton and Hove") %>% 
+  filter(phase_of_education_name == "Secondary") %>% 
+  filter(establishment_status_name == "Open") %>% 
+  select(URN, SCHNAME.x, TOWN.x, TOTPUPS, ATT8SCR, OFSTEDRATING, MINORGROUP, PTFSM6CLA1A) %>%
+  reactable(theme = casa_reactable_theme(colour = "purple"))
+
+
+filtered_df <- england_school_2022_23 %>%
+  filter(LANAME == "Brighton and Hove",
+         phase_of_education_name == "Secondary",
+         establishment_status_name == "Open") %>%
+  select(URN, SCHNAME.x, TOWN.x, TOTPUPS, ATT8SCR, OFSTEDRATING, MINORGROUP, PTFSM6CLA1A, easting, northing)
+
+# Filter out unwanted categories
+england_filtered <- england_school_2022_23 %>%
+  filter(!MINORGROUP %in% c("Special school", "Independent school", "College", NA))
+
+# Filter data
+btn_sub <- england_filtered %>%
+  filter(LEA == 846) %>% 
+  select(URN, SCHNAME.x, LEA, ATT8SCR, PTFSM6CLA1A, PERCTOT, OFSTEDRATING, gor_name)
+
+btn_sub1 <- england_filtered %>%
+  filter(LEA == 846) %>%
+  select(URN, SCHNAME.x, LEA, ATT8SCR, PTFSM6CLA1A) %>%
+  slice(1:2)
+
+england_filtered <- england_filtered %>%
+  filter(PTFSM6CLA1A > 0, ATT8SCR > 0)
+england_filtered <- england_filtered %>%
+  mutate(log_att8 = log(ATT8SCR),
+         log_ptfsm = log(PTFSM6CLA1A),
+         log_perctot = log(PERCTOT))
+
+btn_sub <- btn_sub %>%
+  mutate(log_att8 = log(ATT8SCR),
+         log_ptfsm = log(PTFSM6CLA1A),
+         log_perctot = log(PERCTOT))
+
+# Fit linear model and get predicted values
+model_data <- england_filtered %>%
+  filter(!is.na(ATT8SCR), !is.na(PTFSM6CLA1A), !is.na(PERCTOT))
+
+lm_fit1 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT), data = model_data)
+
+summary(lm_fit1)
+
+model_data <- model_data %>%
+  mutate(
+    fitted_ATT8SCR = exp(fitted(lm_fit1)),
+    resids_real = ATT8SCR - fitted_ATT8SCR
+  )
+
+# Fit model
+lm_fit <- lm(ATT8SCR ~ log(PTFSM6CLA1A), data = england_filtered)
+lm_fit_a <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A), data = england_filtered)
+lm_fit_b <- lm(log(ATT8SCR) ~ log(PERCTOT), data = england_filtered)
+
+# Extract coefficients
+slope <- round(coef(lm_fit)[2], 2)
+intercept <- round(coef(lm_fit)[1], 2)
+
+# Extract R²
+r_squared <- round(summary(lm_fit)$r.squared, 2)
+
+# Create annotation text
+annotation_text <- paste0("y = ", intercept, " + ", slope, "x\nR² = ", r_squared)
+
+# Convert to sf object with EPSG:27700
+sf_df <- st_as_sf(filtered_df, coords = c("easting", "northing"), crs = 27700)
+
+# Transform to EPSG:4326
+sf_df <- st_transform(sf_df, crs = 4326)
+
+# Extract lat/lon for leaflet
+sf_df <- sf_df %>%
+  mutate(
+    lon = st_coordinates(.)[,1],
+    lat = st_coordinates(.)[,2]
+  )
+
+```
+
+## Recap - Last Week's Model
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-align: center
+#| out-width: 70%
+
+# Fit model
+lm_fit <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A), data = england_filtered)
+
+# Extract coefficients
+slope <- round(coef(lm_fit)[2], 2)
+intercept <- round(coef(lm_fit)[1], 2)
+
+# Extract R²
+r_squared <- round(summary(lm_fit)$r.squared, 2)
+
+# Create annotation text
+annotation_text <- paste0("y = ", intercept, " + ", slope, "x\nR² = ", r_squared)
+
+# Plot with annotation
+ggplot(england_filtered) +
+  geom_point(aes(x = log_ptfsm, y = log_att8, alpha = 0.6)) +  # Base layer: all schools
+  geom_point(data = btn_sub, aes(x = log_ptfsm, y = log_att8), 
+             color = "#F9DD73", size = 2.5) +  # Overlay: Brighton & Hove schools
+  geom_smooth(aes(x = log_ptfsm, y = log_att8), method = "lm", 
+              se = FALSE, color = "#8F5289") +
+  annotate("text", x = max(england_filtered$log_ptfsm, na.rm = TRUE), 
+           y = min(england_filtered$log_att8, na.rm = TRUE), 
+           label = annotation_text, hjust = 3, vjust = -2, size = 4, color = "#4E3C56") +
+  labs(title = "England and Wales Schools - Attainment 8 vs % Disadvantaged Students, 2022-23",
+       x = "log(% Disadvantaged Students)",
+       y = "log(Average Attainment 8 Score)") +
+  theme_minimal()
+```
+
+-   Work of Gorard suggested link between levels of disadvantage in a school and attainment.
+-   Not a linear relationship but a log-log elasticity
+
+## An Alternative Model
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-align: center
+#| out-width: 70%
+
+# Fit model
+lm_fit <- lm(log(ATT8SCR) ~ log(PERCTOT), data = england_filtered)
+
+# Extract coefficients
+slope <- round(coef(lm_fit)[2], 2)
+intercept <- round(coef(lm_fit)[1], 2)
+
+# Extract R²
+r_squared <- round(summary(lm_fit)$r.squared, 2)
+
+# Create annotation text
+annotation_text <- paste0("y = ", intercept, " + ", slope, "x\nR² = ", r_squared)
+
+
+# Plot with annotation
+ggplot(england_filtered) +
+  geom_point(aes(x = log(PERCTOT), y = log(ATT8SCR), alpha = 0.6)) +  # Base layer: all schools
+  geom_point(data = btn_sub, aes(x = log(PERCTOT), y = log(ATT8SCR)), 
+             color = "#F9DD73", size = 2.5) +  # Overlay: Brighton & Hove schools
+  geom_smooth(aes(x = log(PERCTOT), y = log(ATT8SCR)), method = "lm", 
+              se = FALSE, color = "#8F5289") +
+  annotate("text", x = max(log(england_filtered$PERCTOT), na.rm = TRUE), 
+           y = min(log(england_filtered$ATT8SCR), na.rm = TRUE), 
+           label = annotation_text, hjust = 2.5, vjust = -8, size = 4, color = "#4E3C56") +
+  labs(title = "England and Wales Schools - Attainment 8 vs % Overall Absence, 2022-23",
+       x = "log(% Overall Absence)",
+       y = "log(Average Attainment 8 Score)") +
+  theme_minimal()
+```
+
+-   Other research suggests overall levels of absence might be even more important
+-   How can we tell?
+
+## An Alternative Model
+
+```{r}
+# Fit linear model and get predicted values
+lm_fit1 <- lm(log(ATT8SCR) ~ log(PERCTOT) , data = england_filtered)
+
+summary(lm_fit1)
+```
+
+-   Overall Absence = bigger coefficient (-0.54 vs -0.21) & improves the $R^2$ to (60% vs 45% for the % disadvantage model)
+-   Suggests that Overall Absence explains more variation in Attainment 8
+
+## Multiple Linear Regression
+
+-   One way to really tell which variable is more important is to put them in a model together
+-   Multiple linear regression extends bivariate regression to include multiple independent variables
+-   As with bivariate regression, variables should be chosen based on theory and prior research rather than just throwing the variables in because you have them
+-   ***However***, it's permissible to explore relationships and experiment and iterate between data exploration and theory - both can inform each other
+
+## Multiple Linear Regression
+
+-   When we start adding more variables into the model, an alternative to the mode generic notation is to include the variables in the equation explicitly, for example:
+
+$$\log(\text{Attainment8}) = \beta_0 + \beta_1\log(\text{PctDisadvantage}) +\\\\ \beta_2log(\text{PctPersistentAbsence}) + \epsilon$$
+
+-   There's no real limit to the number of variables you can include in a model - however:
+    -   Fewer is easier to interpret
+    -   More variables will **reduce** your ***degrees of freedom***
+
+## Multiple Linear Regression
+
+```{r}
+#| warning: false
+#| align: center
+#| out-width: 80%
+
+library(plotly)
+
+fig <- plot_ly(england_filtered, x = ~log(PTFSM6CLA1A), y = ~log(ATT8SCR), z = ~log(PERCTOT), color = ~gor_name)
+fig <- fig %>% add_markers()
+fig <- fig %>% layout(scene = list(xaxis = list(title = 'log(% Disadvantaged)'),
+                     yaxis = list(title = 'log(Attainment 8)'),
+                     zaxis = list(title = 'log(% Overall Absence)')))
+
+fig
+```
+
+## Multiple Linear Regression
+
+```{r}
+# Fit linear model and get predicted values
+model_data <- england_filtered %>%
+  filter(!is.na(ATT8SCR), !is.na(PTFSM6CLA1A), !is.na(PERCTOT))
+
+lm_fit1 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT), data = model_data)
+
+summary(lm_fit1)
+
+model_data <- model_data %>%
+  mutate(
+    fitted_ATT8SCR = exp(fitted(lm_fit1)),
+    resids_real = ATT8SCR - fitted_ATT8SCR
+  )
+
+```
+
+-   What is the model telling us?
+
+## Multiple Linear Regression
+
+-   The coefficients for both variables are statistically ***significant and negative***, indicating that both variables contribute to explaining the variation in Attainment 8 scores
+-   But t-values indicate that the ***% Overall Absence variable (-50.49) has a stronger effect on Attainment 8 scores than the % Disadvantaged Students variable (-31.16)***
+-   The $R^2$ value is now 0.69, indicating that the model is potentially good and explains ***69% of the variation in Attainment 8 scores***. Degrees of freedom are good and the overall model is statistically significant.
+-   But does is satisfy the assumptions of linear regression?
+
+## Multiple Linear Regression - Diagnostics 1
+
+```{r}
+library(performance)
+check_model(lm_fit1, 
+            check = c("linearity"))
+
+```
+
+-   Pretty good - the residuals are randomly scattered around zero, suggesting a linear relationship
+
+## Multiple Linear Regression - Diagnostics 2
+
+```{r}
+check_model(lm_fit1, 
+            check = c("qq"))
+```
+
+-   The residuals are normally distributed - the Q-Q plot shows most points on the line
+
+## Multiple Linear Regression - Diagnostics 3
+
+```{r}
+check_model(lm_fit1, 
+            check = c("homogeneity"))
+```
+
+-   The residuals are randomly scattered around zero, suggesting constant variance.
+
+## Linear Regression - Diagnostics
+
+-   **Linearity**: :sunglasses:
+-   **Homoscedasticity**: :sunglasses:
+-   **Normality of residuals**: :sunglasses:
+-   **No multicollinearity**: :confused:
+-   **Independence of residuals**: :confused:
+
+## Multiple Linear Regression - Multicollinearity
+
+-   Multicollinearity occurs when two or more independent variables in a regression model are ***highly correlated*** with each other
+-   This can lead to unreliable estimates of the coefficients, inflated standard errors, and difficulty in interpreting the results
+
+## Multiple Linear Regression - Multicollinearity
+
+```{r}
+#| out-width: 60%
+#| align: center
+library(correlation)
+library(see)
+
+corr <- england_filtered |>
+  correlation(select = c("PTFSM6CLA1A", "PERCTOT", "ATT8SCR"))
+
+corr %>%
+  summary(redundant = TRUE) %>%
+  plot()
+
+```
+
+-   A quick and easy way to check for the correlation between your independent variables is generate a standard correlation matrix/plot
+-   Difficult to say what is too much correlation - but over 0.7 is often considered problematic
+-   However, pairwise correlations might miss n-way correlations
+
+## Multiple Linear Regression - VIF
+
+```{r}
+#| out-width: 70%
+#| align: center
+check_model(lm_fit1, 
+            check = c("vif"))
+```
+
+-   A more useful diagnostic tool is the ***Variance Inflation Factor (VIF)***, which measures how much the variance of a regression coefficient is increased due to multicollinearity
+-   A VIF value of 1 indicates no correlation, while a VIF value above 5 or 10 suggests high multicollinearity
+
+## Multiple Linear Regression - VIF
+
+***Why does it even matter if the variance is inflated?***
+
+-   ***Variance = Uncertainty*** in our model
+-   If 2 or more variables are highly correlated and both appear to affect the dependent variable, it can be difficult to determine which variable is actually having the effect
+-   The model makes an arbitrary split
+-   Small changes in the data could make the split go either way - e.g. attribute more of the effect to % Disadvantaged Students or % Overall Absence (if VIF high) - thus ***inflating*** the uncertainty / ***variance***
+
+## Multiple Linear Regression - VIF
+
+-   Despite some positive correlation (0.48) between % Disadvantaged Students and % Overall Absence, the VIF is very low \~1.5
+-   No problems with multicollinearity
+-   So we have passed that test and can happily use both in the model
+
+## Linear Regression - Diagnostics
+
+-   **Linearity**: :sunglasses:
+-   **Homoscedasticity**: :sunglasses:
+-   **Normality of residuals**: ::sunglasses::
+-   **No multicollinearity**: :sunglasses:
+-   **Independence of residuals**: :confused:
+
+## Multiple Linear Regression - Independence of Residuals
+
+-   Residuals (errors) should not be correlated with each other
+-   (auto)correlation (clustering) in the errors = model missing something!
+-   can lead to biased estimates and incorrect conclusions
+-   often occurs when a temporal or spatial component to the data
+-   or when another important variable is missing or omitted
+
+## Multiple Linear Regression - Spatial or Temporal (auto)Correlation
+
+-   In our case, we have a spatial component to the data - schools are located in different areas of England and Wales
+-   If schools in the same area have similar characteristics, it is likely that the residuals will be correlated
+-   The easiest way to check this is to plot the values of the residuals for the schools on a map
+
+## Multiple Linear Regression - Residual (auto)Correlation
+
+```{r}
+#| fig-height: 4
+#| fig-width: 11
+#| align: center
+library(leaflet)
+library(scales)
+library(sf)
+
+england_sf <- model_data %>%
+  st_as_sf(coords = c("easting", "northing"), crs = 27700) %>%
+  st_transform(crs = 4326)  # for Leaflet
+
+max_abs <- max(abs(england_sf$resids_real), na.rm = TRUE)
+
+pal <- colorNumeric(
+  palette = "RdBu",
+  domain = c(-max_abs, max_abs),
+  reverse = FALSE  # reverse = FALSE gives blue = negative, red = positive
+)
+
+leaflet(data = england_sf) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  addCircleMarkers(
+    radius = 4,
+    color = ~pal(resids_real),
+    stroke = FALSE,
+    fillOpacity = 1,
+    popup = ~paste0(
+      "<strong>Actual:</strong> ", round(ATT8SCR, 2), "<br>",
+      "<strong>Fitted:</strong> ", round(fitted_ATT8SCR, 2), "<br>",
+      "<strong>Residual:</strong> ", round(resids_real, 2)
+    )
+  ) %>%
+  addLegend(
+    position = "bottomright",
+    pal = pal,
+    values = ~resids_real,
+    title = "Residuals (Actual – Fitted)",
+    labFormat = labelFormat(digits = 2),
+    opacity = 1
+  )
+```
+
+-   Residuals show clear spatial autocorrelation
+-   London (and other city schools) perform much better than model predicts
+
+## Multiple Linear Regression - Residual (auto)Correlation
+
+-   **ALWAYS MAP YOUR RESIDUALS IF MODELLING SPATIAL DATA**
+-   Correlated residuals often the sign of an omitted variable (e.g "London")
+-   In the GIS Course you will learn a lot more about testing for spatial autocorrelation (using Moran's I) and how spatial variables (lags, error terms) or geographically weighted regression can be used to deal with spatial autocorrelation
+-   Here we will try something much simpler - adding London (and other regions) to our model
+
+## Linear Regression - Diagnostics
+
+-   **Linearity**: :sunglasses:
+-   **Homoscedasticity**: :sunglasses:
+-   **Normality of residuals**: ::sunglasses::
+-   **No multicollinearity**: :sunglasses:
+-   **Independence of residuals**: :grimacing:
+
+## Multiple Linear Regression - Dummy Variables
+
+![](L6_images/dummy2.png){fig-align="center" width="10cm"}
+
+## Multiple Linear Regression - Dummy Variables
+
+-   In linear regression, independent variables can also be categorical
+-   Categorical variables are often referred to as ***DUMMY*** variables
+-   *Dummy* because the are a numerical stand-in (1 or 0) for a qualitative concept
+-   In our model *Region* could be a dummy variable to see the "London" effect is real
+    -   Dummy could also be any other categorical variable like Ofsted rating (e.g. Good, Outstanding etc.)
+
+## Multiple Linear Regression - Dummy Variables
+
+```{r}
+# Fit linear model and get predicted values
+model_data$gor_name <- relevel(factor(model_data$gor_name), ref = "London")
+#model_data$ofsted_rating_name <- relevel(factor(model_data$ofsted_rating_name), ref = "Outstanding")
+
+lm_fit2 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT) + gor_name, data = model_data)
+
+summary(lm_fit2)
+```
+
+-   In this model, I have added the Government Office Region (GOR) as a dummy variable.
+
+## Multiple Linear Regression - Dummy Variables
+
+```{r}
+# Fit linear model and get predicted values
+summary(lm_fit2)
+```
+
+-   There are 9 regions in England and here "London" has been set as the **contrast** or reference variable (which all others are compared to)
+-   Changing the contrast compares each region to a different reference
+
+## Multiple Linear Regression - Dummy Variables
+
+```{r}
+# Fit linear model and get predicted values
+model_data$gor_name <- relevel(factor(model_data$gor_name), ref = "South East")
+model_data$ofsted_rating_name <- relevel(factor(model_data$ofsted_rating_name), ref = "Outstanding")
+
+lm_fit2 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT) + gor_name, data = model_data)
+
+summary(lm_fit2)
+
+model_data <- model_data %>%
+  mutate(
+    fitted2_ATT8SCR = exp(fitted(lm_fit2)),
+    resids_real2 = ATT8SCR - fitted2_ATT8SCR
+  )
+```
+
+-   South East as contrast - London's log(ATT8SCR) is 0.09 higher
+-   This equals (exp(0.095655) - 1) \* 100 = 10% - London's average Attainment 8 is 10% higher than the South East
+
+## Multiple Linear Regression - Dummy Variables
+
+```{r}
+#| fig-height: 4
+#| fig-width: 11
+#| align: center
+library(leaflet)
+library(scales)
+library(sf)
+
+england_sf <- model_data %>%
+  st_as_sf(coords = c("easting", "northing"), crs = 27700) %>%
+  st_transform(crs = 4326)  # for Leaflet
+
+max_abs <- max(abs(england_sf$resids_real), na.rm = TRUE)
+
+pal <- colorNumeric(
+  palette = "RdBu",
+  domain = c(-max_abs, max_abs),
+  reverse = FALSE  # reverse = FALSE gives blue = negative, red = positive
+)
+
+leaflet(data = england_sf) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  addCircleMarkers(
+    radius = 4,
+    color = ~pal(resids_real2),
+    stroke = FALSE,
+    fillOpacity = 1,
+    popup = ~paste0(
+      "<strong>Actual:</strong> ", round(ATT8SCR, 2), "<br>",
+      "<strong>Fitted:</strong> ", round(fitted2_ATT8SCR, 2), "<br>",
+      "<strong>Residual:</strong> ", round(resids_real2, 2)
+    )
+  ) %>%
+  addLegend(
+    position = "bottomright",
+    pal = pal,
+    values = ~resids_real,
+    title = "Residuals (Actual – Fitted)",
+    labFormat = labelFormat(digits = 2),
+    opacity = 1
+  )
+```
+
+-   Hard to tell definitively from visual map, but residuals have changed and less clustering (Moran's I would be more definitive - see GIS course)
+
+## Multiple Linear Regression - Dummy Variables
+
+-   There is no correct contrast to choose for your dummy variable, you may need to try different ones to see which makes most intuitive sense
+-   Depending on the contrast, some dummy regions may or may not be statistically significant in comparison
+-   The inclusion of a regional dummy in this model has improved the $R^2$ to 72%
+-   However, you may have noticed some of the coefficients have changed and this brings us to *confounding*
+
+## Multiple Linear Regression - Confounding
+
+![](L6_images/confound.png){fig-align="center" width="10cm"}
+
+Confound: "to fail to discern differences between : mix up"
+
+## Multiple Linear Regression - Confounding
+
+![](L6_images/confound1.png)
+
+## Multiple Linear Regression - Confounding
+
+![](L6_images/confound2.png)
+
+## Multiple Linear Regression - Confounding
+
+-   Confounding is the change in the effect on the dependent variable of the independent variables in the presence of each other
+-   Can occur when we know some independent variables might effect each other (such as disadvantage on absence) **even when their joint presence doesn't cause variance issues**
+-   **Looking for confounding effects is a crucial part of model building - how do the coefficients of your model change when you introduce other variables?**
+
+## Multiple Linear Regression - Confounding
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| align: center
+#| out-width: 50%
+library(jtools)
+library(sjPlot)
+library(sjmisc)
+library(sjlabelled)
+
+export_summs(lm_fit_a, lm_fit_b, lm_fit1, error_format = "",error_pos = "same" )
+#tab_model(lm_fit_a, lm_fit_b, lm_fit1, show.ci = FALSE)
+
+```
+
+-   In the presence of Overall Absence, the effect of disadvantage is confounded (and *vice versa*)
+
+## Multiple Linear Regression - Confounding
+
+-   The coefficient for log(PTFSM6CLA1A) - disadvantage - shrinks dramatically, from -0.21 down to -0.11 (a 44.5% reduction in effect)
+-   While the coefficient for log(PERCTOT) - Overall Absence - also shrinks from -0.54 to -0.41 this is just a 24.6% reduction
+-   The confounding effect of Overall Absence on disadvantage is ***almost double*** the confounding effect of disadvantage on Overall Absence
+-   This means that the relationship between disadvantage and Attainment 8 is much more biased by the omission of overall absence from the model than the other way around
+
+## Multiple Linear Regression - Confounding
+
+```{r}
+summary(lm_fit2)
+```
+
+-   Including a regional dummy ***slightly reduces the effect of Overall Absence*** and ***slightly increases the effect of disadvantage***, relative to model 3
+
+## Multiple Linear Regression - Confounding
+
+Interpretation:
+
+-   Part of the negative effect of disadvantage was being suppressed or masked by the regional differences (probably London where Attainment 8 is higher on average and so are levels of disadvantage)
+-   Part of the negative effect of Overall Absence is due to its correleation with regional factors - but which ones?
+-   We can explore this question through one final twist in our modelling recipe - we can look at the ***interaction effects*** between individual regions and disadvantage / Overall Absence
+
+## Multiple Linear Regression - Interaction Effects
+
+-   Put simply, an interaction term allows the model to answer the question: ***"Does the effect of disadvantage/Overall Absence on a school's Attainment 8 score change from region to region?"***
+-   Operationally, running the model simply requires variables to be multiplied together (signifying the interaction) in the regression equation rather than added
+-   Practically, the combinations of variables need some careful attention (or the assistance of a helpful Artificial Intelligence helper) to interpret correctly!
+
+## Multiple Linear Regression - Interaction Effects
+
+```{r}
+model_data$gor_name <- relevel(factor(model_data$gor_name), ref = "South East")
+model_data$log_PERCTOT <- log(model_data$PERCTOT)
+model_data$log_PTFSM6CLA1A <- log(model_data$PTFSM6CLA1A)
+
+#lm_fit3a <- lm(log(ATT8SCR) ~ log_PTFSM6CLA1A + log_PERCTOT * gor_name, data = model_data)
+lm_fit3a <- lm(log(ATT8SCR) ~ log_PERCTOT * gor_name, data = model_data)
+
+summary(lm_fit3a)
+```
+-   Reference region = South East
+
+## Multiple Linear Regression - Interaction Effects
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| align: center
+#| out-width: 50%
+library(interactions)
+library(casaviz)
+
+casa_palette <- as.character(casa_colours[1:9])
+
+#scale_colour_casa()
+# or another palette like casa_dark
+
+interactions::interact_plot(
+  lm_fit3a,
+  pred = "log_PERCTOT",
+  modx = "gor_name",
+  plot.points = F,
+  colors = casa_palette
+)
+
+#interactions::interact_plot(lm_fit3a, pred = "log_PERCTOT", modx = "gor_name", plot.points = TRUE)
+```
+## Multiple Linear Regression - Interaction Effects
+
+```{r}
+model_data$gor_name <- relevel(factor(model_data$gor_name), ref = "South East")
+model_data$log_PERCTOT <- log(model_data$PERCTOT)
+model_data$log_PTFSM6CLA1A <- log(model_data$PTFSM6CLA1A)
+
+#lm_fit3a <- lm(log(ATT8SCR) ~ log_PTFSM6CLA1A + log_PERCTOT * gor_name, data = model_data)
+lm_fit3b <- lm(log(ATT8SCR) ~ log_PTFSM6CLA1A * gor_name, data = model_data)
+
+summary(lm_fit3b)
+```
+
+
+## Multiple Linear Regression - Interaction Effects
+
+```{r}
+model_data$gor_name <- relevel(factor(model_data$gor_name), ref = "South East")
+lm_fit3 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A) * gor_name + log(PERCTOT) * gor_name, data = model_data)
+
+summary(lm_fit3)
+```
+
+## Multiple Linear Regression - Interaction Effects
+
+-   Main Effect (Reference Group):
+    -   The coefficient for log(PTFSM6CLA1A) is -0.190520. This is the effect of disadvantage in the South East.
+    -   The coefficient for log(PERCTOT) is -0.289960. This is the effect of Overall Absence in the South East.
+-   Interaction Effects (Reference Group value + Other Region coefficient):
+    -   log(PTFSM6CLA1A):gor_nameLondon: The significant positive coefficient (+0.078684) means that the negative effect of disadvantage is less severe in London than in the South East.
+    -   gor_nameLondon:log(PERCTOT): The significant negative coefficient (-0.069792) means that the negative effect of Overall Absence is more severe in London than in the South East.
+
+## Multiple Linear Regression - Interaction Effects
+
+-   Final Note: Adding interaction effects will seriously increase your VIF as you are multiplying variables that are already in the model
+-   High VIF in a model with interaction terms does not affect the overall model.
+-   High VIF could inflate the standard errors of the coefficients making some otherwise significant variables seem insignificant
+-   Mean-Centring is a technique that could fix this, but we won't look at it today
+
+```{r}
+# Step 1: Create the logged variables as new columns in your data frame
+# This is a good practice to avoid complex formulas
+model_data$log_PTFSM6CLA1A <- log(model_data$PTFSM6CLA1A)
+model_data$log_PERCTOT <- log(model_data$PERCTOT)
+
+range(model_data$log_PTFSM6CLA1A)
+range(model_data$log_PERCTOT)
+
+btn_sub$log_PTFSM6CLA1A <- log(btn_sub$PTFSM6CLA1A)
+btn_sub$log_PERCTOT <- log(btn_sub$PERCTOT)
+
+range(btn_sub$log_PTFSM6CLA1A)
+range(btn_sub$log_PERCTOT)
+
+range(exp(btn_sub$log_PTFSM6CLA1A))
+range(exp(btn_sub$log_PERCTOT))
+
+plot(exp(btn_sub$log_PTFSM6CLA1A), exp(btn_sub$log_PERCTOT))
+
+# Step 2: Mean-center the new logged variables
+# The syntax is now correct because you are referencing a column name.
+model_data$log_PTFSM6CLA1A_c <- scale(model_data$log_PTFSM6CLA1A, center = TRUE, scale = FALSE)
+model_data$log_PERCTOT_c <- scale(model_data$log_PERCTOT, center = TRUE, scale = FALSE)
+
+# Step 3: Run your model with the new centered variables
+# The formula is now easier to read as well
+lm_fit3_centered <- lm(log(ATT8SCR) ~ log_PTFSM6CLA1A_c * gor_name + log_PERCTOT_c * gor_name, data = model_data)
+
+# View the summary
+#summary(lm_fit3_centered)
+```
+
+## Bringing it all together - our final regression show-stopper!
+
+::::: columns
+::: {.column width="70%"}
+-   In carefully building our regression model step-by-step, we have evolved our understanding:
+    -   from a basic model for Brighton where it ***appeared*** that the % disadvantaged students in a school explained around 65% of the variation in Attainment 8 scores and a 10% decrease in disadvantage equating to a 6-point increase in Attainment 8
+    -   to understanding that this particular model not only has few degrees of freedom, but the observed associations suffer from unobserved confounding
 :::
 
-## Learning Objectives
-By the end of this lecture you should:
+::: {.column width="30%"}
+![](L6_images/showstopper2.jpg)
+:::
+:::::
 
-1. Understand basic data types;
-2. Consider how to summarise and represent data.
+## Bringing it all together - our final regression show-stopper!
 
-# Overview 
-We've covered: 
+-   Careful
+-   to our most sophisticated 3-variable interacting-terms model where we now understand that
 
-- Data types: levels of measurements; quantitative & qualitative
-- Key metrics 
-- Null values and outliers
-- Visualising data
-
-# Practical 
-Practical will focus on setting up Python environment and describing a dataset.
-
-- Have questions prepared!
+```{r}
+export_summs(lm_fit_a, lm_fit3, error_format = "",error_pos = "same" )
+```

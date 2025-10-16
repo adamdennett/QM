@@ -126,6 +126,7 @@ Let's start by importing the libraries we need in Python.
 
 ```{python}
 import numpy as np
+import plotly as plotly
 import plotly.graph_objects as go
 ```
 
