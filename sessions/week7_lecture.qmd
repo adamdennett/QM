@@ -16,6 +16,7 @@ format:
     slide-number: TRUE
     preview-links: auto
     theme: casa-slides
+    chalkboard: true
     
 filters:
  - code-visibility
@@ -320,6 +321,45 @@ ggplot(england_filtered) +
 -   Work of Gorard suggested link between levels of disadvantage in a school and attainment.
 -   Not a linear relationship but a log-log elasticity
 
+## Recap - Last Week's Model
+
+```{r}
+#| out-width: "60%"
+#| fig-align: "center"
+
+# Filter data (assuming england_filtered is in your environment)
+btn_sub <- england_filtered %>%
+  filter(LEA == 846) 
+
+# Fit linear model
+lm_fit <- lm(ATT8SCR ~ PTFSM6CLA1A, data = btn_sub)
+
+# Get the R-squared value from the model summary
+r2_value <- summary(lm_fit)$r.squared
+
+# Create the annotation text with the R-squared value, rounded to 2 decimal places
+annotation_text <- paste0("R² = ", round(r2_value, 2))
+
+# Plot with residual lines and the new annotation
+ggplot(btn_sub, aes(x = PTFSM6CLA1A, y = ATT8SCR)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "#8F5289") +
+  geom_segment(aes(xend = PTFSM6CLA1A, yend = predict(lm_fit)),
+               linetype = "dotted", color = "grey50") +
+  # Use the new R-squared annotation
+  annotate("text", 
+           x = max(btn_sub$PTFSM6CLA1A, na.rm = TRUE), 
+           y = min(btn_sub$ATT8SCR, na.rm = TRUE), 
+           label = annotation_text, 
+           hjust = 1, vjust = -10, size = 4, color = "#4E3C56") +
+  labs(title = "Brighton and Hove Schools - Attainment 8 vs % Disadvantaged Students, 2022-23",
+       x = "% Disadvantaged Students",
+       y = "Average Attainment 8 Score") +
+  theme_minimal()
+```
+
+-   School-level relationship between attainment and disadvantage unreliable at the local authority level with small changes influencing coefficients where degrees of freedom are low
+
 ## An Alternative Model
 
 ```{r}
@@ -328,6 +368,7 @@ ggplot(england_filtered) +
 #| warning: false
 #| fig-align: center
 #| out-width: 70%
+
 
 # Fit model
 lm_fit <- lm(log(ATT8SCR) ~ log(PERCTOT), data = england_filtered)
@@ -365,10 +406,12 @@ ggplot(england_filtered) +
 ## An Alternative Model
 
 ```{r}
-# Fit linear model and get predicted values
-lm_fit1 <- lm(log(ATT8SCR) ~ log(PERCTOT) , data = england_filtered)
+library(jtools)
 
+# Fit linear model and get predicted values
+lm_fit1 <- lm(log(ATT8SCR) ~ log(PERCTOT) , data = england_filtered) 
 summary(lm_fit1)
+
 ```
 
 -   Overall Absence = bigger coefficient (-0.54 vs -0.21) & improves the $R^2$ to (60% vs 45% for the % disadvantage model)
@@ -429,6 +472,16 @@ model_data <- model_data %>%
 ```
 
 -   What is the model telling us?
+
+## Multiple Linear Regression
+
+```{r}
+#| echo: true
+library(jtools)
+coef_names <- c("log(% Disadvantaged Students)" = "log(PTFSM6CLA1A)", "log(% Overall Absence)" = "log(PERCTOT)")
+plot_summs(lm_fit1, plot.distributions = T, coefs = coef_names)
+```
+
 
 ## Multiple Linear Regression
 
@@ -633,10 +686,10 @@ model_data$gor_name <- relevel(factor(model_data$gor_name), ref = "London")
 
 lm_fit2 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT) + gor_name, data = model_data)
 
-summary(lm_fit2)
+plot_summs(lm_fit2) + theme_nice()
 ```
 
--   In this model, I have added the Government Office Region (GOR) as a dummy variable.
+-   Government Office Region (GOR) dummy - (London as ref)
 
 ## Multiple Linear Regression - Dummy Variables
 
@@ -762,6 +815,14 @@ export_summs(lm_fit_a, lm_fit_b, lm_fit1, error_format = "",error_pos = "same" )
 ```
 
 -   In the presence of Overall Absence, the effect of disadvantage is confounded (and *vice versa*)
+-   Both variables together, however, explain much more variation in Attainment 8 - both part of the story
+
+## Multiple Linear Regression - Confounding
+
+```{r}
+plot_summs(lm_fit_a, lm_fit_b, lm_fit1, robust = "HC3", coefs = coef_names)
+```
+
 
 ## Multiple Linear Regression - Confounding
 
@@ -789,11 +850,35 @@ Interpretation:
 ## Multiple Linear Regression - Interaction Effects
 
 -   Put simply, an interaction term allows the model to answer the question: ***"Does the effect of disadvantage/Overall Absence on a school's Attainment 8 score change from region to region?"***
--   Operationally, running the model simply requires variables to be multiplied together (signifying the interaction) in the regression equation rather than added
+-   Operationally, running interactions in the model simply requires variables to be multiplied together rather than summed
 -   Practically, the combinations of variables need some careful attention (or the assistance of a helpful Artificial Intelligence helper) to interpret correctly!
 
 ## Multiple Linear Regression - Interaction Effects
 
+The equation for a model where we interact Overall Absence with Regions would look like:
+
+$$\log(\text{Attainment8}) = \beta_0 + \beta_1 \log(\text{PctPersistentAbsence}) +\\\\ \sum_{j=1}^{k} \gamma_j \text{Region}_j + \sum_{j=1}^{k} \delta_j (\log(\text{PctPersistentAbsence}) \times \text{Region}_j) + \epsilon$$
+
+## Multiple Linear Regression - Interaction Effects
+
+Where (if we set the South East as the reference dummy)
+
+-   $\beta_0$ is the intercept (predicted $\log(\text{ATT8SCR})$ for the South East when - $\log(\text{PERCTOT})=0$).
+-   $\beta_1$ is the main effect of unauthorised absence (the effect for the South East).
+-   $\gamma_j$ is the difference in overall attainment for region $j$ compared to the South East.
+-   $\delta_j$ is the difference in the slope (effect of absence) for region $j$ compared to the South East.
+-   $\epsilon$ is the error term.
+
+## Multiple Linear Regression - Interaction Effects
+
+::::: columns
+::: {.column width="50%"}
+-   log(PERCTOT) - 1% increase in the unauthorised absence rate predicts a 0.58% decrease in Attainment 8
+-   Controlling for absence, all other regions worse attainment than SE. SE uniquely sensitive to absence 
+-   interaction shows negative effect of unauthorised absence is significantly less severe in London, NE & Yorkshire
+
+:::
+::: {.column width="50%"}
 ```{r}
 model_data$gor_name <- relevel(factor(model_data$gor_name), ref = "South East")
 model_data$log_PERCTOT <- log(model_data$PERCTOT)
@@ -802,9 +887,13 @@ model_data$log_PTFSM6CLA1A <- log(model_data$PTFSM6CLA1A)
 #lm_fit3a <- lm(log(ATT8SCR) ~ log_PTFSM6CLA1A + log_PERCTOT * gor_name, data = model_data)
 lm_fit3a <- lm(log(ATT8SCR) ~ log_PERCTOT * gor_name, data = model_data)
 
-summary(lm_fit3a)
+plot_summs(lm_fit3a, robust = TRUE)
 ```
--   Reference region = South East
+
+-   Reference Region = South East
+:::
+:::::
+
 
 ## Multiple Linear Regression - Interaction Effects
 
@@ -813,7 +902,7 @@ summary(lm_fit3a)
 #| message: false
 #| warning: false
 #| align: center
-#| out-width: 50%
+#| out-width: 100%
 library(interactions)
 library(casaviz)
 
@@ -827,11 +916,13 @@ interactions::interact_plot(
   pred = "log_PERCTOT",
   modx = "gor_name",
   plot.points = F,
+  facet.modx = F,
   colors = casa_palette
 )
 
 #interactions::interact_plot(lm_fit3a, pred = "log_PERCTOT", modx = "gor_name", plot.points = TRUE)
 ```
+
 ## Multiple Linear Regression - Interaction Effects
 
 ```{r}
@@ -845,14 +936,13 @@ lm_fit3b <- lm(log(ATT8SCR) ~ log_PTFSM6CLA1A * gor_name, data = model_data)
 summary(lm_fit3b)
 ```
 
-
 ## Multiple Linear Regression - Interaction Effects
 
 ```{r}
 model_data$gor_name <- relevel(factor(model_data$gor_name), ref = "South East")
 lm_fit3 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A) * gor_name + log(PERCTOT) * gor_name, data = model_data)
 
-summary(lm_fit3)
+plot_summs(lm_fit3, robust = TRUE)
 ```
 
 ## Multiple Linear Regression - Interaction Effects
@@ -860,9 +950,20 @@ summary(lm_fit3)
 -   Main Effect (Reference Group):
     -   The coefficient for log(PTFSM6CLA1A) is -0.190520. This is the effect of disadvantage in the South East.
     -   The coefficient for log(PERCTOT) is -0.289960. This is the effect of Overall Absence in the South East.
+-   **Even when controlling for regional differences, unauthorised absence has a stronger negative effect on Attainment 8 than disadvantage**
+    
+## Multiple Linear Regression - Interaction Effects    
 -   Interaction Effects (Reference Group value + Other Region coefficient):
-    -   log(PTFSM6CLA1A):gor_nameLondon: The significant positive coefficient (+0.078684) means that the negative effect of disadvantage is less severe in London than in the South East.
-    -   gor_nameLondon:log(PERCTOT): The significant negative coefficient (-0.069792) means that the negative effect of Overall Absence is more severe in London than in the South East.
+    -   log(PTFSM6CLA1A):gor_nameLondon: significant positive coefficient (+0.078684) 
+    -   means that the negative effect of disadvantage is less severe in London than in the South East
+    -   same for all other regions - disadvantage has a ***more severe impact*** in the SE than anywhere else in England. SE schools particularly bad at mitigating effects of disadvantage
+    
+    
+## Multiple Linear Regression - Interaction Effects 
+-   Interaction Effects (Reference Group value + Other Region coefficient):
+    -   gor_nameLondon:log(PERCTOT): The significant negative coefficient (-0.069792) 
+    -   means that the negative effect of Overall Absence is more severe in London than in the South East
+    -   same for most other regions - Overall Absence as ***less severe impact*** in SE than anywhere else in England.
 
 ## Multiple Linear Regression - Interaction Effects
 
@@ -872,6 +973,7 @@ summary(lm_fit3)
 -   Mean-Centring is a technique that could fix this, but we won't look at it today
 
 ```{r}
+#| include: false
 # Step 1: Create the logged variables as new columns in your data frame
 # This is a good practice to avoid complex formulas
 model_data$log_PTFSM6CLA1A <- log(model_data$PTFSM6CLA1A)
