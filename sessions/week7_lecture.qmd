@@ -972,6 +972,15 @@ plot_summs(lm_fit3, robust = TRUE)
 -   High VIF could inflate the standard errors of the coefficients making some otherwise significant variables seem insignificant
 -   Mean-Centring is a technique that could fix this, but we won't look at it today
 
+## Multiple Linear Regression - Interaction Effects
+
+::: callout-tip
+-   Interpreting interaction effects is HARD
+-   AI is incredibly adept at interpreting outputs from regression models and describing the outputs in plain English. ChatGPT, Google Gemini, Claude and various others can be of great help here
+-   It doesn't always get it right - never just feed an AI your outputs and trust its interpretation without questioning what it's telling you
+-   Used correctly, however - particularly if you give it context with the data you are using and the patterns you are observing, it's a tool that can really assist your understanding. 
+:::
+
 ```{r}
 #| include: false
 # Step 1: Create the logged variables as new columns in your data frame
