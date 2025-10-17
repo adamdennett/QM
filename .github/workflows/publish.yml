@@ -12,7 +12,7 @@ jobs:
       contents: write
 
     env:
-      GITHUB_PAT: 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
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - name: Check out repository
