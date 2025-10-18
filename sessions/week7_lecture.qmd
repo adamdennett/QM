@@ -967,6 +967,26 @@ plot_summs(lm_fit3, robust = TRUE)
 
 ## Multiple Linear Regression - Interaction Effects
 
+```{r}
+model_data$gor_name <- relevel(factor(model_data$gor_name), ref = "South East")
+lm_fit4 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A) * log(PERCTOT) + gor_name, data = model_data)
+
+summary(lm_fit4)
+
+#plot_summs(lm_fit4, robust = TRUE)
+```
+-   It is also possible to interact our continuous variables. However...
+
+## Multiple Linear Regression - Interaction Effects
+
+-   Interaction term is statistically insignificant
+-   There is no evidence that the effect of concentrations of disadvantage on attainment changes based on the levels of unauthorised absence, or vice-versa
+-   Negative impact of disadvantage is roughly the same whether a school has a low or high unauthorised absence rate, and the negative impact of unauthorised absence is roughly the same regardless of the level of disadvantage
+-   Good to experiment as informative, but this interaction term can be removed from the model
+
+
+## Multiple Linear Regression - Interaction Effects
+
 -   Final Note: Adding interaction effects will seriously increase your VIF as you are multiplying variables that are already in the model
 -   High VIF in a model with interaction terms does not affect the overall model.
 -   High VIF could inflate the standard errors of the coefficients making some otherwise significant variables seem insignificant
@@ -980,6 +1000,14 @@ plot_summs(lm_fit3, robust = TRUE)
 -   It doesn't always get it right - never just feed an AI your outputs and trust its interpretation without questioning what it's telling you
 -   Used correctly, however - particularly if you give it context with the data you are using and the patterns you are observing, it's a tool that can really assist your understanding. 
 :::
+
+## Thoughts regression model building
+
+-   Aim is to try and explain as much variation in dependent variable as possible with the fewest number of independent variables
+-   More variables isn't necessarily better - statistically insignificant variables might be worth dropping from your model
+-   As you add more variables, confounding might change the interpretation of earlier variables and may even stop them being statistically significant
+-   Algorithms like the Step-Wise algorithm can automate the process of variable selection - worth experimenting with, but no substitute for doing your research!
+-   Building a good model takes time, experimentation, iteration and a lot of care and attention
 
 ```{r}
 #| include: false
