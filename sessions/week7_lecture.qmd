@@ -1006,7 +1006,7 @@ summary(lm_fit4)
 -   Aim is to try and explain as much variation in dependent variable as possible with the fewest number of independent variables
 -   More variables isn't necessarily better - statistically insignificant variables might be worth dropping from your model
 -   As you add more variables, confounding might change the interpretation of earlier variables and may even stop them being statistically significant
--   Algorithms like the Step-Wise algorithm can automate the process of variable selection - worth experimenting with, but no substitute for doing your research!
+-   Algorithms like the Step-Wise algorithm can automate the process of variable selection - worth experimenting with, but no substitute for doing your own research!
 -   Building a good model takes time, experimentation, iteration and a lot of care and attention
 
 ```{r}
