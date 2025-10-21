@@ -8,7 +8,6 @@ filters:
   - qna
   - multicode
   - quarto # keep Quarto’s built-ins as the last filter or it won't work
-
 ---
 
 ```{r}
@@ -20,7 +19,6 @@ library(here)
 here()
 
 ```
-
 
 ```{r}
 #| message: false
@@ -44,9 +42,13 @@ here()
 
 library(reticulate)
 
+#virtualenv_list()
+#virtualenv_root()
+use_virtualenv(virtualenv = NULL, required = NULL)
+
 #reticulate::virtualenv_remove("r-reticulate")
 # point reticulate to the right python installation - ideally the one reticulate installed. 
-reticulate::use_python("C:/Users/Adam/AppData/Local/R/cache/R/reticulate/uv/cache/archive-v0/EiTNi4omakhlev5ckz2WP/Scripts/python.exe", required = TRUE)
+#reticulate::use_python("C:/Users/Adam/AppData/Local/R/cache/R/reticulate/uv/cache/archive-v0/EiTNi4omakhlev5ckz2WP/Scripts/python.exe", required = TRUE)
 #use_condaenv("qmEnv", conda = "C:/Users/adam_/anaconda3/Scripts/conda.exe", required = TRUE)
 #reticulate::use_python("C:/Users/adam_/anaconda3/envs/qmEnv/python.exe", required = TRUE)
 #py_run_string("import pyproj; print(pyproj.CRS.from_epsg(27700))")
@@ -80,3 +82,186 @@ reticulate::use_python("C:/Users/Adam/AppData/Local/R/cache/R/reticulate/uv/cach
 ```
 
 ## Preamble
+
+We're going even deeper this week in Volume 2 of the Regression Sessions, so to help you along on your journey we have got Volume 2 of the Progression Sessions with Blame and DRS - Enjoy!
+
+## Introduction
+
+Similar to last week's practical, we will continue our investigation into the factors that affect school-level attainment figures, following the lecture you have just seen.
+
+Last week, you created a data subset for England of some 30-odd variables related to different measures of attainment, and a selection of continuous and categorical variables which might help explain those attainment levels. This week we will use more of those variables to build a multiple regression model and evaluate its outputs.
+
+## Aims
+
+By the end of this week's regression session you should:
+
+-   Consolidate your knowledge of using R or Python to process data in order to carry out a scientific investigation
+-   Build on the skills learned last week to practice further plotting and visualising of data to assess relationships between multiple x variables and a selected y variable
+-   Refresh knowledge of using built-in statistical software functions in R and Python to run some more sophisticated regression models and produce statistical outputs from those models
+-   Practice interpreting the outputs of those models thinking in particular about issues of confounding, multicollinearity and the independence of residuals
+-   Practice experimenting with interaction effects in your model and the interpretation of those outputs
+
+::: callout-note
+As with last week's practical you will find code-blocks that will allow you to run your analysis in either R or Python. Again, it's up to you which you decide to use.
+:::
+
+## Tasks
+
+This week we won't look at individual local authorities, but will focus on the whole of England.
+
+### 1. Baseline Model
+-   Run your baseline bi-variate, whole of England regression model from last week
+
+### 2. Multiple Regression Model
+-   Experiment with adding additional explanatory variables one-by-one into your model - both continuous and categorical
+-   Try to find the model that best explains your attainment variable. One that strikes a good balance between:
+    -   explanatory power (a good $R^2$, significant explanatory variables) 
+    -   parsimony (the principle of simplicity - fewest variables, simplest possible explanation)
+    
+### 3. Evaluation
+-   When you have your 'best' model, how do you interpret the coefficients?
+    -   Which variable(s) has(have) the most explanatory power (check t-values for this)?
+    -   How do you interpret the combined explanatory power of variales in your model?
+    -   What kind of confounding do you observe as you add more variables (if any)?
+    -   Do you have any issues of multicollinearity or residual independence?
+    
+### 4. Interaction Effects
+-   Experiment with interacting some of the variables in your best multiple regression model and see if this adds any more explanatory nuance to your main analysis
+
+::: {.multicode}
+#### ![](L6_images/python-logo-only.png){width="30"}
+```{python}
+
+```
+#### ![](L6_images/Rlogo.png){width="41" height="30"}
+```{r}
+
+```
+:::
+
+## Task 1 - Baseline Model
+
+-   First read in your data file from last week and run your final baseline model from last week
+
+::: {.callout-note}
+The paths in the code below are specific to my home computer - you'll need to adapt this code to read the csv from where it is on your computer.
+
+You will also need to change the variables to the ones you used last week - don't just copy mine!
+:::
+
+::: {.multicode}
+#### ![](L6_images/python-logo-only.png){width="30"}
+```{python}
+import pandas as pd
+import numpy as np
+import janitor
+from pathlib import Path
+import statsmodels.api as sm
+
+# little function to define the file root on different machines
+def find_qm_root(start_path: Path = Path.cwd(), anchor: str = "QM_Fork") -> Path:
+    """
+    Traverse up from the start_path until the anchor folder (e.g. 'QM' or 'QM_Fork')      is found. Returns the path to the anchor folder.
+    """
+    for parent in [start_path] + list(start_path.parents):
+        if parent.name == anchor:
+            return parent
+    raise FileNotFoundError(f"Anchor folder '{anchor}' not found in path      hierarchy.")
+  
+qm_root = find_qm_root()
+base_path = qm_root / "sessions" / "L6_data" / "Performancetables_130242" / "2022-2023"
+na_all = ["", "NA", "SUPP", "NP", "NE", "SP", "SN", "LOWCOV", "NEW", "SUPPMAT", "NaN"]
+
+england_filtered = pd.read_csv(base_path / "england_filtered.csv", na_values=na_all, dtype={"URN": str})
+
+# Log-transform safely: replace non-positive values with NaN
+england_filtered['log_ATT8SCR'] = np.where(england_filtered['ATT8SCR'] > 0, np.log(england_filtered['ATT8SCR']), np.nan)
+england_filtered['log_PTFSM6CLA1A'] = np.where(england_filtered['PTFSM6CLA1A'] > 0, np.log(england_filtered['PTFSM6CLA1A']), np.nan)
+
+# Drop rows with NaNs in either column
+england_clean = england_filtered.dropna(subset=['log_ATT8SCR', 'log_PTFSM6CLA1A'])
+
+# Define independent and dependent variables
+X = sm.add_constant(england_clean['log_PTFSM6CLA1A'])  # adds intercept
+y = england_clean['log_ATT8SCR']
+
+# Fit the model
+england_model1 = sm.OLS(y, X).fit()
+#england_summary = extract_model_summary(england_model1, 'England Model')
+
+# Print summary
+print(england_model1.summary())
+```
+#### ![](L6_images/Rlogo.png){width="41" height="30"}
+```{r}
+library(tidyverse)
+library(janitor)
+library(readr)
+library(dplyr)
+library(here)
+
+base_path <- here("sessions", "L6_data", "Performancetables_130242", "2022-2023")
+na_all <- c("", "NA", "SUPP", "NP", "NE", "SP", "SN", "LOWCOV", "NEW", "SUPPMAT")
+
+england_filtered <- read_csv(file.path(base_path, "england_filtered.csv"), na = na_all) |> mutate(URN = as.character(URN))
+
+str(england_filtered)
+
+# Fit linear model and get predicted values
+england_filtered_clean <- england_filtered[
+  !is.na(england_filtered$ATT8SCR) & 
+  !is.na(england_filtered$PTFSM6CLA1A) &
+  england_filtered$ATT8SCR > 0 &
+  england_filtered$PTFSM6CLA1A > 0, 
+]
+
+england_model1 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A), data = england_filtered_clean)
+summary(england_model1)
+```
+:::
+
+## Task 2 - Multiple Regression Model
+
+-   Right, we that was a nice and simple starter. Now for something a little trickier:
+
+Task 2a
+
+-   Using the steps you learned last week and the information from this week's lecture, I would like you to find the best possible 5-dependent variable model for your chosen attainment variable (without interaction terms). Remember:
+    -   you might run into issues with logging some variables that have real 0s in them - this might cause your model to break. You might need to filter these variables out of your dataset before running your model.
+    -   Check the distributions of your variables using a histograms or box plots or binary scatter plots with your dependent variable, ***before*** putting them into your model 
+    -   with your dummy variables, you might want to experiment with changing your reference variable
+    -   check you regression assumptions - linearity, homoscedasticity, normality of residuals, multicollinearity, independence of residuals - does your model pass?
+    -   which are the most important variables in your model in terms of t-values?
+
+
+::: {.multicode}
+#### ![](L6_images/python-logo-only.png){width="30"}
+```{python}
+
+```
+#### ![](L6_images/Rlogo.png){width="41" height="30"}
+```{r}
+library(performance)
+ggplot(england_filtered_clean, aes(x = PTPRIORLO)) +
+  geom_histogram(aes(y = ..density..), binwidth = 0.2, fill = "#4E3C56", alpha = 0.4)
+
+england_filtered_clean <- england_filtered_clean %>%
+  filter(PTFSM6CLA1A > 0, PERCTOT > 0, PNUMEAL > 0)
+
+england_model2 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT) + gor_name, data = england_filtered_clean, na.action = na.exclude)
+summary(england_model2)
+
+england_model3 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT) + log(PNUMEAL) + gor_name, data = england_filtered_clean, na.action = na.exclude)
+summary(england_model3)
+
+england_model4 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT) + log(PNUMEAL) + OFSTEDRATING + gor_name, data = england_filtered_clean, na.action = na.exclude)
+summary(england_model4)
+
+england_model5 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT) + log(PNUMEAL) + OFSTEDRATING + gor_name + PTPRIORLO + ADMPOL.y, data = england_filtered_clean, na.action = na.exclude)
+summary(england_model5)
+
+check_model(england_model5)
+```
+:::
+
+Task 2b - AI interpretation. Yes, we're using AI to help us!
