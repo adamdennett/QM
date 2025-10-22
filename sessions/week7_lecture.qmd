@@ -490,7 +490,7 @@ plot_summs(lm_fit1, plot.distributions = T, coefs = coef_names)
 -   The $R^2$ value is now 0.69, indicating that the model is potentially good and explains ***69% of the variation in Attainment 8 scores***. Degrees of freedom are good and the overall model is statistically significant.
 -   But does is satisfy the assumptions of linear regression?
 
-## Multiple Linear Regression - Diagnostics 1
+## Diagnostics 1
 
 ```{r}
 library(performance)
@@ -501,7 +501,7 @@ check_model(lm_fit1,
 
 -   Pretty good - the residuals are randomly scattered around zero, suggesting a linear relationship
 
-## Multiple Linear Regression - Diagnostics 2
+## Diagnostics 2
 
 ```{r}
 check_model(lm_fit1, 
@@ -510,7 +510,7 @@ check_model(lm_fit1,
 
 -   The residuals are normally distributed - the Q-Q plot shows most points on the line
 
-## Multiple Linear Regression - Diagnostics 3
+## Diagnostics 3
 
 ```{r}
 check_model(lm_fit1, 
@@ -527,12 +527,12 @@ check_model(lm_fit1,
 -   **No multicollinearity**: :confused:
 -   **Independence of residuals**: :confused:
 
-## Multiple Linear Regression - Multicollinearity
+## Multicollinearity
 
 -   Multicollinearity occurs when two or more independent variables in a regression model are ***highly correlated*** with each other
 -   This can lead to unreliable estimates of the coefficients, inflated standard errors, and difficulty in interpreting the results
 
-## Multiple Linear Regression - Multicollinearity
+## Multicollinearity
 
 ```{r}
 #| out-width: 60%
@@ -553,7 +553,7 @@ corr %>%
 -   Difficult to say what is too much correlation - but over 0.7 is often considered problematic
 -   However, pairwise correlations might miss n-way correlations
 
-## Multiple Linear Regression - VIF
+## Variance Inflaction Factor - VIF
 
 ```{r}
 #| out-width: 70%
@@ -565,7 +565,7 @@ check_model(lm_fit1,
 -   A more useful diagnostic tool is the ***Variance Inflation Factor (VIF)***, which measures how much the variance of a regression coefficient is increased due to multicollinearity
 -   A VIF value of 1 indicates no correlation, while a VIF value above 5 or 10 suggests high multicollinearity
 
-## Multiple Linear Regression - VIF
+## Variance Inflaction Factor - VIF
 
 ***Why does it even matter if the variance is inflated?***
 
@@ -574,7 +574,7 @@ check_model(lm_fit1,
 -   The model makes an arbitrary split
 -   Small changes in the data could make the split go either way - e.g. attribute more of the effect to % Disadvantaged Students or % Overall Absence (if VIF high) - thus ***inflating*** the uncertainty / ***variance***
 
-## Multiple Linear Regression - VIF
+## Variance Inflaction Factor - VIF
 
 -   Despite some positive correlation (0.48) between % Disadvantaged Students and % Overall Absence, the VIF is very low \~1.5
 -   No problems with multicollinearity
@@ -588,7 +588,7 @@ check_model(lm_fit1,
 -   **No multicollinearity**: :sunglasses:
 -   **Independence of residuals**: :confused:
 
-## Multiple Linear Regression - Independence of Residuals
+## Independence of Residuals
 
 -   Residuals (errors) should not be correlated with each other
 -   (auto)correlation (clustering) in the errors = model missing something!
@@ -596,13 +596,13 @@ check_model(lm_fit1,
 -   often occurs when a temporal or spatial component to the data
 -   or when another important variable is missing or omitted
 
-## Multiple Linear Regression - Spatial or Temporal (auto)Correlation
+## Spatial or Temporal (auto)Correlation
 
 -   In our case, we have a spatial component to the data - schools are located in different areas of England and Wales
 -   If schools in the same area have similar characteristics, it is likely that the residuals will be correlated
 -   The easiest way to check this is to plot the values of the residuals for the schools on a map
 
-## Multiple Linear Regression - Residual (auto)Correlation
+## Residual (auto)Correlation
 
 ```{r}
 #| fig-height: 4
@@ -650,7 +650,7 @@ leaflet(data = england_sf) %>%
 -   Residuals show clear spatial autocorrelation
 -   London (and other city schools) perform much better than model predicts
 
-## Multiple Linear Regression - Residual (auto)Correlation
+## Residual (auto)Correlation
 
 -   **ALWAYS MAP YOUR RESIDUALS IF MODELLING SPATIAL DATA**
 -   Correlated residuals often the sign of an omitted variable (e.g "London")
@@ -665,11 +665,11 @@ leaflet(data = england_sf) %>%
 -   **No multicollinearity**: :sunglasses:
 -   **Independence of residuals**: :grimacing:
 
-## Multiple Linear Regression - Dummy Variables
+## Dummy Variables
 
 ![](L6_images/dummy2.png){fig-align="center" width="10cm"}
 
-## Multiple Linear Regression - Dummy Variables
+## Dummy Variables
 
 -   In linear regression, independent variables can also be categorical
 -   Categorical variables are often referred to as ***DUMMY*** variables
@@ -677,7 +677,7 @@ leaflet(data = england_sf) %>%
 -   In our model *Region* could be a dummy variable to see the "London" effect is real
     -   Dummy could also be any other categorical variable like Ofsted rating (e.g. Good, Outstanding etc.)
 
-## Multiple Linear Regression - Dummy Variables
+## Dummy Variables
 
 ```{r}
 # Fit linear model and get predicted values
@@ -691,7 +691,7 @@ plot_summs(lm_fit2) + theme_nice()
 
 -   Government Office Region (GOR) dummy - (London as ref)
 
-## Multiple Linear Regression - Dummy Variables
+## Dummy Variables
 
 ```{r}
 # Fit linear model and get predicted values
@@ -701,7 +701,7 @@ summary(lm_fit2)
 -   There are 9 regions in England and here "London" has been set as the **contrast** or reference variable (which all others are compared to)
 -   Changing the contrast compares each region to a different reference
 
-## Multiple Linear Regression - Dummy Variables
+## Dummy Variables
 
 ```{r}
 # Fit linear model and get predicted values
@@ -722,7 +722,7 @@ model_data <- model_data %>%
 -   South East as contrast - London's log(ATT8SCR) is 0.09 higher
 -   This equals (exp(0.095655) - 1) \* 100 = 10% - London's average Attainment 8 is 10% higher than the South East
 
-## Multiple Linear Regression - Dummy Variables
+## Dummy Variables
 
 ```{r}
 #| fig-height: 4
@@ -769,14 +769,34 @@ leaflet(data = england_sf) %>%
 
 -   Hard to tell definitively from visual map, but residuals have changed and less clustering (Moran's I would be more definitive - see GIS course)
 
-## Multiple Linear Regression - Dummy Variables
+## Dummy Variables
 
 -   There is no correct contrast to choose for your dummy variable, you may need to try different ones to see which makes most intuitive sense
 -   Depending on the contrast, some dummy regions may or may not be statistically significant in comparison
 -   The inclusion of a regional dummy in this model has improved the $R^2$ to 72%
 -   However, you may have noticed some of the coefficients have changed and this brings us to *confounding*
 
-## Multiple Linear Regression - Confounding
+## Variable Reclassification
+
+-   One potentially useful strategy in regression modelling is the reclassification of an independent variable. 
+-   Continuous -> Categorical or Weak Ordinal (e.g. various measurements of height into short, average and tall at different thresholds)
+-   Categorical -> Categorical with fewer categories (e.g. short, average, tall into below average and above average)
+
+## Variable Reclassification
+
+-   Benefits of reclassification:
+    -   Moving from a continuous variable to a weak ordinal variable might make the patterns or observations easier to explain 
+    -   complex relationships (such as log-linear elasticities associated with absence from school) reduced to something more interpretable (if you miss more than 50% of school, your odds of passing your exams are drastically reduced)
+    -   Previous obscured patterns can emerge from the data
+    -   Collapsing categorical variables (e.g. multiple religious school denominations into religious/non-religious) can aid interpretability and boost statistical power, increase degrees of freedom
+    
+## Variable Reclassification
+
+-   Risks of reclassification:
+    -   Loss of statistical power due to loss of information
+    -   Not always obvious where to make the cut when reclassifying a continuous variable and this can be crucial to the interpretation (e.g. is Low <20 or <30?)
+
+## Confounding
 
 ![](L6_images/confound.png){fig-align="center" width="10cm"}
 

@@ -2,7 +2,9 @@
 title: "Prof D's Regression Sessions - Vol 1"
 subtitle: "AKA - Applied Linear Regression - Basics"
 format:
-  html: default
+  html:
+    code-fold: true
+    code-tools: true
   ipynb: default
 filters:
   - qna
@@ -643,7 +645,7 @@ england_filtered = (
         ~england_school_2022_23["MINORGROUP"].isin(excluded_groups) &
         (england_school_2022_23["phaseofeducation_name_"] == "Secondary") &
         (england_school_2022_23["establishmentstatus_name_"] == "Open")
-    ][["URN", "SCHNAME_x", "LEA", "LANAME", "TOWN_x", "gor_name_", "TOTPUPS", "ATT8SCR", "ATT8SCRENG", "ATT8SCRMAT", "ATT8SCR_FSM6CLA1A", "ATT8SCR_NFSM6CLA1A", "ATT8SCR_BOYS", "ATT8SCR_GIRLS", "P8MEA", "P8MEA_FSM6CLA1A", "P8MEA_NFSM6CLA1A", "PTFSM6CLA1A", "PTNOTFSM6CLA1A", "PNUMEAL", "PNUMENGFL", "PTPRIORLO", "PTPRIORHI", "NORB", "NORG", "PNUMFSMEVER", "PERCTOT", "PPERSABS10", "SCHOOLTYPE_x", "RELCHAR", "ADMPOL_y", "gender_name_", "OFSTEDRATING", "MINORGROUP", "easting", "northing"]]
+    ][["URN", "SCHNAME_x", "LEA", "LANAME", "TOWN_x", "gor_name_", "TOTPUPS", "ATT8SCR", "ATT8SCRENG", "ATT8SCRMAT", "ATT8SCR_FSM6CLA1A", "ATT8SCR_NFSM6CLA1A", "ATT8SCR_BOYS", "ATT8SCR_GIRLS", "P8MEA", "P8MEA_FSM6CLA1A", "P8MEA_NFSM6CLA1A", "PTFSM6CLA1A", "PTNOTFSM6CLA1A", "PNUMEAL", "PNUMENGFL", "PTPRIORLO", "PTPRIORHI", "NORB", "NORG", "PNUMFSMEVER", "PERCTOT", "PPERSABS10", "SCHOOLTYPE_x", "RELCHAR", "ADMPOL_y", "ADMPOL_PT", "gender_name_", "OFSTEDRATING", "MINORGROUP", "easting", "northing"]]
 )
 ```
 
@@ -652,8 +654,7 @@ england_filtered = (
 ```{r}
 # Filter data
 england_filtered <- england_school_2022_23 %>%
-  filter(!MINORGROUP %in% c("Special school", "Independent school", "College", NA)) %>% 
-  filter(phase_of_education_name == "Secondary") %>% 
+  filter(!MINORGROUP %in% c("Special school", "Independent school", "College", NA)) %>%   filter(phase_of_education_name == "Secondary") %>% 
   filter(establishment_status_name == "Open") %>% 
   select(URN, SCHNAME.x, TOWN.x, TOTPUPS, ATT8SCR, OFSTEDRATING, MINORGROUP, PTFSM6CLA1A)
 ```
@@ -662,10 +663,11 @@ england_filtered <- england_school_2022_23 %>%
 #| include: false
 # Filter data
 england_filtered <- england_school_2022_23 %>%
-  filter(!MINORGROUP %in% c("Special school", "Independent school", "College", NA)) %>% 
-  filter(phase_of_education_name == "Secondary") %>% 
+  filter(!MINORGROUP %in% c("Special school", "Independent school", "College", NA)) %>%   filter(phase_of_education_name == "Secondary") %>% 
   filter(establishment_status_name == "Open") %>% 
-  select(URN, SCHNAME.x, LEA, LANAME, TOWN.x,gor_name, TOTPUPS, ATT8SCR, ATT8SCRENG, ATT8SCRMAT,ATT8SCRMAT,ATT8SCR_FSM6CLA1A,ATT8SCR_FSM6CLA1A,ATT8SCR_NFSM6CLA1A,ATT8SCR_BOYS,ATT8SCR_GIRLS,P8MEA,P8MEA_FSM6CLA1A,P8MEA_NFSM6CLA1A,PTFSM6CLA1A,PTNOTFSM6CLA1A,PNUMEAL,PNUMENGFL,PTPRIORLO,PTPRIORHI,NORB,NORG,PNUMFSMEVER,PERCTOT,PPERSABS10,SCHOOLTYPE.x,RELCHAR,ADMPOL.y,gender_name,OFSTEDRATING, MINORGROUP, easting, northing)
+  select(URN, SCHNAME.x, LEA, LANAME, TOWN.x,gor_name, TOTPUPS, ATT8SCR, ATT8SCRENG, ATT8SCRMAT,ATT8SCRMAT,ATT8SCR_FSM6CLA1A,ATT8SCR_FSM6CLA1A,ATT8SCR_NFSM6CLA1A,ATT8SCR_BOYS,ATT8SCR_GIRLS,P8MEA,P8MEA_FSM6CLA1A,P8MEA_NFSM6CLA1A,PTFSM6CLA1A,PTNOTFSM6CLA1A,PNUMEAL,PNUMENGFL,PTPRIORLO,PTPRIORHI,NORB,NORG,PNUMFSMEVER,PERCTOT,PPERSABS10,SCHOOLTYPE.x,RELCHAR,ADMPOL.y,ADMPOL_PT,gender_name,OFSTEDRATING, MINORGROUP, easting, northing)
+
+#write_csv(england_filtered, "england_filtered.csv")
 ```
 :::
 
@@ -697,8 +699,9 @@ Other variables to include in your reduced dataset:
 23. School Type e.g. Voluntary Aided school - **SCHOOLTYPE**
 24. Religious character - **RELCHAR**
 25. Admissions Policy - **ADMPOL**
-26. Government Office Region Name - **gor_name**
-27. Mixed of Single Sex - **gender_name**
+26. Admissions Policy new definition from 2019 - **ADMPOL_PT**
+27. Government Office Region Name - **gor_name**
+28. Mixed or Single Sex - **gender_name**
 :::
 
 ::: callout-note
