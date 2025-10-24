@@ -42,14 +42,9 @@ here()
 
 # Restore only the selected packages
 #renv::restore(packages = packages)
-
+#Sys.unsetenv("VIRTUAL_ENV")
 library(reticulate)
-
-#virtualenv_list()
-#virtualenv_root()
-use_virtualenv(virtualenv = NULL, required = NULL)
-
-#reticulate::virtualenv_remove("r-reticulate")
+use_python("/QM_Fork/venv/Scripts/python.exe", required = TRUE)
 # point reticulate to the right python installation - ideally the one reticulate installed. 
 #reticulate::use_python("C:/Users/Adam/AppData/Local/R/cache/R/reticulate/uv/cache/archive-v0/EiTNi4omakhlev5ckz2WP/Scripts/python.exe", required = TRUE)
 #use_condaenv("qmEnv", conda = "C:/Users/adam_/anaconda3/Scripts/conda.exe", required = TRUE)
@@ -106,8 +101,8 @@ By the end of this week's regression session you should:
 
 -   Consolidate your knowledge of using R or Python to process data in order to carry out a scientific investigation
 -   Build on the skills learned last week to practice further plotting and visualising of data to assess relationships between multiple x variables and a selected y variable
--   Refresh knowledge of using built-in statistical software functions in R and Python to run some more sophisticated regression models and produce statistical outputs from those models
--   Practice interpreting the outputs of those models thinking in particular about issues of confounding, multicollinearity and the independence of residuals
+-   Refresh your knowledge of using built-in statistical software functions in R and Python to run some more sophisticated regression models and produce statistical outputs from those models
+-   Practice interpreting the outputs of those models thinking in particular about issues of confounding, mediating, multicollinearity and the independence of residuals
 -   Practice experimenting with interaction effects in your model and the interpretation of those outputs
 
 ::: callout-note
@@ -122,14 +117,18 @@ This week we won't look at individual local authorities, but will focus on the w
 
 -   Run your baseline bivariate, whole of England, regression model from last week
 
-### 2. Multiple Regression Model
+### 2. Data Prep and Exploratory Data Analysis
+
+-   Prepare your data and carry out some exploratory data analysis to understand what you are working with
+
+### 3. Multiple Regression Model
 
 -   Experiment with adding additional explanatory variables one-by-one into your model - both continuous and categorical. You might even experiment with reclassifying variables to reduce any noise that might exist with excessive categories unclear continuous relationships
 -   Try to find the model that best explains your attainment variable. One that strikes a good balance between:
     -   explanatory power (a good $R^2$, significant explanatory variables) - best doesn't necessarily mean the highest $R^2$, if a variable with more nuance allows you to say something more interesting about a relationship.
     -   parsimony (the principle of simplicity - fewest variables, simplest possible explanation)
 
-### 3. Evaluation
+### 4. Evaluation
 
 -   When you have your 'best' model, how do you interpret the coefficients?
     -   Which variable(s) has(have) the most explanatory power (check t-values for this)?
@@ -137,7 +136,7 @@ This week we won't look at individual local authorities, but will focus on the w
     -   What kind of confounding do you observe as you add more variables (if any)?
     -   Do you have any issues of multicollinearity or residual independence? Does your model pass the standard tests?
 
-### 4. Interaction Effects
+### 5. Interaction Effects
 
 -   Experiment with interacting some of the variables in your best multiple regression model and see if this adds any more explanatory nuance to your main analysis
 
@@ -158,11 +157,14 @@ This week we won't look at individual local authorities, but will focus on the w
 ## Task 1 - Baseline Model
 
 -   First read in your data file from last week and run your final baseline model from last week
+-   Then run a basic bivariate regression model for your attainment variable of choice (I am using raw Attainment 8 scores - **ATT8SCR** - , but last week you should have chosen one of the other different Attainment scores to try and model - therefore you will need to adjust your code accordingly)
+-   Your choice of independent variable can be anything, but you might want to start with **PTFSM6CLA1A (% of pupils at the end of key stage 4 who are disadvantaged)** as I am. 
+-   Don't forget, you probably will want to log-transform both of your variables
 
 ::: callout-note
 The paths in the code below are specific to my home computer - you'll need to adapt this code to read the csv from where it is on your computer.
 
-You will also need to change the variables to the ones you used last week - don't just copy mine!
+And one more reminder - you will also need to change the variables to the ones you used last week - don't just copy mine!
 :::
 
 ::: multicode
@@ -230,7 +232,6 @@ england_filtered <- read_csv(file.path(base_path, "england_filtered.csv"), na = 
 
 #str(england_filtered)
 
-# Fit linear model and get predicted values
 england_filtered_clean <- england_filtered[
   !is.na(england_filtered$ATT8SCR) & 
   !is.na(england_filtered$PTFSM6CLA1A) &
@@ -238,34 +239,17 @@ england_filtered_clean <- england_filtered[
   england_filtered$PTFSM6CLA1A > 0, 
 ]
 
+# Fit linear model and get predicted values
 england_model1 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A), data = england_filtered_clean)
 summary(england_model1)
 ```
 
-
-
-
-```{R}
-
-```
 :::
 
-## Task 2 - Multiple Regression Model
+## Task 2 - Exploratory Analysis and Data Preparation
 
 -   Right, we that was a nice and simple starter. We now have a baseline and something to compare your subsequent more sophisticated models to. 
--   These next steps will be a little trickier and I will be expecting you to use some of the knowledge gained last week to complete the tasks, rather than me giving you the code explicitly
-
-Task 2a
-
--   Using the steps you learned last week and the information from this week's lecture, I would like you to find the best possible ***5-dependent variable model*** for your chosen attainment variable (without interaction terms). These can be continuous or categorical variables or any combination of them. Remember:
-    -   Use exploratory analysis to check the distributions of your variables using histograms, box plots etc. or binary scatter plots with your dependent variable, ***before*** putting them into your model
-    -   you might run into issues with logging some variables that have real 0s in them - this might cause your model to break. You might need to filter these variables out of your dataset before running your model.
-    -   with your dummy variables, you might want to experiment with changing your reference category
-    -   you might also want to reclassify a variable if you suspect it is important, but that in its present form is coming out as insignificant
-    -   check you regression assumptions - linearity, homoscedasticity, normality of residuals, multicollinearity, independence of residuals - does your model pass?
-    -   which are the most important variables in your model in terms of t-values?
-
-### Exploratory Data Analysis
+-   These next steps will be a little trickier and I will be expecting you to use some of the knowledge gained last week to complete the tasks, rather than me giving you all of the right code explicitly.
 
 ::: multicode
 #### ![](L6_images/python-logo-only.png){width="30"}
@@ -273,11 +257,10 @@ Task 2a
 ```{python}
 #| message: false
 #| warning: false
+
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-
-# Assuming england_filtered_clean is your DataFrame
 
 # Drop unwanted numeric columns
 numeric_cols = england_filtered_clean.drop(columns=['easting', 'northing', 'LEA'], errors='ignore').select_dtypes(include='number')
@@ -285,14 +268,28 @@ numeric_cols = england_filtered_clean.drop(columns=['easting', 'northing', 'LEA'
 # Convert to long format
 numeric_long = numeric_cols.melt(var_name='variable', value_name='value')
 
-# Create faceted histograms
-g = sns.FacetGrid(numeric_long, col="variable", col_wrap=6, sharex=False, sharey=False)
-g.map_dataframe(sns.histplot, x="value", bins=30, color="steelblue")
-g.set_titles(col_template="{col_name}")
-g.set_axis_labels("Value", "Count")
-plt.subplots_adjust(top=0.9)
-g.fig.suptitle("Histograms of Numerical Variables")
+# Set up the figure
+variables = numeric_long['variable'].unique()
+n_vars = len(variables)
+cols = 6
+rows = (n_vars + cols - 1) // cols
 
+fig, axes = plt.subplots(rows, cols, figsize=(18, 3 * rows))
+axes = axes.flatten()
+
+for i, var in enumerate(variables):
+    sns.histplot(data=numeric_long[numeric_long['variable'] == var], x='value', bins=30, color='steelblue', ax=axes[i])
+    axes[i].set_title(var)
+    axes[i].set_xlabel("Value")
+    axes[i].set_ylabel("Count")
+
+# Hide unused subplots
+for j in range(i + 1, len(axes)):
+    fig.delaxes(axes[j])
+
+plt.tight_layout()
+plt.suptitle("Histograms of Numerical Variables", y=1.02)
+sns.despine()
 plt.show()
 
 ```
@@ -305,7 +302,6 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Assuming england_filtered_clean is your DataFrame
 # Log-transform relevant variables
 england_filtered_clean['log_ATT8SCR'] = np.log(england_filtered_clean['ATT8SCR'])
 england_filtered_clean['log_PTFSM6CLA1A'] = np.log(england_filtered_clean['PTFSM6CLA1A'])
@@ -329,33 +325,74 @@ axis_labels = {
     'PTPRIORLO': 'PTPRIORLO'
 }
 
-# Create faceted scatter plots with regression lines
-g = sns.FacetGrid(
-    long_df,
-    col='predictor',
-    col_wrap=2,
-    sharex=False,
-    height=4,
-    aspect=1
-)
-g.map_dataframe(
-    sns.regplot,
-    x='x_value',
-    y='log_ATT8SCR',
-    scatter_kws={'alpha': 0.5, 'color': 'steelblue'},
-    line_kws={'color': 'black'}
-)
+# Set up the figure manually
+predictors = long_df['predictor'].unique()
+cols = 2
+rows = (len(predictors) + cols - 1) // cols
+fig, axes = plt.subplots(rows, cols, figsize=(12, 4 * rows))
+axes = axes.flatten()
 
-# Set custom axis labels
-for ax, title in zip(g.axes.flat, g.col_names):
-    ax.set_xlabel(axis_labels[title])
-    ax.set_ylabel("log(ATT8SCR)")
+for i, predictor in enumerate(predictors):
+    subset = long_df[long_df['predictor'] == predictor]
+    sns.regplot(
+        data=subset,
+        x='x_value',
+        y='log_ATT8SCR',
+        scatter_kws={'alpha': 0.5, 'color': 'steelblue'},
+        line_kws={'color': 'black'},
+        ax=axes[i]
+    )
+    axes[i].set_title(f"log(ATT8SCR) vs {axis_labels[predictor]}")
+    axes[i].set_xlabel(axis_labels[predictor])
+    axes[i].set_ylabel("log(ATT8SCR)")
 
-plt.subplots_adjust(top=0.9)
-g.fig.suptitle("Scatter Plots of log(ATT8SCR) vs Predictors")
+# Hide unused subplots
+for j in range(i + 1, len(axes)):
+    fig.delaxes(axes[j])
 
+plt.tight_layout()
+plt.suptitle("Scatter Plots of log(ATT8SCR) vs Predictors", y=1.02)
+sns.despine()
 plt.show()
 ```
+
+
+```{python}
+#| message: false
+#| warning: false
+#| fig-width: 8
+#| fig-height: 14
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Select categorical columns and drop unwanted ones
+categorical_cols = england_filtered_clean.select_dtypes(include='object').drop(
+    columns=['URN', 'SCHNAME.x', 'LANAME', 'TOWN.x', 'SCHOOLTYPE.x'], errors='ignore'
+)
+
+# Determine layout
+n_cols = 2
+n_rows = (len(categorical_cols.columns) + n_cols - 1) // n_cols
+fig, axes = plt.subplots(n_rows, n_cols, figsize=(12, 4 * n_rows))
+axes = axes.flatten()
+
+# Generate bar plots
+for i, colname in enumerate(categorical_cols.columns):
+    sns.countplot(data=categorical_cols, x=colname, ax=axes[i], color='darkorange')
+    axes[i].set_title(f"Distribution of {colname}")
+    axes[i].set_xlabel(colname)
+    axes[i].set_ylabel("Count")
+    axes[i].tick_params(axis='x', rotation=45)
+
+# Hide unused subplots
+for j in range(i + 1, len(axes)):
+    fig.delaxes(axes[j])
+
+plt.tight_layout()
+plt.show()
+```
+
 
 
 #### ![](L6_images/Rlogo.png){width="41" height="30"}
@@ -463,38 +500,47 @@ For example, if you are using Regions in England as a dummy, setting your refere
 
 A good strategy is to select the most or least numerous or important category in your variable, rather than something in the middle. Of course, you may not know which is most important until you run your model, so you may need to go back and reset the reference variable and run the model again. 
 
+Here is some code in R and Python to help you carry out the setting of the reference level (Yes, it's more straightforward in R!)
+
 ::: multicode
 #### ![](L6_images/python-logo-only.png){width="30"}
 
 ```{python}
+#| eval: false
+#| include: false
 import pandas as pd
 from pandas.api.types import CategoricalDtype
 
+# Ensure it's a copy to avoid SettingWithCopyWarning
+england_filtered_clean = england_filtered_clean.copy()
+
 # Set reference level for gor_name
-gor_dtype = CategoricalDtype(categories=[
-    "South East",  # reference level
-    *sorted(set(england_filtered_clean["gor_name"]) - {"South East"})
-], ordered=True)
+gor_dtype = CategoricalDtype(
+    categories=["South East"] + sorted(set(england_filtered_clean["gor_name"]) - {"South East"}),
+    ordered=True
+)
 england_filtered_clean["gor_name"] = england_filtered_clean["gor_name"].astype(gor_dtype)
 
 # Set reference level for ofsted_rating_name
-ofsted_dtype = CategoricalDtype(categories=[
-    "Good",  # reference level
-    *sorted(set(england_filtered_clean["OFSTEDRATING"]) - {"Good"})
-], ordered=True)
+ofsted_dtype = CategoricalDtype(
+    categories=["Good"] + sorted(set(england_filtered_clean["OFSTEDRATING"].dropna()) - {"Good"}),
+    ordered=True
+)
 england_filtered_clean["ofsted_rating_name"] = england_filtered_clean["OFSTEDRATING"].astype(ofsted_dtype)
 
 # Set reference level for ADMPOL_PT
-admpol_dtype = CategoricalDtype(categories=[
-    "OTHER NON SEL",  # reference level
-    *sorted(set(england_filtered_clean["ADMPOL_PT"]) - {"OTHER NON SEL"})
-], ordered=True)
+admpol_dtype = CategoricalDtype(
+    categories=["OTHER NON SEL"] + sorted(set(england_filtered_clean["ADMPOL_PT"]) - {"OTHER NON SEL"}),
+    ordered=True
+)
 england_filtered_clean["ADMPOL_PT"] = england_filtered_clean["ADMPOL_PT"].astype(admpol_dtype)
 ```
 
 #### ![](L6_images/Rlogo.png){width="41" height="30"}
 
 ```{r}
+#| message: false
+#| warning: false
 ## In R, you can change the reference category using the relevel() function
 
 england_filtered_clean$gor_name <- relevel(factor(england_filtered_clean$gor_name), ref = "South East")
@@ -503,54 +549,317 @@ england_filtered_clean$ADMPOL_PT <- relevel(factor(england_filtered_clean$ADMPOL
 ```
 :::
 
+### Reclassifying a variable into fewer categories
+
+As mentioned in the lecture, it can sometimes be useful to reclassify a variable into fewer categories to see if a signal appears. 
+
+Let's have a look at the religious character of a school variable and test it out as dummy in a basic model:
+
+:::{callout.note}
+Note the Python code is far more complicated than the R code, but should prodice similar outputs
+:::
+
 ::: multicode
 #### ![](L6_images/python-logo-only.png){width="30"}
 
 ```{python}
+#| message: false
+#| warning: false
+import numpy as np
+import pandas as pd
+import statsmodels.api as sm
 
+# Drop rows with missing values in relevant columns
+model_df = england_filtered_clean[['ATT8SCR', 'PTFSM6CLA1A', 'RELCHAR']].dropna().copy()
+
+# Log-transform numeric variables
+model_df['log_ATT8SCR'] = np.log(model_df['ATT8SCR'].astype(float))
+model_df['log_PTFSM6CLA1A'] = np.log(model_df['PTFSM6CLA1A'].astype(float))
+
+# Ensure RELCHAR is treated as categorical
+model_df['RELCHAR'] = model_df['RELCHAR'].astype('category')
+
+# Create design matrix with dummy variables for RELCHAR
+X = pd.get_dummies(model_df[['log_PTFSM6CLA1A', 'RELCHAR']], drop_first=True)
+
+# Add constant
+X = sm.add_constant(X)
+
+# Response variable
+y = model_df['log_ATT8SCR']
+
+# Ensure all columns are float64 to avoid dtype issues
+X = X.astype('float64')
+y = y.astype('float64')
+
+# Fit linear model using Pandas DataFrame directly
+model = sm.OLS(y, X).fit()
+
+# Display summary with proper variable names
+print(model.summary())
 ```
 
 #### ![](L6_images/Rlogo.png){width="41" height="30"}
 
 ```{r}
+#| message: false
+#| warning: false
+# Fit linear model and get predicted values
+england_model2 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A) + RELCHAR, data = england_filtered_clean)
+summary(england_model2)
+```
+:::
+
+You will notice that the religious character variables nearly all insignificant. As such, lets try collapsing into three groups - "None", "Christian" and "Non-Christian"
+
+::: multicode
+#### ![](L6_images/python-logo-only.png){width="30"}
+
+```{python}
+#| message: false
+#| warning: false
+# Define mapping function
+def classify_relchar(value):
+    if pd.isna(value):
+        return "None"
+    elif value in ["Does not apply", "None"]:
+        return "None"
+    elif value in [
+        "Roman Catholic", "Greek Orthodox", "Church of England", "Catholic", "Christian",
+        "Church of England/Roman Catholic", "Roman Catholic/Church of England",
+        "Church of England/Christian", "Anglican/Church of England"
+    ]:
+        return "Christian"
+    else:
+        return "Non-Christian"
+
+# Apply classification
+england_filtered_clean['RELCHAR_Grp'] = england_filtered_clean['RELCHAR'].apply(classify_relchar)
+```
+
+#### ![](L6_images/Rlogo.png){width="41" height="30"}
+
+```{r}
+#| message: false
+#| warning: false
+england_filtered_clean <- england_filtered_clean %>%
+  mutate(RELCHAR_Grp = case_when(
+    RELCHAR %in% c("Does not apply", "None") ~ "None",
+    RELCHAR %in% c(
+      "Roman Catholic", "Greek Orthodox", "Church of England", "Catholic", "Christian",
+      "Church of England/Roman Catholic", "Roman Catholic/Church of England",
+      "Church of England/Christian", "Anglican/Church of England"
+    ) ~ "Christian",
+    TRUE ~ "Non-Christian"
+  ))
+```
+:::
+
+Now re-run your model
+
+::: multicode
+#### ![](L6_images/python-logo-only.png){width="30"}
+
+```{python}
+#| message: false
+#| warning: false
+import numpy as np
+import pandas as pd
+import statsmodels.api as sm
+
+# Convert RELCHAR_Grp to a categorical variable with "None" as the reference level
+england_filtered_clean['RELCHAR_Grp'] = pd.Categorical(
+    england_filtered_clean['RELCHAR_Grp'],
+    categories=["None", "Christian", "Non-Christian"],
+    ordered=False
+)
+
+# Drop rows with missing values in relevant columns
+model_df = england_filtered_clean[['ATT8SCR', 'PTFSM6CLA1A', 'RELCHAR_Grp']].dropna().copy()
+
+# Log-transform numeric variables
+model_df['log_ATT8SCR'] = np.log(model_df['ATT8SCR'].astype(float))
+model_df['log_PTFSM6CLA1A'] = np.log(model_df['PTFSM6CLA1A'].astype(float))
+
+# Ensure RELCHAR is treated as categorical
+model_df['RELCHAR_Grp'] = model_df['RELCHAR_Grp'].astype('category')
+
+# Create design matrix with dummy variables for RELCHAR
+X = pd.get_dummies(model_df[['log_PTFSM6CLA1A', 'RELCHAR_Grp']], drop_first=True)
+
+# Add constant
+X = sm.add_constant(X)
+
+# Response variable
+y = model_df['log_ATT8SCR']
+
+# Ensure all columns are float64 to avoid dtype issues
+X = X.astype('float64')
+y = y.astype('float64')
+
+# Fit linear model using Pandas DataFrame directly
+model = sm.OLS(y, X).fit()
+
+# Display summary with proper variable names
+print(model.summary())
+```
+
+#### ![](L6_images/Rlogo.png){width="41" height="30"}
+
+```{r}
+#| message: false
+#| warning: false
+# Fit linear model and get predicted values
+# Ensure RELCHAR_Grp is a factor with "None" as the reference level
+england_filtered_clean <- england_filtered_clean %>%
+  mutate(RELCHAR_Grp = factor(RELCHAR_Grp, levels = c("None", "Christian", "Non-Christian")))
+
+england_model2 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A) + RELCHAR_Grp, data = england_filtered_clean)
+summary(england_model2)
+```
+:::
+
+Has this made a difference? What's happened to the significance of the religious character variable?
+
+:::{.callout-tip}
+You can use this method to reclassify any different variable. 
+
+Think about how you might reclassify a continuous variable. You might think about converting something like 'total number of pupils on roll' into 'small', 'medium' and 'large' schools, for example, based on certain thresholds. How might you choose these thresholds? If you are struggling to think of how you might code this kind of reclassification up, this is exactly where AI can be very helpful in assisting you - although while it might be good at the code to do it, I can guarantee it will likely be pretty bad at deciding on useful breaks in your data, so this is where you might need to intervene. 
+:::
+
+## Task 3 - Building your optimum multiple regression model
+
+### Recipe Steps
+
+-   Using the steps you learned last week and the information from this week's lecture, I would like you to find the best possible ***7-dependent variable model*** for your chosen attainment variable (without interaction terms). These can be continuous or categorical variables or any combination of them. Remember:
+    -   Use exploratory analysis to check the distributions of your variables using histograms, box plots etc. or binary scatter plots with your dependent variable, ***before*** putting them into your model (you've already done some of this, but you may need to do some more)
+    -   you might run into issues with logging some variables that have real 0s in them - this might cause your model to break. You might need to filter these variables out of your dataset before running your model. Some of the code above will help with this - if you get stuck, ask a friendly AI for help
+    -   with your dummy variables, you might want to experiment with changing your reference category
+    -   you might also want to reclassify a variable if you suspect it is important, but that in its present form is coming out as insignificant
+    -   check you regression assumptions - linearity, homoscedasticity, normality of residuals, multicollinearity, independence of residuals - does your model pass?
+    -   which are the most important variables in your model in terms of t-values?
+
+-   You should try and build your model step by step, a variable at a time. Each time you run the model, check what is happening to the coefficients
+    -   What do you notice about confounding or mediation as you go?
+    -   Do any of your variables become insignificant? For example, what happens to religious character groups in the presence of regions, for example? If a variable becomes insignificant, you might we wise to drop it from the analysis (but maybe not until the end in case another variable makes it significant again) 
+    
+#### ON YOUR MARKS, GET SET - GO!!!
+
+When you think you have your best model, move on to Task 4 below
+
+
+::: multicode
+#### ![](L6_images/python-logo-only.png){width="30"}
+
+```{python}
+#| message: false
+#| warning: false
+#| 
+```
+
+#### ![](L6_images/Rlogo.png){width="41" height="30"}
+
+```{r}
+#| message: false
+#| warning: false
 library(performance)
-ggplot(england_filtered_clean, aes(x = PTPRIORLO)) +
-  geom_histogram(aes(y = ..density..), binwidth = 0.2, fill = "#4E3C56", alpha = 0.4)
+library(jtools)
 
 england_filtered_clean <- england_filtered_clean %>%
   filter(PTFSM6CLA1A > 0, PERCTOT > 0, PNUMEAL > 0)
 
-england_model2 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT) + gor_name, data = england_filtered_clean, na.action = na.exclude)
-summary(england_model2)
-
-england_model3 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT) + log(PNUMEAL) + gor_name, data = england_filtered_clean, na.action = na.exclude)
+england_model3 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT) + RELCHAR_Grp, data = england_filtered_clean)
 summary(england_model3)
 
-england_model4 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT) + log(PNUMEAL) + OFSTEDRATING + gor_name, data = england_filtered_clean, na.action = na.exclude)
+england_model4 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT) + gor_name, data = england_filtered_clean, na.action = na.exclude)
 summary(england_model4)
 
-england_model5 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT) + log(PNUMEAL) + OFSTEDRATING + gor_name + PTPRIORLO + ADMPOL_PT, data = england_filtered_clean, na.action = na.exclude)
+england_model5 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT) + log(PNUMEAL) + gor_name, data = england_filtered_clean, na.action = na.exclude)
 summary(england_model5)
 
+england_model6 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT) + log(PNUMEAL) + OFSTEDRATING + gor_name, data = england_filtered_clean, na.action = na.exclude)
+summary(england_model6)
+
+england_model7 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT) + log(PNUMEAL) + OFSTEDRATING + gor_name + PTPRIORLO + ADMPOL_PT, data = england_filtered_clean, na.action = na.exclude)
+summary(england_model7)
+
 #Get fitted values with NA for excluded rows
-fitted_vals <- fitted(england_model5)
+fitted_vals <- fitted(england_model7)
 
 # Add fitted values to the dataframe
-england_filtered_clean$fitted5 <- fitted_vals
+england_filtered_clean$fitted7 <- fitted_vals
 
 
-check_model(england_model5)
 ```
 :::
 
+## Task 4 - Evaluation
+
+-   When you have your 'best' model, how do you interpret the coefficients?
+    -   Which variable(s) has(have) the most explanatory power (check t-values for this)?
+    -   How do you interpret the combined explanatory power of variables in your model?
+    -   What kind of confounding do you observe as you add more variables (if any)?
+    -   Do you have any issues of multicollinearity or residual independence? Does your model pass the standard tests?
+    
+Here's my best model compared with some of the others I built as I went along
+
 ```{r}
+names(coef(england_model3))
+
+coef_names <- c(
+  "Constant" = "(Intercept)",
+  #"Religious Christian" = "RELCHAR_GrpChristian",
+  #"Religious not-Christian","RELCHAR_GrpNon-Christian",
+  "% Disadvantaged end KS4 (log)" = "log(PTFSM6CLA1A)",
+  "% overall absence (log)" = "log(PERCTOT)",
+  "% English Not First Language (log)" = "log(PNUMEAL)",
+  "Ofsted: Outstanding" = "OFSTEDRATINGOutstanding",
+  "Ofsted: Requires Improvement" = "OFSTEDRATINGRequires improvement",
+  "Ofsted: Serious Weaknesses" = "OFSTEDRATINGSerious Weaknesses",
+  "Ofsted: Special Measures" = "OFSTEDRATINGSpecial Measures",
+  "Region: East Midlands" = "gor_nameEast Midlands",
+  "Region: East of England" = "gor_nameEast of England",
+  "Region: London" = "gor_nameLondon",
+  "Region: North East" = "gor_nameNorth East",
+  "Region: North West" = "gor_nameNorth West",
+  "Region: South West" = "gor_nameSouth West",
+  "Region: West Midlands" = "gor_nameWest Midlands",
+  "Region: Yorkshire and the Humber" = "gor_nameYorkshire and the Humber",
+  "% Low Prior Attainment" = "PTPRIORLO",
+  "Admissions: Non-selective in Highly Selective Area" = "ADMPOL_PTNON SEL IN HIGHLY SEL AREA",
+  "Admissions: Selective" = "ADMPOL_PTSEL"
+)
+```
+
+```{r}
+library(jtools)
+
+export_summs(
+  england_model3, england_model4, england_model5, england_model6, england_model7, 
+  robust = "HC3",
+  coefs = coef_names
+)
+```
+
+
+
+```{r}
+#| fig-width: 8
+#| fig-height: 10
+check_model(england_model7)
+```
+
+
+```{r}
+#| message: false
+#| warning: false
 library(tidyverse)
 library(ggrepel)
 
 # Convert fitted values back to original scale
 england_filtered_clean <- england_filtered_clean %>%
   mutate(
-    fitted_original = exp(fitted5),
+    fitted_original = exp(fitted7),
     highlight = LANAME == "Brighton and Hove",
     label = if_else(highlight, SCHNAME.x, NA_character_)
   )
@@ -586,6 +895,8 @@ ggplot(england_filtered_clean, aes(x = fitted_original, y = ATT8SCR)) +
 ```
 
 ```{r}
+#| message: false
+#| warning: false
 # Filter for Brighton and Hove only
 brighton_data <- england_filtered_clean %>%
   filter(LANAME == "Brighton and Hove")
@@ -604,13 +915,15 @@ ggplot(brighton_data, aes(x = fitted_original, y = ATT8SCR)) +
 ```
 
 ```{r}
+#| message: false
+#| warning: false
 library(tidyverse)
 
 # Calculate residuals and filter for Brighton and Hove
 brighton_residuals <- england_filtered_clean %>%
   filter(LANAME == "Brighton and Hove") %>%
   mutate(
-    fitted_original = exp(fitted5),
+    fitted_original = exp(fitted7),
     residual = ATT8SCR - fitted_original,
     abs_residual = abs(residual)
   )
@@ -629,5 +942,8 @@ ggplot(brighton_residuals, aes(x = reorder(SCHNAME.x, residual), y = residual)) 
 ```
 
 
+## Task 5 - Interacting Variables
+
+In the lecture, you saw how we could
 
 Task 2b - AI interpretation. Yes, we're using AI to help us!

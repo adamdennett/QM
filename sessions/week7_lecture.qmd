@@ -172,7 +172,13 @@ england_school_2022_23_not_special <- england_school_2022_23 %>%
   
 ```
 
-## This week's Session - Foundations {transition="convex-in none-out" transition-speed="fast"}
+## This week's Session Aims {transition="convex-in none-out" transition-speed="fast"}
+
+-   Build on the basics you learned last week and learn how to extend regression modelling into multiple dimensions
+-   Understand the main benefits, risks and steps to take when gradually building the complexity of your models
+-   Understand who to interpret the outputs correctly
+-   Gain an appreciation of how regression help explain the phenomena we are observing
+-   Have hands-on practice at building and interpreting your own complex models
 
 ```{r, echo=FALSE}
 # This makes the fonts play nicely within the figures
@@ -401,7 +407,7 @@ ggplot(england_filtered) +
 ```
 
 -   Other research suggests overall levels of absence might be even more important
--   How can we tell?
+-   How can we tell for sure?
 
 ## An Alternative Model
 
@@ -419,7 +425,7 @@ summary(lm_fit1)
 
 ## Multiple Linear Regression
 
--   One way to really tell which variable is more important is to put them in a model together
+-   One way to *really* tell which variable is more important is to put them in a model together and observe how the affect each other
 -   Multiple linear regression extends bivariate regression to include multiple independent variables
 -   As with bivariate regression, variables should be chosen based on theory and prior research rather than just throwing the variables in because you have them
 -   ***However***, it's permissible to explore relationships and experiment and iterate between data exploration and theory - both can inform each other
@@ -476,12 +482,18 @@ model_data <- model_data %>%
 ## Multiple Linear Regression
 
 ```{r}
-#| echo: true
+#| message: false
+#| warning: false
+#| out-width: 70%
+#| fig-align: center
+#| echo: FALSE
 library(jtools)
+library(performance)
 coef_names <- c("log(% Disadvantaged Students)" = "log(PTFSM6CLA1A)", "log(% Overall Absence)" = "log(PERCTOT)")
 plot_summs(lm_fit1, plot.distributions = T, coefs = coef_names)
+mp <- model_performance(lm_fit1)
+display(mp)
 ```
-
 
 ## Multiple Linear Regression
 
@@ -681,25 +693,26 @@ leaflet(data = england_sf) %>%
 
 ```{r}
 # Fit linear model and get predicted values
+lm_fit2 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT) + gor_name, data = model_data)
+
+summary(lm_fit2)
+```
+
+-   There are 9 regions in England and here "London" has been set as the **contrast** or reference variable (which all others are compared to)
+-   Changing the contrast compares each region to a different reference
+
+## Dummy Variables
+
+```{r}
+# Fit linear model and get predicted values
 model_data$gor_name <- relevel(factor(model_data$gor_name), ref = "London")
 #model_data$ofsted_rating_name <- relevel(factor(model_data$ofsted_rating_name), ref = "Outstanding")
-
 lm_fit2 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT) + gor_name, data = model_data)
 
 plot_summs(lm_fit2) + theme_nice()
 ```
 
 -   Government Office Region (GOR) dummy - (London as ref)
-
-## Dummy Variables
-
-```{r}
-# Fit linear model and get predicted values
-summary(lm_fit2)
-```
-
--   There are 9 regions in England and here "London" has been set as the **contrast** or reference variable (which all others are compared to)
--   Changing the contrast compares each region to a different reference
 
 ## Dummy Variables
 
@@ -721,6 +734,17 @@ model_data <- model_data %>%
 
 -   South East as contrast - London's log(ATT8SCR) is 0.09 higher
 -   This equals (exp(0.095655) - 1) \* 100 = 10% - London's average Attainment 8 is 10% higher than the South East
+
+```{r}
+# Fit linear model and get predicted values
+model_data$gor_name <- relevel(factor(model_data$gor_name), ref = "South East")
+#model_data$ofsted_rating_name <- relevel(factor(model_data$ofsted_rating_name), ref = "Outstanding")
+
+lm_fit2 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT) + gor_name, data = model_data)
+
+plot_summs(lm_fit2) + theme_nice()
+#effect_plot(lm_fit2, pred = gor_name, interval = TRUE, partial.residuals = TRUE, jitter = .2)
+```
 
 ## Dummy Variables
 
@@ -774,27 +798,28 @@ leaflet(data = england_sf) %>%
 -   There is no correct contrast to choose for your dummy variable, you may need to try different ones to see which makes most intuitive sense
 -   Depending on the contrast, some dummy regions may or may not be statistically significant in comparison
 -   The inclusion of a regional dummy in this model has improved the $R^2$ to 72%
--   However, you may have noticed some of the coefficients have changed and this brings us to *confounding*
+-   However, you may have noticed some of the coefficients have changed and this brings us to *confounding* and *mediation*
 
 ## Variable Reclassification
 
--   One potentially useful strategy in regression modelling is the reclassification of an independent variable. 
--   Continuous -> Categorical or Weak Ordinal (e.g. various measurements of height into short, average and tall at different thresholds)
--   Categorical -> Categorical with fewer categories (e.g. short, average, tall into below average and above average)
+A Quick Aside:
+-   One potentially useful strategy in regression modelling is the reclassification of an independent variable.
+-   Continuous -\> Categorical or Weak Ordinal (e.g. various measurements of height into short, average and tall at different thresholds)
+-   Categorical -\> Categorical with fewer categories (e.g. short, average, tall into below average and above average)
 
 ## Variable Reclassification
 
 -   Benefits of reclassification:
-    -   Moving from a continuous variable to a weak ordinal variable might make the patterns or observations easier to explain 
+    -   Moving from a continuous variable to a weak ordinal variable might make the patterns or observations easier to explain
     -   complex relationships (such as log-linear elasticities associated with absence from school) reduced to something more interpretable (if you miss more than 50% of school, your odds of passing your exams are drastically reduced)
     -   Previous obscured patterns can emerge from the data
     -   Collapsing categorical variables (e.g. multiple religious school denominations into religious/non-religious) can aid interpretability and boost statistical power, increase degrees of freedom
-    
+
 ## Variable Reclassification
 
 -   Risks of reclassification:
     -   Loss of statistical power due to loss of information
-    -   Not always obvious where to make the cut when reclassifying a continuous variable and this can be crucial to the interpretation (e.g. is Low <20 or <30?)
+    -   Not always obvious where to make the cut when reclassifying a continuous variable and this can be crucial to the interpretation (e.g. is Low \<20 or \<30?)
 
 ## Confounding
 
@@ -802,21 +827,21 @@ leaflet(data = england_sf) %>%
 
 Confound: "to fail to discern differences between : mix up"
 
-## Multiple Linear Regression - Confounding
+## Confounding
 
 ![](L6_images/confound1.png)
 
-## Multiple Linear Regression - Confounding
+## Confounding
 
 ![](L6_images/confound2.png)
 
-## Multiple Linear Regression - Confounding
+## Confounding
 
 -   Confounding is the change in the effect on the dependent variable of the independent variables in the presence of each other
 -   Can occur when we know some independent variables might effect each other (such as disadvantage on absence) **even when their joint presence doesn't cause variance issues**
 -   **Looking for confounding effects is a crucial part of model building - how do the coefficients of your model change when you introduce other variables?**
 
-## Multiple Linear Regression - Confounding
+## Confounding
 
 ```{r}
 #| echo: false
@@ -837,21 +862,25 @@ export_summs(lm_fit_a, lm_fit_b, lm_fit1, error_format = "",error_pos = "same" )
 -   In the presence of Overall Absence, the effect of disadvantage is confounded (and *vice versa*)
 -   Both variables together, however, explain much more variation in Attainment 8 - both part of the story
 
-## Multiple Linear Regression - Confounding
+## Confounding
 
 ```{r}
+#| message: false
+#| warning: false
+#| out-width: 70%
+#| fig-align: center
 plot_summs(lm_fit_a, lm_fit_b, lm_fit1, robust = "HC3", coefs = coef_names)
+
 ```
 
-
-## Multiple Linear Regression - Confounding
+## Confounding
 
 -   The coefficient for log(PTFSM6CLA1A) - disadvantage - shrinks dramatically, from -0.21 down to -0.11 (a 44.5% reduction in effect)
 -   While the coefficient for log(PERCTOT) - Overall Absence - also shrinks from -0.54 to -0.41 this is just a 24.6% reduction
 -   The confounding effect of Overall Absence on disadvantage is ***almost double*** the confounding effect of disadvantage on Overall Absence
 -   This means that the relationship between disadvantage and Attainment 8 is much more biased by the omission of overall absence from the model than the other way around
 
-## Multiple Linear Regression - Confounding
+## Confounding
 
 ```{r}
 summary(lm_fit2)
@@ -859,27 +888,62 @@ summary(lm_fit2)
 
 -   Including a regional dummy ***slightly reduces the effect of Overall Absence*** and ***slightly increases the effect of disadvantage***, relative to model 3
 
-## Multiple Linear Regression - Confounding
+## Confounding
 
 Interpretation:
 
 -   Part of the negative effect of disadvantage was being suppressed or masked by the regional differences (probably London where Attainment 8 is higher on average and so are levels of disadvantage)
--   Part of the negative effect of Overall Absence is due to its correleation with regional factors - but which ones?
+-   Part of the negative effect of Overall Absence is due to its correlation with regional factors - but which ones?
 -   We can explore this question through one final twist in our modelling recipe - we can look at the ***interaction effects*** between individual regions and disadvantage / Overall Absence
 
-## Multiple Linear Regression - Interaction Effects
+
+## Mediating 
+
+::::: columns
+::: {.column width="50%"}
+-   A mediating variable lies on the causal pathway between the primary independent variable and the the outcome
+-   Gabber Music ($X$) $\rightarrow$ Hakken Dancing ($Y$)
+-   Gabber Music ($X$) $\rightarrow$ Consumption of Mind-Altering Drugs ($M$) $\rightarrow$ Hakken Dancing ($Y$)
+
+<https://en.wikipedia.org/wiki/Hakken>
+:::
+
+::: {.column width="50%"}
+```{=html}
+<iframe height="600" width= "400" src="https://www.tiktok.com/player/v1/7513852984829234454?&music_info=1&description=1&loop=1&autoplay=1" allow="fullscreen" title="test"></iframe>
+```
+:::
+:::::
+
+## Mediating 
+
+-   **Step 1:** Gabber Music ($X$) $\rightarrow$ Consumption of Mind-Altering Drugs ($M$) - Gabber music is so awful that being in a field where it is playing for too long forces people to consume vast amounts of mind altering drugs to cope
+-   **Step 2:** Consumption of Mind-Altering Drugs ($M$) $\rightarrow$ Hakken Dancing ($Y$) - Mind-altering drugs induce involuntary limb movements and repetitive motions in time with the relentless gabber beat
+-   **Step 3:** Gabber Music ($X$) $\rightarrow$ Hakken Dancing ($Y$) - The effect of gabber music on hakken dancing is significantly reduced once we control for the presence of mind altering drugs, although there is still some independent effect (some mad Dutch people who don't take drugs just love dancing to gabber!).
+-   Mind-altering drugs act as a partial mediator of the relationship between Gabber Music and Hakken Dancing
+
+## Mediating
+
+Disadvantage $\rightarrow$ Absence $\rightarrow$ Attainment
+
+-   **Step 1:** Disadvantage to Absence (X $\rightarrow$ M): Plausible that high rates of disadvantage lead to higher rates of unauthorised absence (due to factors like poor health, transport issues, lack of engagement, etc.).
+-   **Step 2:** Absence to Attainment (M $\rightarrow$ Y): Model consistently show a large, highly significant negative effect of Absence on Attainment
+-   **Step 3:** Disadvantage to Attainment (X $\rightarrow$ Y): The effect of Disadvantage is significantly reduced but still exists
+-   Some of the detrimental effect of poverty is channelled through the mechanism of higher unauthorised absence
+
+## Interaction Effects
 
 -   Put simply, an interaction term allows the model to answer the question: ***"Does the effect of disadvantage/Overall Absence on a school's Attainment 8 score change from region to region?"***
 -   Operationally, running interactions in the model simply requires variables to be multiplied together rather than summed
 -   Practically, the combinations of variables need some careful attention (or the assistance of a helpful Artificial Intelligence helper) to interpret correctly!
 
-## Multiple Linear Regression - Interaction Effects
+## Interaction Effects
 
 The equation for a model where we interact Overall Absence with Regions would look like:
 
 $$\log(\text{Attainment8}) = \beta_0 + \beta_1 \log(\text{PctPersistentAbsence}) +\\\\ \sum_{j=1}^{k} \gamma_j \text{Region}_j + \sum_{j=1}^{k} \delta_j (\log(\text{PctPersistentAbsence}) \times \text{Region}_j) + \epsilon$$
 
-## Multiple Linear Regression - Interaction Effects
+## Interaction Effects
 
 Where (if we set the South East as the reference dummy)
 
@@ -889,15 +953,15 @@ Where (if we set the South East as the reference dummy)
 -   $\delta_j$ is the difference in the slope (effect of absence) for region $j$ compared to the South East.
 -   $\epsilon$ is the error term.
 
-## Multiple Linear Regression - Interaction Effects
+## Interaction Effects
 
 ::::: columns
 ::: {.column width="50%"}
--   log(PERCTOT) - 1% increase in the unauthorised absence rate predicts a 0.58% decrease in Attainment 8
--   Controlling for absence, all other regions worse attainment than SE. SE uniquely sensitive to absence 
--   interaction shows negative effect of unauthorised absence is significantly less severe in London, NE & Yorkshire
-
+-   1% increase in the overall absence rate (log(PERCTOT)) predicts a 0.58% decrease in Attainment 8
+-   Controlling for overall absence, all other regions worse attainment than SE (reference). SE uniquely sensitive to absence
+-   Interaction effect: in London, NE & Yorkshire strong positive coefficient = negative effect of overall absence on attainment is significantly less severe than in SE
 :::
+
 ::: {.column width="50%"}
 ```{r}
 model_data$gor_name <- relevel(factor(model_data$gor_name), ref = "South East")
@@ -909,13 +973,10 @@ lm_fit3a <- lm(log(ATT8SCR) ~ log_PERCTOT * gor_name, data = model_data)
 
 plot_summs(lm_fit3a, robust = TRUE)
 ```
-
--   Reference Region = South East
 :::
 :::::
 
-
-## Multiple Linear Regression - Interaction Effects
+## Interaction Effects
 
 ```{r}
 #| echo: false
@@ -943,20 +1004,23 @@ interactions::interact_plot(
 #interactions::interact_plot(lm_fit3a, pred = "log_PERCTOT", modx = "gor_name", plot.points = TRUE)
 ```
 
-## Multiple Linear Regression - Interaction Effects
+## Interaction Effects
 
 ```{r}
 model_data$gor_name <- relevel(factor(model_data$gor_name), ref = "South East")
 model_data$log_PERCTOT <- log(model_data$PERCTOT)
-model_data$log_PTFSM6CLA1A <- log(model_data$PTFSM6CLA1A)
+model_data$log_PTFSM6CLA1A <- log(model_data$PTFSM6CLA1A) 
 
 #lm_fit3a <- lm(log(ATT8SCR) ~ log_PTFSM6CLA1A + log_PERCTOT * gor_name, data = model_data)
 lm_fit3b <- lm(log(ATT8SCR) ~ log_PTFSM6CLA1A * gor_name, data = model_data)
 
-summary(lm_fit3b)
+#summary(lm_fit3b)
+plot_summs(lm_fit3b, robust = TRUE)
 ```
 
-## Multiple Linear Regression - Interaction Effects
+-   Interacting disadvantage with region shows negative effect of disadvantage not as bad in regions other than SE - however...
+
+## Interaction Effects
 
 ```{r}
 model_data$gor_name <- relevel(factor(model_data$gor_name), ref = "South East")
@@ -965,27 +1029,28 @@ lm_fit3 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A) * gor_name + log(PERCTOT) * gor_na
 plot_summs(lm_fit3, robust = TRUE)
 ```
 
-## Multiple Linear Regression - Interaction Effects
+-   As overall absence confounds disadvantage, so interacting both with region changes these effects
+
+## Interaction Effects
 
 -   Main Effect (Reference Group):
     -   The coefficient for log(PTFSM6CLA1A) is -0.190520. This is the effect of disadvantage in the South East.
     -   The coefficient for log(PERCTOT) is -0.289960. This is the effect of Overall Absence in the South East.
 -   **Even when controlling for regional differences, unauthorised absence has a stronger negative effect on Attainment 8 than disadvantage**
-    
-## Multiple Linear Regression - Interaction Effects    
+
+## Interaction Effects
+
 -   Interaction Effects (Reference Group value + Other Region coefficient):
-    -   log(PTFSM6CLA1A):gor_nameLondon: significant positive coefficient (+0.078684) 
-    -   means that the negative effect of disadvantage is less severe in London than in the South East
-    -   same for all other regions - disadvantage has a ***more severe impact*** in the SE than anywhere else in England. SE schools particularly bad at mitigating effects of disadvantage
-    
-    
-## Multiple Linear Regression - Interaction Effects 
+    -   log(PTFSM6CLA1A):gor_nameLondon: significant positive coefficient (+0.078684) - negative effect of disadvantage is ***less severe in London than in the South East***
+    -   same for all other regions - disadvantage has a ***more severe impact in the SE*** than anywhere else in England. SE schools particularly bad at mitigating effects of disadvantage
+
+## Interaction Effects
+
 -   Interaction Effects (Reference Group value + Other Region coefficient):
-    -   gor_nameLondon:log(PERCTOT): The significant negative coefficient (-0.069792) 
-    -   means that the negative effect of Overall Absence is more severe in London than in the South East
+    -   gor_nameLondon:log(PERCTOT): The significant negative coefficient (-0.069792) - negative effect of Overall Absence is more severe in London than in the South East
     -   same for most other regions - Overall Absence as ***less severe impact*** in SE than anywhere else in England.
 
-## Multiple Linear Regression - Interaction Effects
+## Interaction Effects
 
 ```{r}
 model_data$gor_name <- relevel(factor(model_data$gor_name), ref = "South East")
@@ -995,33 +1060,33 @@ summary(lm_fit4)
 
 #plot_summs(lm_fit4, robust = TRUE)
 ```
+
 -   It is also possible to interact our continuous variables. However...
 
-## Multiple Linear Regression - Interaction Effects
+## Interaction Effects
 
 -   Interaction term is statistically insignificant
 -   There is no evidence that the effect of concentrations of disadvantage on attainment changes based on the levels of unauthorised absence, or vice-versa
 -   Negative impact of disadvantage is roughly the same whether a school has a low or high unauthorised absence rate, and the negative impact of unauthorised absence is roughly the same regardless of the level of disadvantage
 -   Good to experiment as informative, but this interaction term can be removed from the model
 
-
-## Multiple Linear Regression - Interaction Effects
+## Interaction Effects
 
 -   Final Note: Adding interaction effects will seriously increase your VIF as you are multiplying variables that are already in the model
 -   High VIF in a model with interaction terms does not affect the overall model.
 -   High VIF could inflate the standard errors of the coefficients making some otherwise significant variables seem insignificant
 -   Mean-Centring is a technique that could fix this, but we won't look at it today
 
-## Multiple Linear Regression - Interaction Effects
+## Interaction Effects
 
 ::: callout-tip
--   Interpreting interaction effects is HARD
+-   Interpreting interaction effects is HARD (as you can probably tell from me trying to explain these!)
 -   AI is incredibly adept at interpreting outputs from regression models and describing the outputs in plain English. ChatGPT, Google Gemini, Claude and various others can be of great help here
 -   It doesn't always get it right - never just feed an AI your outputs and trust its interpretation without questioning what it's telling you
--   Used correctly, however - particularly if you give it context with the data you are using and the patterns you are observing, it's a tool that can really assist your understanding. 
+-   Used correctly, however - particularly if you give it context with the data you are using and the patterns you are observing, it's a tool that can really assist your understanding.
 :::
 
-## Thoughts regression model building
+## Some final thoughts on building regression models
 
 -   Aim is to try and explain as much variation in dependent variable as possible with the fewest number of independent variables
 -   More variables isn't necessarily better - statistically insignificant variables might be worth dropping from your model
@@ -1069,7 +1134,9 @@ lm_fit3_centered <- lm(log(ATT8SCR) ~ log_PTFSM6CLA1A_c * gor_name + log_PERCTOT
 ::: {.column width="70%"}
 -   In carefully building our regression model step-by-step, we have evolved our understanding:
     -   from a basic model for Brighton where it ***appeared*** that the % disadvantaged students in a school explained around 65% of the variation in Attainment 8 scores and a 10% decrease in disadvantage equating to a 6-point increase in Attainment 8
-    -   to understanding that this particular model not only has few degrees of freedom, but the observed associations suffer from unobserved confounding
+    -   to understanding that this initial local model was poor:
+        -   few degrees of freedom
+        -   unobserved confounding and mediation
 :::
 
 ::: {.column width="30%"}
@@ -1079,9 +1146,64 @@ lm_fit3_centered <- lm(log(ATT8SCR) ~ log_PTFSM6CLA1A_c * gor_name + log_PERCTOT
 
 ## Bringing it all together - our final regression show-stopper!
 
--   Careful
--   to our most sophisticated 3-variable interacting-terms model where we now understand that
-
 ```{r}
-export_summs(lm_fit_a, lm_fit3, error_format = "",error_pos = "same" )
+#| message: false
+#| warning: false
+#| out-width: 70%
+#| fig-align: center
+library(performance)
+england_filtered_clean <- england_filtered[
+  !is.na(england_filtered$ATT8SCR) & 
+  !is.na(england_filtered$PTFSM6CLA1A) &
+  england_filtered$ATT8SCR > 0 &
+  england_filtered$PTFSM6CLA1A > 0, 
+]
+
+england_filtered_clean <- england_filtered_clean %>%
+  filter(PTFSM6CLA1A > 0, PERCTOT > 0, PNUMEAL > 0)
+
+england_model5 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT) + log(PNUMEAL) + OFSTEDRATING + gor_name + PTPRIORLO + ADMPOL_PT, data = england_filtered_clean, na.action = na.exclude)
+
+plot_summs(england_model5, plot.distributions = TRUE, robust = TRUE)
+mp <- model_performance(england_model5)
+display(mp)
 ```
+
+
+## Bringing it all together - our final regression show-stopper!
+
+::::: columns
+::: {.column width="70%"}
+-   Additional variables (some discussed, so not discussed in this lecture) have allowed us to explain almost 85% of the variation in Attainment 8 at the school level across England
+-   Careful interrogation of the coefficients as we have successively built up the complexity of the model reveals how the variables interact with each other
+    -   The influence of disadvantage is partially confounded by overall absence
+    -   but overall absence is a mediating variable in the relationship between disadvantage and attainment
+    
+:::
+
+::: {.column width="30%"}
+![](L6_images/showstopper2.jpg)
+:::
+:::::
+
+## Bringing it all together - our final regression show-stopper!
+
+::::: columns
+::: {.column width="70%"}
+-   Dummy variables can be your friend and allow us to compare how different groups perform in the data
+-   Ineracting variables ***can*** add even more explanatory power, but will take effort to interpret - AI can be your friend here if you are struggling
+-   If you follow the recipe, check you regression diagnostics at each stage and continually ***VISUALISE*** your data as you go, a good multiple regression model can be one of the most powerful explanatory tools in your toolbox!
+    
+:::
+
+::: {.column width="30%"}
+![](L6_images/showstopper2.jpg)
+:::
+:::::
+
+## This week's practical
+
+-   Recreating much of what you have seen in this lecture yourself!
+-   Extending last week's model and interpreting the outputs in Python or R
+-   This is another long practical - you won't complete it in class today, so you should spend time at home (while listening to the Progression Sessions, preferably) working through this at your own pace. 
+-   It is important that you are able to build your best model before next week's lecture and practical session!
