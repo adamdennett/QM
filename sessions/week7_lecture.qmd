@@ -1206,4 +1206,4 @@ display(mp)
 -   Recreating much of what you have seen in this lecture yourself!
 -   Extending last week's model and interpreting the outputs in Python or R
 -   This is another long practical - you won't complete it in class today, so you should spend time at home (while listening to the Progression Sessions, preferably) working through this at your own pace. 
--   It is important that you are able to build your best model before next week's lecture and practical session!
+-   It is important that you are able to build your best model before next week's lecture and practical session! 
