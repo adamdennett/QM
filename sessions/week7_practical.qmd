@@ -942,8 +942,12 @@ ggplot(brighton_residuals, aes(x = reorder(SCHNAME.x, residual), y = residual)) 
 ```
 
 
-## Task 5 - Interacting Variables
+## Task 5 - Interacting Variables (Extension activity)
 
-In the lecture, you saw how we could
+In the lecture, you saw how we could look at how some of the continuous variables (like disadvantage or absence) vary by categorical variable levels (like region). Or indeed, whether continuous variables might interact with each other - for example do levels of unauthorised absence and disadvantage affect each other. 
 
-Task 2b - AI interpretation. Yes, we're using AI to help us!
+As you saw in the lecture, interpreting interactions can be complex, so here I would just like you to have a brief experiment with some of the variables in your best model. 
+
+If you are struggling to understand these effects, again, an AI helper like Gemini or ChatGPT might help you understand these interactions if you feed it your model outputs. 
+
+Most of the time in most of the regression models you build, you might not need to interact variables, but it can be informative. Next week, however, we will look at other alternatives to interacting variables when we move onto linear mixed effects models. So at this point, just some experimentation is what I would like you to achieve. 
