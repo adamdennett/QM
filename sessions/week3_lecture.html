@@ -7,11 +7,11 @@
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-236d90495073fb2ac8939117e3e83141.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-95f147d06fdb9f8ce149f95e323965f4.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
 <link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
 <link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.7.32">
+  <meta name="generator" content="quarto-1.8.25">
 
   <meta name="author" content="Beatrice Taylor">
   <title>Quantitative Methods – Hypothesis Testing</title>
@@ -98,7 +98,7 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-6e21e22f74c95ec39a62ad42034103de.css">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-708fdb05d86516b6f171cd9cf793ecac.css">
   <link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -1381,8 +1381,8 @@ D_{n,m} = \sup_x \, | F_n(x) - G_m(x) |
 <section id="kde-of-simulated-heights" class="slide level2">
 <h2>KDE of simulated heights</h2>
 <p>It’s easy to fit a KDE to data in Python:</p>
-<div id="42de5b42" class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<div id="178b4f0a" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb4-2"><a></a><span class="im">import</span> pandas <span class="im">as</span> pd </span>
 <span id="cb4-3"><a></a><span class="im">from</span> scipy.stats <span class="im">import</span> gaussian_kde</span>
 <span id="cb4-4"><a></a></span>
@@ -1392,7 +1392,7 @@ D_{n,m} = \sup_x \, | F_n(x) - G_m(x) |
 <span id="cb4-8"><a></a><span class="co"># Kernel Density Estimation</span></span>
 <span id="cb4-9"><a></a>kde <span class="op">=</span> gaussian_kde(data)</span>
 <span id="cb4-10"><a></a>x_vals <span class="op">=</span> np.linspace(<span class="dv">100</span>, <span class="dv">200</span>, <span class="dv">100</span>)</span>
-<span id="cb4-11"><a></a>y_vals <span class="op">=</span> kde(x_vals)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-11"><a></a>y_vals <span class="op">=</span> kde(x_vals)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="kde-of-simulated-heights-1" class="slide level2">
@@ -1505,8 +1505,8 @@ df = n_1 + n_2 - 2 = 95 + 103 - 2 = 196
 <section id="example---step-4---calculate-the-p-value" class="slide level2">
 <h2>Example - step 4 - calculate the p value</h2>
 <p>Traditionally this uses look up tables - we’re going to use Python.</p>
-<div id="912f16ee" class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a></a><span class="im">from</span> scipy <span class="im">import</span> stats</span>
+<div id="0dec0606" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a></a><span class="im">from</span> scipy <span class="im">import</span> stats</span>
 <span id="cb5-2"><a></a></span>
 <span id="cb5-3"><a></a>t_val <span class="op">=</span> <span class="op">-</span><span class="fl">12.7</span></span>
 <span id="cb5-4"><a></a>df <span class="op">=</span> <span class="dv">18</span></span>
@@ -1514,7 +1514,7 @@ df = n_1 + n_2 - 2 = 95 + 103 - 2 = 196
 <span id="cb5-6"><a></a><span class="co"># Two-tailed p-value</span></span>
 <span id="cb5-7"><a></a>p_value_two_tailed <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> (<span class="dv">1</span> <span class="op">-</span> stats.t.cdf(<span class="bu">abs</span>(t_val), df))</span>
 <span id="cb5-8"><a></a></span>
-<span id="cb5-9"><a></a><span class="bu">print</span>(<span class="st">"Two-tailed p-value:"</span>, p_value_two_tailed)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-9"><a></a><span class="bu">print</span>(<span class="st">"Two-tailed p-value:"</span>, p_value_two_tailed)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Two-tailed p-value: 2.0151302848603336e-10</code></pre>
 </div>
@@ -1748,7 +1748,7 @@ df = n_1 + n_2 - 2 = 95 + 103 - 2 = 196
         margin: 0.1,
 
         math: {
-          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js',
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js',
           config: 'TeX-AMS_HTML-full',
           tex2jax: {
             inlineMath: [['\\(','\\)']],
@@ -1822,13 +1822,14 @@ df = n_1 + n_2 - 2 = 95 + 103 - 2 = 196
           e.clearSelection();
         }
         const getTextToCopy = function(trigger) {
-            const codeEl = trigger.previousElementSibling.cloneNode(true);
-            for (const childEl of codeEl.children) {
-              if (isCodeAnnotation(childEl)) {
-                childEl.remove();
-              }
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
             }
-            return codeEl.innerText;
+          }
+          return codeEl.innerText;
         }
         const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
           text: getTextToCopy

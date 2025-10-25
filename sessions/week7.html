@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.32">
+<meta name="generator" content="quarto-1.8.25">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Adam Dennett">
-<meta name="dcterms.date" content="2025-10-17">
+<meta name="dcterms.date" content="2025-10-25">
 
 <title>Week 7 - Prof D’s Regression Sessions Vol 2 – Quantitative Methods</title>
 <style>
@@ -37,14 +37,19 @@ ul.task-list li input[type="checkbox"] {
 <link href="..//img/favicon.ico" rel="icon">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-0e1a0b5eddb947468ade5bb78d269cd2.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-0a64b63d52573e9083ac7ef925da3e11.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-0a64b63d52573e9083ac7ef925da3e11.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-0a64b63d52573e9083ac7ef925da3e11.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-b6a2f5d04b09550d7e1c0e46426718ec.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-5457fb42737ce7af87b82faab80c0026.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-5457fb42737ce7af87b82faab80c0026.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-5457fb42737ce7af87b82faab80c0026.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
 <link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
 <link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
@@ -92,7 +97,8 @@ ul.task-list li input[type="checkbox"] {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a href="../index.html" class="navbar-brand navbar-brand-logo">
-    <img src="../img/logo/logo_only_sm.png" alt="" class="navbar-logo">
+    <img src="../img/logo/logo_only_sm.png" alt="" class="navbar-logo light-content">
+    <img src="../img/logo/logo_only_sm.png" alt="" class="navbar-logo dark-content">
     </a>
     <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">Quantitative Methods</span>
@@ -147,7 +153,7 @@ ul.task-list li input[type="checkbox"] {
   </li>  
         <li>
     <a class="dropdown-item" href="../sessions/week7.html">
- <span class="dropdown-text">7. Generalised Linear Regression</span></a>
+ <span class="dropdown-text">7. Multiple Regression</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../sessions/week8.html">
@@ -212,7 +218,8 @@ ul.task-list li input[type="checkbox"] {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
       <a href="../index.html" class="sidebar-logo-link">
-      <img src="../img/logo/full_md.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
+      <img src="../img/logo/full_md.png" alt="" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../img/logo/full_md.png" alt="" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
       </a>
       </div>
     <div class="sidebar-menu-container"> 
@@ -282,7 +289,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../sessions/week7.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">7. Generalised Linear Regression</span></a>
+ <span class="menu-text">7. Multiple Regression</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -363,7 +370,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">October 17, 2025</p>
+      <p class="date">October 25, 2025</p>
     </div>
   </div>
   
@@ -378,23 +385,24 @@ ul.task-list li input[type="checkbox"] {
 <p><a href="L6_images/regression2.PNG" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="L6_images/regression2.PNG" class="img-fluid"></a></p>
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>This week will build on last week’s introduction to Linear Regression, extending the model into deep space and beyond. Sorry, that’s the Progression Sessions Vol 2 (this week’s recommended listening on the practical pages!). No, we won’t quite get that far, but we will be extending our regression model into multiple dimensions to really start to unpick what might be influencing our</p>
-<p>Because of its popularity, regression is also one of the most widely misused models in the spatial data scientist’s toolbox. Therefore, understanding the basics is absolutely fundamental. If you understand the basics, then you stand a better chance of understanding what the more sophisticated methods related to standard linear regression bring to the table.</p>
+<p>This week will build on last week’s introduction to Linear Regression, extending the model into deep space and beyond. Sorry, that’s the Progression Sessions Vol 2 (this week’s recommended listening on the practical pages!). No, we won’t quite get that far, but we will be extending our regression model into multiple (near-space) dimensions to really start to unpick what might be influencing our attainment variables in English Schools.</p>
+<p>In a multiple linear regression model, additional independent/explanatory variables are added to try and explain the unexplained variance that may remain in a bivariate regression model. In theory these dimensions are infinite, however in practice care needs to be taken to strike the correct balance between explanatory power and interpretability with it unlikely that you could select a large number of independent variables without running into issues of multicolinearity (more of which in the lecture).</p>
 </section>
 <section id="learning-objectives" class="level2">
 <h2 class="anchored" data-anchor-id="learning-objectives">Learning Objectives</h2>
 <p>By the end of this week, you will:</p>
 <ol type="1">
-<li>Understand what basic bivariate regression model is and how it might be used to explore / describe the relationship between two continuous variables</li>
-<li>Understand the absolutely fundamental importance of visualising your data and your model first</li>
-<li>Be able to interpret the various outputs from a statistical regression model - knowing what each means and how not to rely just on things like p-values and R-Squared to determine how good your model is</li>
-<li>Appreciate how the coefficients in a model will likely vary depending on your study population and how representative it is of the wider population you are making inferences about. In doing this, you will understand why ‘degrees of freedom’ are important</li>
-<li>Be ready to go beyond the basics and take your regression modelling further in next week’s Regression Session.</li>
+<li>Extend your understanding of linear regression by learning how we might incorporate additional continuous and categorical independent variables</li>
+<li>Understand why multicollinearity is an issue and how to avoid it</li>
+<li>Understand how the spatial or temporal autocorrelation of residuals might indicate issues in your model</li>
+<li>Understand how to incorporate and interpret dummy (categorial) independent variables in your model</li>
+<li>Understand what confounding is and how you can use confounding to better understand the influence of variables in your model</li>
+<li>Understand how it is possible to interact some of the variables in your model to see how the effects of one variable change in the presence of another, or whether there is indeed no statistically significant interaction</li>
 </ol>
 </section>
 <section id="lecture" class="level2">
 <h2 class="anchored" data-anchor-id="lecture">Lecture</h2>
-<p>To access the lecture notes: <a href="weekXXX_lecture.qmd">Lecture</a></p>
+<p>To access the lecture notes: <a href="week7_lecture.html">Lecture</a></p>
 </section>
 <section id="quiz" class="level2">
 <h2 class="anchored" data-anchor-id="quiz">Quiz</h2>
@@ -479,13 +487,14 @@ Note
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
@@ -846,7 +855,7 @@ Note
 <p><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 2025–, Huanfa Chen, Adam Dennett, Bea Taylor</p>
 </div>   
     <div class="nav-footer-center">
-<p><img src="..\img/logo/logo_only_sm.png" height="25"> Quantitative Methods</p>
+<p><img src="../img/logo/logo_only_sm.png" height="25"> Quantitative Methods</p>
 <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/huanfachen/QM/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
