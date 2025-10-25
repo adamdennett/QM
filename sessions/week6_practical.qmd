@@ -48,7 +48,7 @@ library(reticulate)
 
 #virtualenv_list()
 #virtualenv_root()
-use_virtualenv(virtualenv = NULL, required = NULL)
+#use_virtualenv(virtualenv = NULL, required = NULL)
 
 #reticulate::virtualenv_remove("r-reticulate")
 # point reticulate to the right python installation - ideally the one reticulate installed. 
