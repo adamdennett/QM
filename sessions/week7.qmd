@@ -11,7 +11,7 @@ title: "Week 7 - Prof D's Regression Sessions Vol 2"
 
 This week will build on last week's introduction to Linear Regression, extending the model into deep space and beyond. Sorry, that's the Progression Sessions Vol 2 (this week's recommended listening on the practical pages!). No, we won't quite get that far, but we will be extending our regression model into multiple (near-space) dimensions to really start to unpick what might be influencing our attainment variables in English Schools.
 
-In a multiple linear regression model, additional independent/explanatory variables are added to try and explain the unexplained variance that may remain in a bivariate regression model. In theory these dimensions are infinite, however in practice care needs to be taken to strike the correct balance between explanatory power and interpretability with it unlikely that you could select a large number of independent variables without running into issues of multicolinearity (more of which in the lecture).
+In a multiple linear regression model, additional independent/explanatory variables are added to try and explain the unexplained variance that may remain in a bivariate regression model. In theory these dimensions are infinite, however in practice care needs to be taken to strike the correct balance between explanatory power and interpretability with it unlikely that you could select a large number of independent variables without running into issues of multicollinearity (more of which in the lecture).
 
 ## Learning Objectives
 
@@ -42,7 +42,7 @@ To save a copy of notebook to your own GitHub Repo: follow the GitHub link, clic
 
 To access the practical:
 
-1. [Preview](week7_practical.html)
+1. [Main Practical Page](week7_practical.html)
 2. [Download](week7_practical.ipynb)
 
 ## Further resources
