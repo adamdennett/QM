@@ -44,7 +44,7 @@ here()
 #renv::restore(packages = packages)
 #Sys.unsetenv("VIRTUAL_ENV")
 library(reticulate)
-use_python("/QM_Fork/venv/Scripts/python.exe", required = TRUE)
+#use_python("/QM_Fork/venv/Scripts/python.exe", required = TRUE)
 # point reticulate to the right python installation - ideally the one reticulate installed. 
 #reticulate::use_python("C:/Users/Adam/AppData/Local/R/cache/R/reticulate/uv/cache/archive-v0/EiTNi4omakhlev5ckz2WP/Scripts/python.exe", required = TRUE)
 #use_condaenv("qmEnv", conda = "C:/Users/adam_/anaconda3/Scripts/conda.exe", required = TRUE)
