@@ -279,7 +279,7 @@ window.Quarto = {
   </ul>
 </li>
   <li><a href="#task-4---evaluation" id="toc-task-4---evaluation" class="nav-link" data-scroll-target="#task-4---evaluation">Task 4 - Evaluation</a></li>
-  <li><a href="#task-5---interacting-variables" id="toc-task-5---interacting-variables" class="nav-link" data-scroll-target="#task-5---interacting-variables">Task 5 - Interacting Variables</a></li>
+  <li><a href="#task-5---interacting-variables-extension-activity" id="toc-task-5---interacting-variables-extension-activity" class="nav-link" data-scroll-target="#task-5---interacting-variables-extension-activity">Task 5 - Interacting Variables (Extension activity)</a></li>
   </ul><div class="toc-actions"><ul><li><a href="https://github.com/huanfachen/QM/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div><div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="week7_practical.ipynb" download="week7_practical.ipynb"><i class="bi bi-journal-code"></i>Jupyter</a></li></ul></div></nav>
     </div>
 <!-- main -->
@@ -450,7 +450,7 @@ Dep. Variable:            log_ATT8SCR   R-squared:                       0.468
 Model:                            OLS   Adj. R-squared:                  0.468
 Method:                 Least Squares   F-statistic:                     2611.
 Date:                Sat, 25 Oct 2025   Prob (F-statistic):               0.00
-Time:                        15:09:45   Log-Likelihood:                 1668.0
+Time:                        15:21:52   Log-Likelihood:                 1668.0
 No. Observations:                2968   AIC:                            -3332.
 Df Residuals:                    2966   BIC:                            -3320.
 Df Model:                           1                                         
@@ -855,7 +855,7 @@ Dep. Variable:            log_ATT8SCR   R-squared:                       0.429
 Model:                            OLS   Adj. R-squared:                  0.424
 Method:                 Least Squares   F-statistic:                     99.29
 Date:                Sat, 25 Oct 2025   Prob (F-statistic):          3.44e-213
-Time:                        15:09:59   Log-Likelihood:                 1138.8
+Time:                        15:22:06   Log-Likelihood:                 1138.8
 No. Observations:                1868   AIC:                            -2248.
 Df Residuals:                    1853   BIC:                            -2165.
 Df Model:                          14                                         
@@ -1052,7 +1052,7 @@ Dep. Variable:            log_ATT8SCR   R-squared:                       0.480
 Model:                            OLS   Adj. R-squared:                  0.479
 Method:                 Least Squares   F-statistic:                     912.1
 Date:                Sat, 25 Oct 2025   Prob (F-statistic):               0.00
-Time:                        15:10:00   Log-Likelihood:                 1701.5
+Time:                        15:22:07   Log-Likelihood:                 1701.5
 No. Observations:                2968   AIC:                            -3395.
 Df Residuals:                    2964   BIC:                            -3371.
 Df Model:                           3                                         
@@ -1850,9 +1850,11 @@ F-statistic: 868.5 on 18 and 2883 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 </div>
-</section><section id="task-5---interacting-variables" class="level2"><h2 class="anchored" data-anchor-id="task-5---interacting-variables">Task 5 - Interacting Variables</h2>
-<p>In the lecture, you saw how we could</p>
-<p>Task 2b - AI interpretation. Yes, we’re using AI to help us!</p>
+</section><section id="task-5---interacting-variables-extension-activity" class="level2"><h2 class="anchored" data-anchor-id="task-5---interacting-variables-extension-activity">Task 5 - Interacting Variables (Extension activity)</h2>
+<p>In the lecture, you saw how we could look at how some of the continuous variables (like disadvantage or absence) vary by categorical variable levels (like region). Or indeed, whether continuous variables might interact with each other - for example do levels of unauthorised absence and disadvantage affect each other.</p>
+<p>As you saw in the lecture, interpreting interactions can be complex, so here I would just like you to have a brief experiment with some of the variables in your best model.</p>
+<p>If you are struggling to understand these effects, again, an AI helper like Gemini or ChatGPT might help you understand these interactions if you feed it your model outputs.</p>
+<p>Most of the time in most of the regression models you build, you might not need to interact variables, but it can be informative. Next week, however, we will look at other alternatives to interacting variables when we move onto linear mixed effects models. So at this point, just some experimentation is what I would like you to achieve.</p>
 
 
 <!-- -->
@@ -3250,11 +3252,15 @@ F-statistic: 868.5 on 18 and 2883 DF,  p-value: &lt; 2.2e-16</code></pre>
 <span id="cb41-996"><a href="#cb41-996" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb41-997"><a href="#cb41-997" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb41-998"><a href="#cb41-998" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb41-999"><a href="#cb41-999" aria-hidden="true" tabindex="-1"></a><span class="fu">## Task 5 - Interacting Variables</span></span>
+<span id="cb41-999"><a href="#cb41-999" aria-hidden="true" tabindex="-1"></a><span class="fu">## Task 5 - Interacting Variables (Extension activity)</span></span>
 <span id="cb41-1000"><a href="#cb41-1000" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb41-1001"><a href="#cb41-1001" aria-hidden="true" tabindex="-1"></a>In the lecture, you saw how we could</span>
+<span id="cb41-1001"><a href="#cb41-1001" aria-hidden="true" tabindex="-1"></a>In the lecture, you saw how we could look at how some of the continuous variables (like disadvantage or absence) vary by categorical variable levels (like region). Or indeed, whether continuous variables might interact with each other - for example do levels of unauthorised absence and disadvantage affect each other. </span>
 <span id="cb41-1002"><a href="#cb41-1002" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb41-1003"><a href="#cb41-1003" aria-hidden="true" tabindex="-1"></a>Task 2b - AI interpretation. Yes, we're using AI to help us!</span>
+<span id="cb41-1003"><a href="#cb41-1003" aria-hidden="true" tabindex="-1"></a>As you saw in the lecture, interpreting interactions can be complex, so here I would just like you to have a brief experiment with some of the variables in your best model. </span>
+<span id="cb41-1004"><a href="#cb41-1004" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-1005"><a href="#cb41-1005" aria-hidden="true" tabindex="-1"></a>If you are struggling to understand these effects, again, an AI helper like Gemini or ChatGPT might help you understand these interactions if you feed it your model outputs. </span>
+<span id="cb41-1006"><a href="#cb41-1006" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-1007"><a href="#cb41-1007" aria-hidden="true" tabindex="-1"></a>Most of the time in most of the regression models you build, you might not need to interact variables, but it can be informative. Next week, however, we will look at other alternatives to interacting variables when we move onto linear mixed effects models. So at this point, just some experimentation is what I would like you to achieve. </span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
