@@ -1,41 +1,361 @@
 ---
-title: "XXX"
-subtitle: "XXX"
+title: "Prof D's Regression Sessions - Vol 3"
+subtitle: "In the mix - the linear mix(ed effects model)"
 author: 
-  - name: "XXX"
-email: "XXX"
-date-as-string: "12 September 2025"
+  - name: "Adam Dennett"
+email: "a.dennett@ucl.ac.uk"
+date-as-string: "1st August 2024"
+other: "CASA0007 Quantitative Methods"
 from: markdown+emoji
-format: revealjs
+format:
+  revealjs: 
+    logo: "L6_images/CASA_logo.svg"
+    template-partials: 
+      - title-slide.html
+    transition: none
+    slide-number: TRUE
+    preview-links: auto
+    theme: casa-slides
+    chalkboard: true
+    
+filters:
+ - code-visibility
+lightbox: auto
+title-slide-attributes:
+    data-background-image: "L6_images/regression.png"
+    data-background-size: stretch
+    data-background-opacity: "0.08"
+    data-background-color: "#4e3c56"
 ---
+
+```{r}
+#all england schools
+edubase_schools <- read_csv("https://www.dropbox.com/scl/fi/fhzafgt27v30lmmuo084y/edubasealldata20241003.csv?rlkey=uorw43s44hnw5k9js3z0ksuuq&raw=1") %>% 
+  clean_names() %>% 
+  filter(phase_of_education_name == "Secondary") %>% 
+  filter(establishment_status_name == "Open") %>% 
+  mutate(urn = as.character(urn))
+
+#read in Brighton Secondary Schools Data
+brighton_sec_schools <- read_csv("https://www.dropbox.com/scl/fi/fhzafgt27v30lmmuo084y/edubasealldata20241003.csv?rlkey=uorw43s44hnw5k9js3z0ksuuq&raw=1") %>% 
+  clean_names() %>% 
+  filter(la_name == "Brighton and Hove") %>% 
+  filter(phase_of_education_name == "Secondary") %>% 
+  filter(establishment_status_name == "Open") %>%
+  st_as_sf(., coords = c("easting", "northing")) %>% 
+  st_set_crs(27700)
+
+btn_urn_list <- brighton_sec_schools %>% 
+  select(urn) 
+
+england_abs <- read_csv(here("sessions","L6_data", "Performancetables_130242", "2022-2023", "england_abs.csv"), na = c("", "NA", "SUPP", "NP", "NE"))
+england_census <- read_csv(here("sessions","L6_data", "Performancetables_130242", "2022-2023", "england_census.csv"), na = c("", "NA", "SUPP", "NP", "NE"))
+england_ks4final <- read_csv(here("sessions","L6_data", "Performancetables_130242", "2022-2023", "england_ks4final.csv"), na = c("", "NA", "SUPP", "NP", "NE"))
+england_school_information <- read_csv(here("sessions","L6_data", "Performancetables_130242", "2022-2023", "england_school_information.csv"), na = c("", "NA", "SUPP", "NP", "NE"))
+
+la_codes <- read_csv(here("sessions","L6_data", "Performancetables_130249", "2022-2023", "la_and_region_codes_meta.csv"), na = c("", "NA", "SUPP", "NP", "NE")) %>% 
+  clean_names()
+
+england_ks4final <- england_ks4final %>%
+  mutate(URN = as.character(URN)) %>%
+  mutate(across(TOTPUPS:PTOTENT_E_COVID_IMPACTED_PTQ_EE, ~ parse_number(as.character(.))))
+
+england_ks4final <- england_ks4final %>%
+  filter(!is.na(URN))
+
+england_abs <- england_abs %>%
+  mutate(URN = as.character(URN))
+
+england_census <- england_census %>%
+  mutate(URN = as.character(URN))
+
+england_school_information <- england_school_information %>%
+  mutate(URN = as.character(URN))
+
+# Left join england_ks4final with england_abs
+england_school_2022_23 <- england_ks4final %>%
+  left_join(england_abs, by = "URN") %>%
+  left_join(england_census, by = "URN") %>%
+  left_join(england_school_information, by = "URN")
+
+data_types <- sapply(england_school_2022_23, class)
+england_school_2022_23_meta <- data.frame(Field = names(data_types), DataType = data_types)
+
+btn_sub <- england_school_2022_23 %>%
+  filter(URN %in% btn_urn_list$urn)
+
+#P8_BANDING
+england_school_2022_23_not_special <- england_school_2022_23 %>%
+  filter(MINORGROUP != "Special school" & ADMPOL.x == "NSE")
+
+eng_sch_2022_23_not_special_plus <- england_school_2022_23_not_special %>% left_join(
+  edubase_schools, by = join_by(URN == urn)
+)
+
+
+calculate_index_of_dissimilarity <- function(df) {
+  # Ensure the dataframe has the necessary columns
+  required_columns <- c("TFSM6CLA1A", "TNOTFSM6CLA1A")
+  if (!all(required_columns %in% colnames(df))) {
+    stop("Dataframe must contain the columns: TFSM6CLA1A and TNOTFSM6CLA1A")
+  }
+  
+  # Calculate the total number of disadvantaged and non-disadvantaged pupils
+  total_disadvantaged <- sum(df$TFSM6CLA1A, na.rm = TRUE)
+  total_non_disadvantaged <- sum(df$TNOTFSM6CLA1A, na.rm = TRUE)
+  
+  # Calculate the index of dissimilarity
+  df$dissimilarity_component <- abs(df$TFSM6CLA1A / total_disadvantaged - df$TNOTFSM6CLA1A / total_non_disadvantaged)
+  index_of_dissimilarity <- 0.5 * sum(df$dissimilarity_component, na.rm = TRUE)
+  
+  return(index_of_dissimilarity)
+}
+
+calculate_gorard_segregation <- function(df) {
+  # Ensure the dataframe has the necessary columns
+  required_columns <- c("TFSM6CLA1A", "TNOTFSM6CLA1A", "TPUP")
+  if (!all(required_columns %in% colnames(df))) {
+    stop("Dataframe must contain the columns: TFSM6CLA1A, TNOTFSM6CLA1A, and TPUP")
+  }
+  
+  # Calculate the total number of disadvantaged, non-disadvantaged pupils, and total pupils
+  total_disadvantaged <- sum(df$TFSM6CLA1A, na.rm = TRUE)
+  total_pupils <- sum(df$TPUP, na.rm = TRUE)
+  
+  # Calculate the Gorard Segregation Index
+  df$gorard_component <- abs(df$TFSM6CLA1A / total_disadvantaged - df$TPUP / total_pupils)
+  gorard_segregation <- 0.5 * sum(df$gorard_component, na.rm = TRUE)
+  
+  return(gorard_segregation)
+}
+
+# Function to calculate the Index of Dissimilarity
+calculate_index_of_dissimilarity <- function(df) {
+  total_disadvantaged <- sum(df$TFSM6CLA1A, na.rm = TRUE)
+  total_non_disadvantaged <- sum(df$TNOTFSM6CLA1A, na.rm = TRUE)
+  
+  df$dissimilarity_component <- abs(df$TFSM6CLA1A / total_disadvantaged - df$TNOTFSM6CLA1A / total_non_disadvantaged)
+  index_of_dissimilarity <- 0.5 * sum(df$dissimilarity_component, na.rm = TRUE)
+  
+  return(index_of_dissimilarity)
+}
+
+
+# Apply the functions to each LEA and create a new dataframe with the results
+results_df <- england_school_2022_23_not_special %>%
+  group_by(LEA) %>%
+  summarise(
+    index_of_dissimilarity = calculate_index_of_dissimilarity(cur_data()),
+    gorard_segregation = calculate_gorard_segregation(cur_data())
+  )
+
+
+# Join the dataframes
+merged_df <- left_join(results_df, la_codes, by = c("LEA" = "lea"))
+
+
+ggplot(merged_df, aes(x = index_of_dissimilarity, y = gorard_segregation)) +
+  geom_point(aes(color = factor(LEA == 846)), size = 3, alpha = 0.7) +
+  scale_color_manual(values = c("grey", "red")) +
+  geom_text_repel(data = subset(merged_df, LEA == 846), 
+                  aes(label = "Brighton and Hove"), 
+                  size = 3, nudge_x = 0.1, nudge_y = -0.05, force = 10, box.padding = 0.5, direction = "both") +
+  labs(title = "Scatter Plot of Index of Dissimilarity vs \nGorard Segregation, all LEAs in England",
+       x = "Index of Dissimilarity",
+       y = "Gorard Segregation Index") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+
+
+
+
+```{r}
+#| message: false
+#| warning: false
+library(tidyverse)
+library(janitor)
+library(readr)
+library(dplyr)
+library(here)
+
+base_path <- here("sessions", "L6_data", "Performancetables_130242", "2022-2023")
+na_all <- c("", "NA", "SUPP", "NP", "NE", "SP", "SN", "LOWCOV", "NEW", "SUPPMAT")
+
+england_filtered <- read_csv(file.path(base_path, "england_filtered.csv"), na = na_all) |> mutate(URN = as.character(URN))
+
+#str(england_filtered)
+
+england_filtered_clean <- england_filtered[
+  !is.na(england_filtered$ATT8SCR) & 
+  !is.na(england_filtered$PTFSM6CLA1A) &
+  england_filtered$ATT8SCR > 0 &
+  england_filtered$PTFSM6CLA1A > 0, 
+]
+
+```
+
+
 # This week 
 
 ## Understanding and describing data 
 
 - Quantitative research is the process of collecting and analysing **numerical data** to describe, model, and predict variables of interest.
 
-- Garbage in, garbage out.
 
-::: {.notes}
-This lecture focuses on understanding and describing data. 
 
-:::
+```{r}
+# Fit linear model and get predicted values
+# Fit linear model and get predicted values
+model_data <- england_filtered %>%
+  filter(!is.na(ATT8SCR), !is.na(PTFSM6CLA1A), !is.na(PERCTOT))
 
-## Learning Objectives
-By the end of this lecture you should:
+lm_fit1 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT), data = model_data)
 
-1. Understand basic data types;
-2. Consider how to summarise and represent data.
+summary(lm_fit1)
 
-# Overview 
-We've covered: 
+model_data <- model_data %>%
+  mutate(
+    fitted_ATT8SCR = exp(fitted(lm_fit1)),
+    resids_real = ATT8SCR - fitted_ATT8SCR
+  )
 
-- Data types: levels of measurements; quantitative & qualitative
-- Key metrics 
-- Null values and outliers
-- Visualising data
 
-# Practical 
-Practical will focus on setting up Python environment and describing a dataset.
+model_data$gor_name <- relevel(factor(model_data$gor_name), ref = "South East")
+model_data$log_PERCTOT <- log(model_data$PERCTOT)
+model_data$log_PTFSM6CLA1A <- log(model_data$PTFSM6CLA1A)
 
-- Have questions prepared!
+#lm_fit3a <- lm(log(ATT8SCR) ~ log_PTFSM6CLA1A + log_PERCTOT * gor_name, data = model_data)
+lm_fit3a <- lm(log(ATT8SCR) ~ log_PERCTOT * gor_name, data = model_data)
+
+plot_summs(lm_fit3a, robust = TRUE)
+
+library(interactions)
+library(casaviz)
+
+casa_palette <- as.character(casa_colours[1:9])
+
+#scale_colour_casa()
+# or another palette like casa_dark
+
+interactions::interact_plot(
+  lm_fit3a,
+  pred = "log_PERCTOT",
+  modx = "gor_name",
+  plot.points = T,
+  facet.modx = F,
+  colors = casa_palette
+)
+
+england_model1 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A), data = england_filtered_clean)
+
+
+
+```
+
+```{r}
+filtered_data <- england_filtered_clean %>%
+  filter(OFSTEDRATING != "Inadequate" & !is.na(OFSTEDRATING))
+filtered_region <- england_filtered_clean %>%
+  filter(OFSTEDRATING != "Inadequate" & !is.na(OFSTEDRATING) & !is.na(gor_name))
+btn_sub <- filtered_region %>%
+  filter(URN %in% btn_urn_list$urn)
+
+# Base plot with england_school_2022_23
+plot <- ggplot(filtered_data, aes(y = log(ATT8SCR), x = log(PTFSM6CLA1A), colour = OFSTEDRATING)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +  # Add linear model line for england_school_2022_23
+  labs(title = "Attainment 8 vs % Deprivation, 2022-23",
+       x = "% Deprivation",
+       y = "Attainment 8 Score",
+       color = "Ofsted Rating") +
+  theme_minimal()
+
+# Add another layer with btn_sub points and labels with sticks
+plot + 
+  geom_point(data = btn_sub, aes(y = log(ATT8SCR), x = log(PTFSM6CLA1A)), color = "black") +
+  geom_smooth(data = btn_sub, aes(y = log(ATT8SCR), x = log(PTFSM6CLA1A)), method = "lm", se = FALSE, color = "black") +  # Add linear model line for btn_sub
+  geom_text_repel(data = btn_sub, aes(y = log(ATT8SCR), x = log(PTFSM6CLA1A), label = SCHNAME.x), color = "black", size = 3, nudge_y = c(-1.5, 1.5), force = 10, box.padding = 0.5, max.overlaps = 10, direction = "both") 
+```
+
+```{r}
+library(ggplot2)
+library(dplyr)
+
+# Step 1: Compute lm coefficients per Ofsted rating
+lm_labels <- england_filtered_clean %>%
+  group_by(OFSTEDRATING) %>%
+  summarise(
+    model = list(lm(log(ATT8SCR) ~ log(PTFSM6CLA1A))),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    intercept = sapply(model, function(m) coef(m)[1]),
+    slope = sapply(model, function(m) coef(m)[2]),
+    label = paste0("y = ", round(slope, 2), "x + ", round(intercept, 2))
+  )
+
+# Step 2: Merge label positions (optional: use median values for placement)
+label_positions <- england_filtered_clean %>%
+  group_by(OFSTEDRATING) %>%
+  summarise(
+    x = min(log(PTFSM6CLA1A), na.rm = TRUE),
+    y = 2.5,
+    .groups = "drop"
+  )
+
+lm_labels <- left_join(lm_labels, label_positions, by = "OFSTEDRATING")
+
+# Step 3: Plot with annotations
+ggplot(england_filtered_clean, aes(y = log(ATT8SCR), x = log(PTFSM6CLA1A), colour = OFSTEDRATING)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  geom_text(data = lm_labels, aes(x = x, y = y, label = label), inherit.aes = FALSE, hjust = 0, size = 3.5) +
+  labs(
+    title = "Attainment 8 vs Overall Absence %, 2022-23",
+    x = "% Overall Absence",
+    y = "Attainment 8 Score",
+    color = "Ofsted Rating"
+  ) +
+  theme_minimal() +
+  facet_wrap(~ OFSTEDRATING)
+```
+
+```{r}
+filtered_data <- england_filtered_clean %>%
+  filter(OFSTEDRATING != "Inadequate" & !is.na(OFSTEDRATING))
+filtered_region <- england_filtered_clean %>%
+  filter(OFSTEDRATING != "Inadequate" & !is.na(OFSTEDRATING) & !is.na(gor_name))
+btn_sub <- filtered_region %>%
+  filter(URN %in% btn_urn_list$urn)
+
+# Base plot with england_school_2022_23
+plot <- ggplot(filtered_data, aes(y = log(ATT8SCR), x = log(PERCTOT), colour = OFSTEDRATING)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +  # Add linear model line for england_school_2022_23
+  labs(title = "Attainment 8 vs Overall Absence %, 2022-23",
+       x = "% Overall Absence",
+       y = "Attainment 8 Score",
+       color = "Ofsted Rating") +
+  theme_minimal()
+
+# Add another layer with btn_sub points and labels with sticks
+plot + 
+  geom_point(data = btn_sub, aes(y = log(ATT8SCR), x = log(PERCTOT)), color = "black") +
+  geom_smooth(data = btn_sub, aes(y = log(ATT8SCR), x = log(PERCTOT)), method = "lm", se = FALSE, color = "black") +  # Add linear model line for btn_sub
+  geom_text_repel(data = btn_sub, aes(y = log(ATT8SCR), x = log(PERCTOT), label = SCHNAME.x), color = "black", size = 3, nudge_y = c(-1.5, 1.5), force = 10, box.padding = 0.5, max.overlaps = 10, direction = "both") 
+```
+
+
+```{r}
+ggplot(england_filtered_clean, aes(y = log(ATT8SCR), x = log(PERCTOT), colour = OFSTEDRATING)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +  # Add linear model line for england_school_2022_23
+  labs(title = "Attainment 8 vs Overall Absence %, 2022-23",
+       x = "% Overall Absence",
+       y = "Attainment 8 Score",
+       color = "Ofsted Rating") +
+  theme_minimal() +
+  facet_wrap(~ OFSTEDRATING)  # Facet plots for each Ofsted rating
+```
