@@ -547,6 +547,14 @@ library(lme4)
 lm1 <- lm(P8MEA ~ PTFSM6CLA1A + OFSTEDRATING, data = england_filtered_clean)
 summary(lm1)
 
-lme1 <- lmer(P8MEA ~ PTFSM6CLA1A + (1|OFSTEDRATING), data = england_filtered_clean)
+lme1 <- lmer(P8MEA ~ 1 + (1|OFSTEDRATING), data = england_filtered_clean)
 summary(lme1)
+
 ```
+
+
+```{r}
+lme2 <- lmer(P8MEA ~ PTFSM6CLA1A + (1|OFSTEDRATING), data = england_filtered_clean)
+summary(lme2)
+```
+
