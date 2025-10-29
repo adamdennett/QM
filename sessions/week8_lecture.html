@@ -7,11 +7,14 @@
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-95f147d06fdb9f8ce149f95e323965f4.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-95f147d06fdb9f8ce149f95e323965f4.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.8.25">
 
-  <meta name="author" content="XXX">
-  <title>Quantitative Methods – XXX</title>
+  <meta name="author" content="Adam Dennett">
+  <title>Quantitative Methods – Prof D’s Regression Sessions - Vol 3</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -30,10 +33,12 @@
       vertical-align: middle;
     }
   </style>
-  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-708fdb05d86516b6f171cd9cf793ecac.css">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-3d9a2287676b2fea48eb10fd22aaf47d.css">
   <link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
   <style type="text/css">
     .reveal div.sourceCode {
@@ -122,8 +127,8 @@
       margin-right: 0; 
     }
   </style>
-<meta property="og:title" content="XXX – Quantitative Methods">
-<meta property="og:description" content="XXX">
+<meta property="og:title" content="Prof D’s Regression Sessions - Vol 3 – Quantitative Methods">
+<meta property="og:description" content="In the mix - the linear mix(ed effects model)">
 <meta property="og:image" content="https://adamdennett.github.io/QM/sessions/img/logo/full_sm.png">
 <meta property="og:site_name" content="Foundations">
 <meta property="og:locale" content="en_GB">
@@ -133,19 +138,20 @@
     <div class="slides">
 
 
-<section id="title-slide" data-background-color="#4e3c56" data-background-image="../img/web/title-slide.png" data-background-opacity="0.08" data-background-size="stretch" style="height:100%" class="center">
+<section id="title-slide" data-background-color="#4e3c56" data-background-image="L6_images/regression.png" data-background-opacity="0.08" data-background-size="stretch" style="height:100%" class="center">
 
 <br>
 <br>
 
-<h1 class="title">XXX</h1>
+<h1 class="title">Prof D’s Regression Sessions - Vol 3</h1>
 
-  <h3 style="opacity:0.8;" class="subtitle">XXX</h3>
+  <h3 style="opacity:0.8;" class="subtitle">In the mix - the linear mix(ed effects model)</h3>
 
-<p><span style="margin:0px; font-weight:700;" class="author">XXX</span> - XXX </p>
+<p><span style="margin:0px; font-weight:700;" class="author">Adam Dennett</span> - a.dennett@ucl.ac.uk </p>
 
-<p style="opacity: 0.8">12 September 2025</p>
+<p style="opacity: 0.8">1st August 2024</p>
 
+<p style="opacity:0.8;">CASA0007 Quantitative Methods</p>
 
 </section>
 <section>
@@ -153,57 +159,252 @@
 <h1>This week</h1>
 
 </section>
-<section id="understanding-and-describing-data" class="slide level2">
-<h2>Understanding and describing data</h2>
+<section id="recap" class="slide level2">
+<h2>Recap</h2>
 <ul>
-<li><p>Quantitative research is the process of collecting and analysing <strong>numerical data</strong> to describe, model, and predict variables of interest.</p></li>
-<li><p>Garbage in, garbage out.</p></li>
+<li>Last week we saw how multiple regression models can allow us to understand complex relationships between predictor and outcome variables</li>
+<li>We began to explore how by increasing the complexity of our regression models, we can begin to observe how the effects of different variables can confound (obscrure) and mediate (partially cause) the effects of others, giving us a deeper understanding of our system of interest</li>
+<li>We were able to see that with just a relatively small number of variables, we could explain most of the variation in school-level attainment scores in England</li>
 </ul>
-<aside class="notes">
-<p>This lecture focuses on understanding and describing data.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
 </section>
-<section id="learning-objectives" class="slide level2">
-<h2>Learning Objectives</h2>
-<p>By the end of this lecture you should:</p>
-<ol type="1">
-<li>Understand basic data types;</li>
-<li>Consider how to summarise and represent data.</li>
-</ol>
+<section id="ols-regression-with-interaction-terms" class="slide level2">
+<h2>OLS regression with interaction terms</h2>
+<div class="cell" width="80%">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-4-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-4-1.png" width="960"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>In our most sophisticated model we could even see how the relationship between our main predictor and our outcome might vary between levels of a categorical variable</li>
+</ul>
+</section>
+<section id="ols-regression-with-interaction-terms-1" class="slide level2">
+<h2>OLS regression with Interaction Terms</h2>
+<ul>
+<li>Interacting categorical variables with other continuous predictor variables allowed us to see how levels of continuous predictor slope coefficient vary according to the categorical predictor</li>
+<li>In our example, we saw how in a simple bivariate model of Attainment 8 vs Disadvantage, the slope less severe in regions such as London, the West Midlands and Yorkshire and the Humber when compared to the South East.</li>
+<li>The effects of concentrations of disadvantaged pupils in schools felt more severely in the South East.</li>
+</ul>
+</section>
+<section id="drawbacks-of-ols-with-interaction" class="slide level2">
+<h2>Drawbacks of OLS with Interaction</h2>
+<ul>
+<li>OLS assumes all observations (schools) are independent of each other, when in reality, they may have characteristics which mean they are not independent - i.e.&nbsp;they are in the same local authority or have similar Ofsted ratings which mean they share some characteristics with each other in terms of governance etc.</li>
+<li>OLS assumes the effects (parameters) are constant (fixed) across the whole population / dataset</li>
+<li>OLS assumes the errors are independent</li>
+<li>OLS only has one global intercept with group level differences in the data only crudely represented with dummy variables</li>
+</ul>
+</section>
+<section id="different-slopes-and-intercepts" class="slide level2">
+<h2>Different Slopes and Intercepts</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-5-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-5-1.png" width="960"></a></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="different-slopes-and-intercepts-1" class="slide level2">
+<h2>Different Slopes and Intercepts</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-6-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-6-1.png" width="960"></a></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="different-slopes-and-intercepts-2" class="slide level2">
+<h2>Different Slopes and Intercepts</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-9-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-9-1.png" width="960"></a></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="different-slopes-and-intercepts-3" class="slide level2">
+<h2>Different Slopes and Intercepts</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-10-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-10-1.png" width="960"></a></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="different-slopes-and-intercepts-4" class="slide level2">
+<h2>Different Slopes and Intercepts</h2>
+<ul>
+<li>Solution: can we just partition our data and run different models for different groups?</li>
+<li>Answer: Well yes, you could, but it might also be useful to explore more systematically how slopes and intercepts vary between and within groups in your data - that is also useful information</li>
+</ul>
+<p>In order to model these grouping factors more explicitly, we need a new type of model - a linear mixed effects model</p>
+</section>
+<section id="jargon-alert" class="slide level2">
+<h2>Jargon Alert!</h2>
+<ul>
+<li>Before we embark on our linear mixed effects journey, there are two key pieces of jargon you need to learn</li>
+<li><strong><em>Fixed Effects</em></strong> - A Fixed Effect is your traditional explanatory variable (or covariate) whose relationship with the outcome you are primarily interested in estimating for its own sake.
+<ul>
+<li>Example: Proportion of disadvantaged students in a school. You want the single, best-estimated coefficient (<span class="math inline">\(\beta\)</span>) for this factor.</li>
+</ul></li>
+<li><strong><em>Random Effects</em></strong> - A Random Effect is a grouping factor (or nesting factor) whose variability you want to account for, but whose specific individual levels you don’t necessarily want to draw conclusions about.
+<ul>
+<li>Example: The different Ofsted ratings (or individual Schools). You’re interested in how much the relationship varies across these groups, not the specific effect of ‘Longhill School’</li>
+</ul></li>
+</ul>
+</section>
+<section id="fixed-effects---more-detail" class="slide level2">
+<h2>Fixed Effects - More Detail</h2>
+<ul>
+<li>Fixed effects estimate the mean relationship across all groups. They represent the “fixed” part of the model that applies to every observation.
+<ul>
+<li>You estimate a single <span class="math inline">\(\beta\)</span> coefficient for a fixed effect, which represents the population average effect of that variable.</li>
+<li>Fixed effects can be either continuous (e.g., % of disadvantaged students in a school) or categorical (region, ofsted rating).</li>
+</ul></li>
+<li>Depending on how you formulate your model, a fixed effect could be a random effect in a different context.</li>
+</ul>
+</section>
+<section id="random-effects---more-detail" class="slide level2">
+<h2>Random Effects - More Detail</h2>
+<ul>
+<li>Random effects, (random intercepts and slopes) represent the deviations of each group’s effect from the overall fixed-effect average.
+<ul>
+<li>When you model a grouping factor (like Ofsted Rating) as a random effect, you are not estimating five separate coefficients (one for each rating).</li>
+<li>Instead, you estimate a variance term (<span class="math inline">\(\sigma^2_{\text{group}}\)</span>) that quantifies how much the true group effects (intercepts and/or slopes) scatter around the overall mean effect.</li>
+<li>This approach is used when the groups (e.g., the 5 Ofsted categories or the hundreds of individual schools) are considered a random sample from a larger, unobserved population of groups.</li>
+<li>This allows the model to “borrow strength” across groups to stabilise estimates (the principle of shrinkage).</li>
+</ul></li>
+</ul>
+</section>
+<section id="linear-mixed-effects-models" class="slide level2">
+<h2>Linear Mixed Effects Models</h2>
+<ul>
+<li>A Linear Mixed Effects (LME) model is a more general class of statistical model that features both a fixed-effects component (the population-average parameters) and a random-effects component (the group-specific deviations)</li>
+<li>A common type of LME model is the multilevel or hierarchical linear model.
+<ul>
+<li>Multilevel models focus specifically on nested data structures, e.g.&nbsp;students in classes <span class="math inline">\(\rightarrow\)</span> classes within schools <span class="math inline">\(\rightarrow\)</span> schools within local authorities <span class="math inline">\(\rightarrow\)</span> local authorities within regions</li>
+</ul></li>
+<li>All multilevel models are linear mixed effects models, but linear mixed effects models can handle even more types of groupings (e.g.&nbsp;longitudinal - repeated observations over time)</li>
+</ul>
+</section>
+<section id="linear-mixed-effects-models-1" class="slide level2">
+<h2>Linear Mixed Effects Models</h2>
+<p><a href="L6_images/multilevel_data.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-6"><img data-src="L6_images/multilevel_data.webp"></a></p>
+<p>Multilevel Data Structures (Source:&nbsp;<a href="http://www.stat.columbia.edu/~gelman/arm/">Gelman &amp; Hill (2006)</a>) and <a href="https://paulrjohnson.net/blog/2022-11-01-multilevel-model-r-cheatsheet/" class="uri">https://paulrjohnson.net/blog/2022-11-01-multilevel-model-r-cheatsheet/</a></p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-11-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-11-1.png" width="960"></a></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="the-null-model" class="slide level2">
+<h2>The Null Model</h2>
+<ul>
+<li>The first step in a linear mixed effects model is to fit what is often called a null model and is also called the Variance Components Model</li>
+</ul>
+<p><span class="math display">\[\text{lmer}(\text{P8MEA} \sim 1 + (1|\text{OFSTEDRATING}), \text{data} = \dots)\]</span></p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = P8MEA ~ PTFSM6CLA1A + OFSTEDRATING, data = england_filtered_clean)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.59098 -0.24817 -0.01413  0.22867  1.83558 
+
+Coefficients:
+                                   Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)                       0.2590072  0.0161142  16.073  &lt; 2e-16 ***
+PTFSM6CLA1A                      -0.0110672  0.0005175 -21.388  &lt; 2e-16 ***
+OFSTEDRATINGOutstanding           0.5520942  0.0205478  26.869  &lt; 2e-16 ***
+OFSTEDRATINGRequires improvement -0.3822240  0.0224482 -17.027  &lt; 2e-16 ***
+OFSTEDRATINGSerious Weaknesses   -0.4958429  0.0826930  -5.996 2.27e-09 ***
+OFSTEDRATINGSpecial Measures     -0.6606618  0.0968667  -6.820 1.10e-11 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.3853 on 2900 degrees of freedom
+  (62 observations deleted due to missingness)
+Multiple R-squared:  0.4283,    Adjusted R-squared:  0.4273 
+F-statistic: 434.5 on 5 and 2900 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by REML ['lmerMod']
+Formula: P8MEA ~ 1 + (1 | OFSTEDRATING)
+   Data: england_filtered_clean
+
+REML criterion at convergence: 3156.8
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-4.3316 -0.6163  0.0060  0.6152  4.2823 
+
+Random effects:
+ Groups       Name        Variance Std.Dev.
+ OFSTEDRATING (Intercept) 0.3146   0.5609  
+ Residual                 0.1718   0.4145  
+Number of obs: 2906, groups:  OFSTEDRATING, 5
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)  -0.2646     0.2523  -1.049</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by REML ['lmerMod']
+Formula: P8MEA ~ PTFSM6CLA1A + (1 | OFSTEDRATING)
+   Data: england_filtered_clean
+
+REML criterion at convergence: 2744
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-4.1283 -0.6451 -0.0364  0.5935  4.7671 
+
+Random effects:
+ Groups       Name        Variance Std.Dev.
+ OFSTEDRATING (Intercept) 0.2320   0.4817  
+ Residual                 0.1485   0.3853  
+Number of obs: 2906, groups:  OFSTEDRATING, 5
+
+Fixed effects:
+              Estimate Std. Error t value
+(Intercept)  0.0673133  0.2174828    0.31
+PTFSM6CLA1A -0.0110830  0.0005174  -21.42
+
+Correlation of Fixed Effects:
+            (Intr)
+PTFSM6CLA1A -0.071</code></pre>
+</div>
+</div>
+
+
 </section></section>
-<section id="overview" class="title-slide slide level1 center">
-<h1>Overview</h1>
-<p>We’ve covered:</p>
-<ul>
-<li>Data types: levels of measurements; quantitative &amp; qualitative</li>
-<li>Key metrics</li>
-<li>Null values and outliers</li>
-<li>Visualising data</li>
-</ul>
-</section>
-
-<section id="practical" class="title-slide slide level1 center">
-<h1>Practical</h1>
-<p>Practical will focus on setting up Python environment and describing a dataset.</p>
-<ul>
-<li>Have questions prepared!</li>
-</ul>
-
-
-</section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
-<p><img src="../img/logo/full.svg" class="slide-logo"></p>
+<p><img src="../L6_images/CASA_logo.svg" class="slide-logo"></p>
 <div class="footer footer-default">
 <p>© CASA &nbsp; | &nbsp; <a href="https://www.ucl.ac.uk/bartlett/casa">ucl.ac.uk/bartlett/casa</a></p>
 </div>
@@ -216,6 +417,7 @@
   <script src="../site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
   <script src="../site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
   <script src="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="../site_libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
   <script src="../site_libs/revealjs/plugin/quarto-support/support.js"></script>
   
 
@@ -237,7 +439,8 @@
 'autoAnimateDuration': 1,
 'autoAnimateUnmatched': true,
 'jumpToSlide': true,
-'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'chalkboard': {"buttons":true},
 'smaller': false,
  
         // Display controls in the bottom right corner
@@ -258,7 +461,7 @@
         progress: true,
 
         // Display the page number of the current slide
-        slideNumber: false,
+        slideNumber: 'c/t',
 
         // 'all', 'print', or 'speaker'
         showSlideNumber: 'all',
@@ -408,7 +611,7 @@
         },
 
         // reveal.js plugins
-        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
 
           RevealMath,
           RevealNotes,
@@ -417,6 +620,44 @@
         ]
       });
     </script>
+    
+    <script>
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+      // slide changes (different for each slide format).
+      (function () {
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
+          const event = window.document.createEvent("Event");
+          event.initEvent("slideenter", true, true);
+          window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
+
+          // dispatch for shiny
+          if (window.jQuery) {
+            if (previousSlide) {
+              window.jQuery(previousSlide).trigger("hidden");
+            }
+            if (currentSlide) {
+              window.jQuery(currentSlide).trigger("shown");
+            }
+          }
+        }
+
+        // hookup for slidy
+        if (window.w3c_slidy) {
+          window.w3c_slidy.add_observer(function (slide_num) {
+            // slide_num starts at position 1
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+          });
+        }
+
+      })();
+    </script>
+
     <script id="quarto-html-after-body" type="application/javascript">
       window.document.addEventListener("DOMContentLoaded", function (event) {
         const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
@@ -585,6 +826,38 @@
         }
       });
       </script>
+    <script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+    (function() {
+      let previousOnload = window.onload;
+      window.onload = () => {
+        if (previousOnload) {
+          previousOnload();
+        }
+        lightboxQuarto.on('slide_before_load', (data) => {
+          const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+          const href = trigger.getAttribute('href');
+          if (href !== null) {
+            const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+            if (imgEl !== null) {
+              const srcAttr = imgEl.getAttribute("src");
+              if (srcAttr && srcAttr.startsWith("data:")) {
+                slideConfig.href = srcAttr;
+              }
+            }
+          } 
+        });
+      
+        lightboxQuarto.on('slide_after_load', (data) => {
+          const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(slideNode);
+          }
+        });
+      
+      };
+      
+    })();
+              </script>
     
 
 </body></html>
