@@ -44,6 +44,7 @@ here()
 #renv::restore(packages = packages)
 #Sys.unsetenv("VIRTUAL_ENV")
 library(reticulate)
+
 #use_python("/QM_Fork/venv/Scripts/python.exe", required = TRUE)
 # point reticulate to the right python installation - ideally the one reticulate installed. 
 #reticulate::use_python("C:/Users/Adam/AppData/Local/R/cache/R/reticulate/uv/cache/archive-v0/EiTNi4omakhlev5ckz2WP/Scripts/python.exe", required = TRUE)
@@ -54,7 +55,14 @@ library(reticulate)
 #virtualenv_create("r-reticulate", python = "C:/Users/Adam/AppData/Local/R/cache/R/reticulate/uv/cache/archive-v0/EiTNi4omakhlev5ckz2WP/Scripts/python.exe")
 
 #virtualenv_install("r-reticulate", packages = c("pyyaml", "jupyter", "statsmodels","pyjanitor","pathlib","matplotlib","pandas", "numpy", "scipy", "seaborn", "geopandas", "folium", "branca"))
-#use_virtualenv("r-reticulate", required = TRUE)
+  #use_virtualenv("r-reticulate", required = TRUE)
+
+#py_install(packages = c(
+#  "pyyaml", "jupyter", "statsmodels", "pyjanitor", "pathlib",
+#  "matplotlib", "pandas", "numpy", "scipy", "seaborn",
+#  "geopandas", "folium", "branca", "plotly", "contexily"
+#))
+
 
 # reticulate::py_config()
 # reticulate::py_require("pyyaml")
@@ -180,7 +188,7 @@ from pathlib import Path
 import statsmodels.api as sm
 
 # little function to define the file root on different machines
-def find_qm_root(start_path: Path = Path.cwd(), anchor: str = "QM") -> Path:
+def find_qm_root(start_path: Path = Path.cwd(), anchor: str = "QM_Fork") -> Path:
     """
     Traverse up from the start_path until the anchor folder (e.g. 'QM' or 'QM_Fork')      is found. Returns the path to the anchor folder.
     """

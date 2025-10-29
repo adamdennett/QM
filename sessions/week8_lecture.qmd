@@ -1,6 +1,6 @@
 ---
 title: "Prof D's Regression Sessions - Vol 3"
-subtitle: "In the mix - the linear mix(ed effects model)"
+subtitle: "In the mix - the linear mix(ed effects model lecture)"
 author: 
   - name: "Adam Dennett"
 email: "a.dennett@ucl.ac.uk"
@@ -290,7 +290,7 @@ england_model1 <- lm(log(ATT8SCR) ~ log(PTFSM6CLA1A), data = england_filtered_cl
 -   OLS assumes the errors are independent
 -   OLS only has one global intercept with group level differences in the data only crudely represented with dummy variables
 
-## Different Slopes and Intercepts
+## Different Slopes and Intercepts - Attainment 8
 
 ```{r}
 filtered_data <- england_filtered_clean %>%
@@ -317,7 +317,7 @@ plot #+
 #  geom_text_repel(data = btn_sub, aes(y = log(ATT8SCR), x = log(PTFSM6CLA1A), label = SCHNAME.x), color = "black", size = 3, nudge_y = c(-1.5, 1.5), force = 10, box.padding = 0.5, max.overlaps = 10, direction = "both") 
 ```
 
-## Different Slopes and Intercepts
+## Different Slopes and Intercepts - Attainment 8
 
 ```{r}
 library(ggplot2)
@@ -403,7 +403,7 @@ ggplot(england_filtered_clean, aes(y = log(ATT8SCR), x = log(PERCTOT), colour = 
   facet_wrap(~ OFSTEDRATING)  # Facet plots for each Ofsted rating
 ```
 
-## Different Slopes and Intercepts
+## Different Slopes and Intercepts - Progress 8
 
 ```{r}
 
@@ -441,7 +441,7 @@ plot #+
 #  geom_text_repel(data = btn_sub, aes(y = P8MEA, x = PTFSM6CLA1A, label = SCHNAME.x), color = "black", size = 3, nudge_y = c(-1.5, 1.5), force = 10, box.padding = 0.5, max.overlaps = 10, direction = "both") 
 ```
 
-## Different Slopes and Intercepts
+## Different Slopes and Intercepts - Progress 8
 
 ```{r}
 # Step 1: Compute lm coefficients per Ofsted rating
@@ -521,9 +521,11 @@ In order to model these grouping factors more explicitly, we need a new type of 
 
 ## Linear Mixed Effects Models
 
-![](L6_images/multilevel_data.webp)
+![](L6_images/multilevel_data.webp) In practice, LME models essentially result in varying intercepts, slopes or both.
 
 Multilevel Data Structures (Source: [Gelman & Hill (2006)](http://www.stat.columbia.edu/~gelman/arm/)) and <https://paulrjohnson.net/blog/2022-11-01-multilevel-model-r-cheatsheet/>
+
+## Linear Mixed Effects Models
 
 ```{r}
 #| message: false
@@ -537,9 +539,152 @@ ggpairs(england_filtered_clean, , mapping = aes(color = OFSTEDRATING), columns =
 
 ## The Null Model
 
--   The first step in a linear mixed effects model is to fit what is often called a null model and is also called the Variance Components Model
+-   The first step in a linear mixed effects model is to fit what is often called a ***null model*** (otherwise know as the ***'Variance Components'*** / ***'Unconditional Means'*** Model)
+-   Point of the null model is to partition the total variance in the outcome variable (Progress 8 - P8MEA) into the levels or components we think are relevant.
+-   In our example, we have schools (Level 1 - our primary unit) and various grouping factors we could use e.g. local authority (level 2), region (level 3). Or we could use Ofsted rating as a level 2 factor.
+
+## The Null Model - a 2 Level Model example
+
+$$\mathbf{Y_{ij} = \gamma_{00} + u_{0j} + \epsilon_{ij}}$$
+
+This equation shows that the total variability in $Y_{ij}$ (Progress 8) is decomposed into two sources:
+-   Fixed Effect: $\mathbf{\gamma_{00}}$ (The overall population average - **grand/global mean**).
+-   Random Effect (Level 1): $\mathbf{\epsilon_{ij}}$ (linked to the variation within groups/ratings, $\mathbf{\sigma^2_{\epsilon}}$).
+-   Random Effect (Level 2): $\mathbf{u_{0j}}$ (linked to the variation between groups/ratings, $\mathbf{\sigma^2_{u_{0}}}$).
+
+## Null Model - Level 1
+
+-    $$\mathbf{Y_{ij} = \beta_{0j} + \epsilon_{ij}}$$$\mathbf{Y_{ij}}$: The outcome (e.g., Progress 8) for the $i^{th}$ school in the $j^{th}$ Ofsted rating.
+-    $\mathbf{\beta_{0j}}$: The intercept for the specific Ofsted rating $j$. This represents the true mean Progress 8 for all schools within that rating. Because we haven't added any predictors yet, this is the only fixed part of the model.
+-    $\mathbf{\epsilon_{ij}}$: The Level 1 residual error (or "school-level error"). This is the deviation of the $i^{th}$ school's P8MEA from its own rating group's mean ($\beta_{0j}$).
+-    Assumption: $\epsilon_{ij} \sim N(0, \mathbf{\sigma^2_{\epsilon}})$ where $\mathbf{\sigma^2_{\epsilon}}$ is the Within-Group Variance (or Level 1 variance/Residual Variance).
+
+## Null Model - Level 2
+
+$$\mathbf{\beta_{0j} = \gamma_{00} + u_{0j}}$$$\mathbf{\beta_{0j}}$: The mean Progress 8 for the $j^{th}$ Ofsted rating (the intercept from Level 1).
+$\mathbf{\gamma_{00}}$: The grand mean or the overall fixed intercept. This is the mean Progress 8 averaged across all Ofsted ratings. This is the fixed effect in the model.
+$\mathbf{u_{0j}}$: The Level 2 residual error (or "group-level error"). This is the deviation of the $j^{th}$ Ofsted rating's mean ($\beta_{0j}$) from the grand mean ($\gamma_{00}$).
+Assumption: $u_{0j} \sim N(0, \mathbf{\sigma^2_{u_{0}}})$ where $\mathbf{\sigma^2_{u_{0}}}$ is the Between-Group Variance (or Level 2 variance/Random Intercept Variance).
+
+
+
+## The Null Model
+
+1.  **Between-Group Variance** ($\sigma^2_{\text{OFSTED}}$ - or more generally $\mathbf{\sigma^2_{u_{0}}}$): The variability in average P8MEA that exists between the different Ofsted ratings.
+2.  **Within-Group (Residual) Variance** ($\sigma^2_{\text{Residual}}$ - or more generally $\mathbf{\sigma^2_{\epsilon}}$): The variability in P8MEA that exists between schools within each rating (i.e., the school-level differences).
+
+## The Null Model
+
+```{r}
+#| message: false
+#| warning: false
+#| align: center
+#| out-width: 60%
+
+# 1. Load the necessary library for plotting
+library(ggplot2)
+
+# --- Ensure OFSTEDRATING is an ordered factor for better plotting ---
+# It appears you have six levels based on the OLS output, so we order them logically.
+# Adjust the order if the true levels/baseline are different in your data.
+rating_order <- c("Special Measures", "Serious Weaknesses", "Requires improvement", "Good", "Outstanding")
+england_filtered_clean$OFSTEDRATING <- factor(
+  england_filtered_clean$OFSTEDRATING,
+  levels = rating_order,
+  ordered = TRUE
+)
+
+
+## ## 1. Boxplot Visualization (Level 1 and Level 2 Variance) ## ##
+boxplot_p8mea <- ggplot(england_filtered_clean, aes(x = OFSTEDRATING, y = P8MEA, fill = OFSTEDRATING)) +
+  geom_boxplot(alpha = 0.7) +
+  geom_hline(yintercept = mean(england_filtered_clean$P8MEA, na.rm = TRUE),
+             linetype = "dashed", color = "black", linewidth = 1) +
+  labs(
+    title = "P8MEA Distribution Across Ofsted Ratings (The Null Model Structure)",
+    subtitle = "Fixed Grand Mean (Dashed Line) and Random Intercepts (Box Medians)",
+    x = "Ofsted Rating",
+    y = "Progress 8 Score (P8MEA)"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none")
+
+print(boxplot_p8mea)
+
+
+```
+
+-   All of the information in the NULL model is contained in this plot!
+-   **Within-Group Variance** ($\mathbf{\sigma^2_{\epsilon}}$) - the height of each individual box and the length of its whiskers. Taller boxes and longer whiskers indicate more variability among schools within that single rating category.
+
+## The Null Model
+
+```{r}
+#| message: false
+#| warning: false
+#| align: center
+#| out-width: 60%
+
+# 1. Load the necessary library for plotting
+library(ggplot2)
+
+# --- Ensure OFSTEDRATING is an ordered factor for better plotting ---
+# It appears you have six levels based on the OLS output, so we order them logically.
+# Adjust the order if the true levels/baseline are different in your data.
+rating_order <- c("Special Measures", "Serious Weaknesses", "Requires improvement", "Good", "Outstanding")
+england_filtered_clean$OFSTEDRATING <- factor(
+  england_filtered_clean$OFSTEDRATING,
+  levels = rating_order,
+  ordered = TRUE
+)
+
+
+## ## 1. Boxplot Visualization (Level 1 and Level 2 Variance) ## ##
+boxplot_p8mea <- ggplot(england_filtered_clean, aes(x = OFSTEDRATING, y = P8MEA, fill = OFSTEDRATING)) +
+  geom_boxplot(alpha = 0.7) +
+  geom_hline(yintercept = mean(england_filtered_clean$P8MEA, na.rm = TRUE),
+             linetype = "dashed", color = "black", linewidth = 1) +
+  labs(
+    title = "P8MEA Distribution Across Ofsted Ratings (The Null Model Structure)",
+    subtitle = "Fixed Grand Mean (Dashed Line) and Random Intercepts (Box Medians)",
+    x = "Ofsted Rating",
+    y = "Progress 8 Score (P8MEA)"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none")
+
+print(boxplot_p8mea)
+
+
+```
+
+-   **Between-Group Variance** ($\mathbf{\sigma^2_{u_{0}}}$) - Differences between the mean/median lines of the boxplots for each rating category
+-   The sum of these two variances ($\sigma^2_{\text{OFSTED}} + \sigma^2_{\text{Residual}}$) gives the **Total Variance** of P8MEA. This establishes the baseline level of clustering in the data before any other variables are considered
+
+## The Null Model
+
+```{r}
+## ## 2. Density Plot Visualization (Comparing the Two Variance Components) ## ##
+# This plot visually shows how much the groups overlap (small overlap means high ICC).
+density_p8mea <- ggplot(england_filtered_clean, aes(x = P8MEA, fill = OFSTEDRATING, color = OFSTEDRATING)) +
+  geom_density(alpha = 0.4) +
+  labs(
+    title = "Density of Progress 8 (P8MEA) by Ofsted Rating",
+    subtitle = "Low overlap suggests large differences between ratings (High ICC)",
+    x = "Progress 8 Score (P8MEA)",
+    y = "Density"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+print(density_p8mea)
+```
+
+## The Null Model
 
 $$\text{lmer}(\text{P8MEA} \sim 1 + (1|\text{OFSTEDRATING}), \text{data} = \dots)$$
+
+## The Null Model
 
 ```{r}
 library(lme4)
@@ -552,9 +697,7 @@ summary(lme1)
 
 ```
 
-
 ```{r}
 lme2 <- lmer(P8MEA ~ PTFSM6CLA1A + (1|OFSTEDRATING), data = england_filtered_clean)
 summary(lme2)
 ```
-
