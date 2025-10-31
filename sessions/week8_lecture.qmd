@@ -485,9 +485,9 @@ ggplot(england_filtered_clean, aes(y = P8MEA, x = PTFSM6CLA1A, colour = OFSTEDRA
 ## Different Slopes and Intercepts
 
 -   Solution: can we just partition our data and run different models for different groups?
--   Answer: Well yes, you could, but it might also be useful to explore more systematically how slopes and intercepts vary between and within groups in your data - that is also useful information
+-   Answer: Well yes, you could, but we couldn't then answer questions about whether variation between individual schools is more important than between groups (e.g. local authorities or Ofsted ratings)
 
-In order to model these grouping factors more explicitly, we need a new type of model - a linear mixed effects model
+In order to model these grouping factors more explicitly and understand their general impact, we need a new type of model - a ***linear mixed effects model***
 
 ## Jargon Alert!
 
@@ -501,8 +501,9 @@ In order to model these grouping factors more explicitly, we need a new type of 
 
 -   Fixed effects estimate the mean relationship across all groups. They represent the "fixed" part of the model that applies to every observation.
     -   You estimate a single $\beta$ coefficient for a fixed effect, which represents the population average effect of that variable.
-    -   Fixed effects can be either continuous (e.g., % of disadvantaged students in a school) or categorical (region, ofsted rating).
+    -   Fixed effects can be either continuous (e.g., % of disadvantaged students in a school) or categorical (region, Ofsted rating).
 -   Depending on how you formulate your model, a fixed effect could be a random effect in a different context.
+
 
 ## Random Effects - More Detail
 
@@ -511,19 +512,29 @@ In order to model these grouping factors more explicitly, we need a new type of 
     -   Instead, you estimate a variance term ($\sigma^2_{\text{group}}$) that quantifies how much the true group effects (intercepts and/or slopes) scatter around the overall mean effect.
     -   This approach is used when the groups (e.g., the 5 Ofsted categories or the hundreds of individual schools) are considered a random sample from a larger, unobserved population of groups.
     -   This allows the model to "borrow strength" across groups to stabilise estimates (the principle of shrinkage).
+    
+## Random Effects vs Dummy Variables
+
+-   Random Effects and Dummy Variables are often exactly the same variable, they are just treated differently in a LME vs OLS model
+-   In an OLS, the Dummy variable gets a specific coefficient value
+-   In a LME, the random effect represents the overall variability that that variable brings to the explanation (i.e. how much variability in attainment is down to schools themselves ***generally***, rather than a particular school ***specifically***)
+-   Where you might have lots of Dummy categories, a random effect might be more suitable
+
 
 ## Linear Mixed Effects Models
 
 -   A Linear Mixed Effects (LME) model is a more general class of statistical model that features both a fixed-effects component (the population-average parameters) and a random-effects component (the group-specific deviations)
--   A common type of LME model is the multilevel or hierarchical linear model.
-    -   Multilevel models focus specifically on nested data structures, e.g. students in classes $\rightarrow$ classes within schools $\rightarrow$ schools within local authorities $\rightarrow$ local authorities within regions
--   All multilevel models are linear mixed effects models, but linear mixed effects models can handle even more types of groupings (e.g. longitudinal - repeated observations over time)
+-   A common type of LME model is the ***multilevel model*** or hierarchical linear model.
+    -   **Multilevel models** focus specifically on **nested** data structures, e.g. students in classes $\rightarrow$ classes within schools $\rightarrow$ schools within local authorities $\rightarrow$ local authorities within regions
+-   All multilevel models are linear mixed effects models, but other types of linear mixed effects models can handle even more types of groupings (e.g. longitudinal - repeated observations over time)
 
 ## Linear Mixed Effects Models
 
-![](L6_images/multilevel_data.webp) In practice, LME models essentially result in varying intercepts, slopes or both.
+![](L6_images/multilevel_data.webp)
 
-Multilevel Data Structures (Source: [Gelman & Hill (2006)](http://www.stat.columbia.edu/~gelman/arm/)) and <https://paulrjohnson.net/blog/2022-11-01-multilevel-model-r-cheatsheet/>
+-   In practice, LME models essentially result in varying intercepts, slopes or both.
+
+Multilevel Data Structures (Source:[Gelman & Hill (2006)](http://www.stat.columbia.edu/~gelman/arm/)) and <https://paulrjohnson.net/blog/2022-11-01-multilevel-model-r-cheatsheet/>
 
 ## Linear Mixed Effects Models
 
@@ -541,45 +552,18 @@ ggpairs(england_filtered_clean, , mapping = aes(color = OFSTEDRATING), columns =
 
 -   The first step in a linear mixed effects model is to fit what is often called a ***null model*** (otherwise know as the ***'Variance Components'*** / ***'Unconditional Means'*** Model)
 -   Point of the null model is to partition the total variance in the outcome variable (Progress 8 - P8MEA) into the levels or components we think are relevant.
--   In our example, we have schools (Level 1 - our primary unit) and various grouping factors we could use e.g. local authority (level 2), region (level 3). Or we could use Ofsted rating as a level 2 factor.
+-   In our example, we have:
+    -   Schools (Level 1 - our primary unit) and
+        -   Local authority (level 2) - or other grouping factors e.g. Ofsted rating,
+            -   Region (level 3).
 
-## The Null Model - a 2 Level Model example
-
-$$\mathbf{Y_{ij} = \gamma_{00} + u_{0j} + \epsilon_{ij}}$$
-
-This equation shows that the total variability in $Y_{ij}$ (Progress 8) is decomposed into two sources:
--   Fixed Effect: $\mathbf{\gamma_{00}}$ (The overall population average - **grand/global mean**).
--   Random Effect (Level 1): $\mathbf{\epsilon_{ij}}$ (linked to the variation within groups/ratings, $\mathbf{\sigma^2_{\epsilon}}$).
--   Random Effect (Level 2): $\mathbf{u_{0j}}$ (linked to the variation between groups/ratings, $\mathbf{\sigma^2_{u_{0}}}$).
-
-## Null Model - Level 1
-
--    $$\mathbf{Y_{ij} = \beta_{0j} + \epsilon_{ij}}$$$\mathbf{Y_{ij}}$: The outcome (e.g., Progress 8) for the $i^{th}$ school in the $j^{th}$ Ofsted rating.
--    $\mathbf{\beta_{0j}}$: The intercept for the specific Ofsted rating $j$. This represents the true mean Progress 8 for all schools within that rating. Because we haven't added any predictors yet, this is the only fixed part of the model.
--    $\mathbf{\epsilon_{ij}}$: The Level 1 residual error (or "school-level error"). This is the deviation of the $i^{th}$ school's P8MEA from its own rating group's mean ($\beta_{0j}$).
--    Assumption: $\epsilon_{ij} \sim N(0, \mathbf{\sigma^2_{\epsilon}})$ where $\mathbf{\sigma^2_{\epsilon}}$ is the Within-Group Variance (or Level 1 variance/Residual Variance).
-
-## Null Model - Level 2
-
-$$\mathbf{\beta_{0j} = \gamma_{00} + u_{0j}}$$$\mathbf{\beta_{0j}}$: The mean Progress 8 for the $j^{th}$ Ofsted rating (the intercept from Level 1).
-$\mathbf{\gamma_{00}}$: The grand mean or the overall fixed intercept. This is the mean Progress 8 averaged across all Ofsted ratings. This is the fixed effect in the model.
-$\mathbf{u_{0j}}$: The Level 2 residual error (or "group-level error"). This is the deviation of the $j^{th}$ Ofsted rating's mean ($\beta_{0j}$) from the grand mean ($\gamma_{00}$).
-Assumption: $u_{0j} \sim N(0, \mathbf{\sigma^2_{u_{0}}})$ where $\mathbf{\sigma^2_{u_{0}}}$ is the Between-Group Variance (or Level 2 variance/Random Intercept Variance).
-
-
-
-## The Null Model
-
-1.  **Between-Group Variance** ($\sigma^2_{\text{OFSTED}}$ - or more generally $\mathbf{\sigma^2_{u_{0}}}$): The variability in average P8MEA that exists between the different Ofsted ratings.
-2.  **Within-Group (Residual) Variance** ($\sigma^2_{\text{Residual}}$ - or more generally $\mathbf{\sigma^2_{\epsilon}}$): The variability in P8MEA that exists between schools within each rating (i.e., the school-level differences).
-
-## The Null Model
+## The Null Model - a 2 Level example
 
 ```{r}
 #| message: false
 #| warning: false
 #| align: center
-#| out-width: 60%
+#| out-width: 80%
 
 # 1. Load the necessary library for plotting
 library(ggplot2)
@@ -614,54 +598,76 @@ print(boxplot_p8mea)
 
 ```
 
--   All of the information in the NULL model is contained in this plot!
--   **Within-Group Variance** ($\mathbf{\sigma^2_{\epsilon}}$) - the height of each individual box and the length of its whiskers. Taller boxes and longer whiskers indicate more variability among schools within that single rating category.
+-   All of the information in the two-level NULL model is contained in this plot!
 
-## The Null Model
+## The Null Model - a 2 Level example
 
-```{r}
-#| message: false
-#| warning: false
-#| align: center
-#| out-width: 60%
+$$Y_{ij} = \gamma_{00} + u_{0j} + \epsilon_{ij}$$ The total variability in outcome $Y_{ij}$ (Progress 8) for the $i^{th}$ school in the $j^{th}$ Ofsted rating is decomposed into:
 
-# 1. Load the necessary library for plotting
-library(ggplot2)
+-   **Fixed Effect**: $\gamma_{00}$ (The overall population average - **grand/global mean**).
+-   **Random Effect - Level 1**: $\epsilon_{ij}$ - **Within-Group Variance** - the height of each individual box and the length of its whiskers. Taller boxes and longer whiskers indicate more variability among schools within that single rating category.
+-   **Random Effect - Level 2**: $u_{0j}$ - **Between-Group Variance** 
 
-# --- Ensure OFSTEDRATING is an ordered factor for better plotting ---
-# It appears you have six levels based on the OLS output, so we order them logically.
-# Adjust the order if the true levels/baseline are different in your data.
-rating_order <- c("Special Measures", "Serious Weaknesses", "Requires improvement", "Good", "Outstanding")
-england_filtered_clean$OFSTEDRATING <- factor(
-  england_filtered_clean$OFSTEDRATING,
-  levels = rating_order,
-  ordered = TRUE
-)
+## Level 1 - Within-Group Variance
 
+$$
+Y_{ij} = \beta_{0j} + \epsilon_{ij}
+$$
 
-## ## 1. Boxplot Visualization (Level 1 and Level 2 Variance) ## ##
-boxplot_p8mea <- ggplot(england_filtered_clean, aes(x = OFSTEDRATING, y = P8MEA, fill = OFSTEDRATING)) +
-  geom_boxplot(alpha = 0.7) +
-  geom_hline(yintercept = mean(england_filtered_clean$P8MEA, na.rm = TRUE),
-             linetype = "dashed", color = "black", linewidth = 1) +
-  labs(
-    title = "P8MEA Distribution Across Ofsted Ratings (The Null Model Structure)",
-    subtitle = "Fixed Grand Mean (Dashed Line) and Random Intercepts (Box Medians)",
-    x = "Ofsted Rating",
-    y = "Progress 8 Score (P8MEA)"
-  ) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none")
+-   **The Progress 8 Outcome**: $Y_{ij}$
+-   **The within-group intercept**: $\beta_{0j}$ for the specific Ofsted rating $j$. This represents the true mean Progress 8 for all schools within that rating.\
+-   **The Level 1 residual error**: $\epsilon_{ij}$ (or "school-level error"). This is the deviation of the $i^{th}$ school's P8MEA from its own Ofsted group's mean ($\beta_{0j}$).
+    -   Assumption: $\epsilon_{ij} \sim N(0, \sigma^2_{\epsilon})$ where $\sigma^2_{\epsilon}$
 
-print(boxplot_p8mea)
+## Level 1 - Within-Group Variance
 
+$$\epsilon_{ij} \sim N(0, \sigma^2_{\epsilon})$$ 
 
-```
+|  |  |
+|----|----|
+| **Notation** | **Meaning** |
+| $\epsilon_{ij}$ | The **Level 1 Residual Error** (or "within-group error") for the $i$-th school in the $j$-th Ofsted rating. | 
+| $\sim$ | "Is distributed as" or "Follows the distribution." |
+| $N(\dots)$ | The ***N***ormal (Gaussian) Distribution. 
+| $0$ | The **Mean** of the distribution = 0. |
+| $\sigma^2_{\epsilon}$ | The **Within-Group Variance** of the distribution. |
 
--   **Between-Group Variance** ($\mathbf{\sigma^2_{u_{0}}}$) - Differences between the mean/median lines of the boxplots for each rating category
--   The sum of these two variances ($\sigma^2_{\text{OFSTED}} + \sigma^2_{\text{Residual}}$) gives the **Total Variance** of P8MEA. This establishes the baseline level of clustering in the data before any other variables are considered
+## Level 2 - Between-Group Variance
 
-## The Null Model
+$$
+\beta_{0j} = \gamma_{00} + u_{0j}
+$$
+
+-   Level 1 intercept $\beta_{0j}$: The mean Progress 8 for the $j^{th}$ Ofsted rating
+-   **The grand mean** $\gamma_{00}$: the overall fixed intercept. This is the mean Progress 8 averaged across all Ofsted ratings. ***The dotted black line on our earlier plot***
+-   **Level 2 residual error** $u_{0j}$: "group-level error". This is the deviation of the $j^{th}$ Ofsted rating's mean ($\beta_{0j}$) from the grand mean ($\gamma_{00}$).
+    -   Assumption: $u_{0j} \sim N(0, \sigma^2_{u_{0}})$ where $\sigma^2_{u_{0}}$ is the Between-Group Variance (or Level 2 variance/Random Intercept Variance).
+
+## Total Variance
+
+1.  **Between-Group Variance** ($\sigma^2_{\text{Between}}$ - or more generally $\sigma^2_{u_{0}}$): The variability in average P8MEA that exists ***between*** the different Ofsted ratings.
+2.  **Within-Group (Residual) Variance** ($\sigma^2_{\text{Within}}$ - or more generally $\sigma^2_{\epsilon}$): The variability in P8MEA that exists between schools ***within*** each rating (i.e., the school-level differences).
+-   Total Variance is simply the sum of these two
+
+$$\sigma^2_{\text{Total}} = \sigma^2_{\text{Between}} + \sigma^2_{\text{Within}}$$
+$$\sigma^2_{\text{Total}} = \sigma^2_{u_{0}} + \sigma^2_{\epsilon}$$
+
+## The Intraclass Correlation Coefficient (ICC)
+
+The ICC tells you the proportion of the total variability in the outcome that is accounted for by the grouping structure.
+
+-   It answers the question in our case: "How much of the total difference in Progress 8 is due to the school's Ofsted rating?"
+-   It can also be interpreted as the expected correlation between any two randomly chosen schools within the same Ofsted rating.
+
+## The Intraclass Correlation Coefficient (ICC)
+
+$$\text{ICC} = \frac{\text{Between-Group Variance}}{\text{Total Variance}} = \frac{\sigma^2_{u_{0}}}{\sigma^2_{u_{0}} + \sigma^2_{\epsilon}}$$
+
+-   This ICC is simply the ratio between the between the between group variance and the total variance
+-   The higher the ICC (closer to 1), the more variance is due to differences between groups (i.e. differences between the Ofsted rating of schools) than within groups (i.e. between schools within Ofsted rating bands)
+-   **A high ICC is a strong indication that a multilevel model is a suitable modelling strategy to pursue to try and explain these group-level differences**
+
+## The ICC
 
 ```{r}
 ## ## 2. Density Plot Visualization (Comparing the Two Variance Components) ## ##
@@ -680,14 +686,24 @@ density_p8mea <- ggplot(england_filtered_clean, aes(x = P8MEA, fill = OFSTEDRATI
 print(density_p8mea)
 ```
 
-## The Null Model
+-   High ICC = distinct, non-overlapping humps
+-   Low ICC = density plots all overlapping on-top of each other
 
-$$\text{lmer}(\text{P8MEA} \sim 1 + (1|\text{OFSTEDRATING}), \text{data} = \dots)$$
+## The Null Model - Syntax
 
-## The Null Model
+-   Using Paul Johnson's excellent guide for syntax, the null model in R follows this format: `y ~ 1 + (1 | g)`
+-   In the null model, the first `1` just tells the model to use a fixed global intercept
+-   Grouping factors (random effects) are denoted to the *right* of the vertical bar or pipe symbol `|` inside the brackets. To the *left* we have the sub-model. 
+-   The full model in R would like like:
+$$\text{lme_model1} <- \text{lmer}(\text{P8MEA} \sim 1 + (1|\text{OFSTEDRATING}), \text{data} = \dots)$$
+
+<https://paulrjohnson.net/blog/2022-11-01-multilevel-model-r-cheatsheet/>
+
+## Running The Null Model
 
 ```{r}
 library(lme4)
+library(performance)
 
 lm1 <- lm(P8MEA ~ PTFSM6CLA1A + OFSTEDRATING, data = england_filtered_clean)
 summary(lm1)
@@ -695,9 +711,71 @@ summary(lm1)
 lme1 <- lmer(P8MEA ~ 1 + (1|OFSTEDRATING), data = england_filtered_clean)
 summary(lme1)
 
+icc(lme1, by_group = T)
+
 ```
+
+```{r}
+library(lme4)
+library(ggplot2)
+
+# Fit the model
+lme1 <- lmer(P8MEA ~ 1 + (1|OFSTEDRATING), data = england_filtered_clean)
+
+# Extract random effects
+ranef_df <- as.data.frame(ranef(lme1)$OFSTEDRATING)
+ranef_df$OFSTEDRATING <- rownames(ranef(lme1)$OFSTEDRATING)
+
+# Plot
+ggplot(ranef_df, aes(x = OFSTEDRATING, y = `(Intercept)`)) +
+  geom_point(size = 3) +
+  geom_hline(yintercept = fixef(lme1)[1], linetype = "dashed", color = "red") +
+  labs(title = "Varying Intercepts by OFSTED Rating",
+       x = "OFSTED Rating",
+       y = "Intercept") +
+  theme_minimal()
+```
+
+
 
 ```{r}
 lme2 <- lmer(P8MEA ~ PTFSM6CLA1A + (1|OFSTEDRATING), data = england_filtered_clean)
 summary(lme2)
 ```
+
+
+```{r}
+library(lme4)
+library(ggplot2)
+
+# Fit the model
+lme2 <- lmer(P8MEA ~ PTFSM6CLA1A + (1|OFSTEDRATING), data = england_filtered_clean)
+
+# Get fixed effect and random intercepts
+fixed_intercept <- fixef(lme2)[1]
+slope <- fixef(lme2)[2]
+ranef_df <- as.data.frame(ranef(lme2)$OFSTEDRATING)
+ranef_df$OFSTEDRATING <- rownames(ranef(lme2)$OFSTEDRATING)
+
+# Create prediction grid
+pop_range <- seq(min(england_filtered_clean$PTFSM6CLA1A),
+                 max(england_filtered_clean$PTFSM6CLA1A), length.out = 100)
+
+pred_df <- do.call(rbind, lapply(1:nrow(ranef_df), function(i) {
+  intercept <- fixed_intercept + ranef_df$`(Intercept)`[i]
+  data.frame(
+    PTFSM6CLA1A = pop_range,
+    P8MEA = intercept + slope * pop_range,
+    OFSTEDRATING = ranef_df$OFSTEDRATING[i]
+  )
+}))
+
+# Plot
+ggplot(pred_df, aes(x = PTFSM6CLA1A, y = P8MEA, color = OFSTEDRATING)) +
+  geom_line(size = 1.2) +
+  labs(title = "Predicted P8MEA vs Population by OFSTED Rating",
+       x = "PTFSM6CLA1A (Population Measure)",
+       y = "Predicted P8MEA") +
+  theme_minimal()
+```
+
