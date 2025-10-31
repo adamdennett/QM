@@ -696,7 +696,6 @@ print(density_p8mea)
 -   Grouping factors (random effects) are denoted to the *right* of the vertical bar or pipe symbol `|` inside the brackets. To the *left* we have the sub-model. 
 -   The full model in R would like like:
 $$\text{lme_model1} <- \text{lmer}(\text{P8MEA} \sim 1 + (1|\text{OFSTEDRATING}), \text{data} = \dots)$$
-
 <https://paulrjohnson.net/blog/2022-11-01-multilevel-model-r-cheatsheet/>
 
 ## Running The Null Model
