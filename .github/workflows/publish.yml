@@ -69,7 +69,7 @@ jobs:
           cache: 'pip'
       
       - name: Set RETICULATE_PYTHON environment variable
-        run: echo "RETICULATE_PYTHON=/opt/hostedtoolcache/Python/3.10.18/x64/bin/python" >> $GITHUB_ENV
+        run: echo "RETICULATE_PYTHON=${{ env.pythonLocation }}/bin/python" >> $GITHUB_ENV
 
       - name: Install Python dependencies
         run: |
