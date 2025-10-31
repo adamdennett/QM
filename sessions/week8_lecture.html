@@ -128,7 +128,7 @@
     }
   </style>
 <meta property="og:title" content="Prof D’s Regression Sessions - Vol 3 – Quantitative Methods">
-<meta property="og:description" content="In the mix - the linear mix(ed effects model)">
+<meta property="og:description" content="In the mix - the linear mix(ed effects model lecture)">
 <meta property="og:image" content="https://adamdennett.github.io/QM/sessions/img/logo/full_sm.png">
 <meta property="og:site_name" content="Foundations">
 <meta property="og:locale" content="en_GB">
@@ -145,7 +145,7 @@
 
 <h1 class="title">Prof D’s Regression Sessions - Vol 3</h1>
 
-  <h3 style="opacity:0.8;" class="subtitle">In the mix - the linear mix(ed effects model)</h3>
+  <h3 style="opacity:0.8;" class="subtitle">In the mix - the linear mix(ed effects model lecture)</h3>
 
 <p><span style="margin:0px; font-weight:700;" class="author">Adam Dennett</span> - a.dennett@ucl.ac.uk </p>
 
@@ -199,8 +199,8 @@
 <li>OLS only has one global intercept with group level differences in the data only crudely represented with dummy variables</li>
 </ul>
 </section>
-<section id="different-slopes-and-intercepts" class="slide level2">
-<h2>Different Slopes and Intercepts</h2>
+<section id="different-slopes-and-intercepts---attainment-8" class="slide level2">
+<h2>Different Slopes and Intercepts - Attainment 8</h2>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -211,8 +211,8 @@
 </div>
 </div>
 </section>
-<section id="different-slopes-and-intercepts-1" class="slide level2">
-<h2>Different Slopes and Intercepts</h2>
+<section id="different-slopes-and-intercepts---attainment-8-1" class="slide level2">
+<h2>Different Slopes and Intercepts - Attainment 8</h2>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -223,8 +223,8 @@
 </div>
 </div>
 </section>
-<section id="different-slopes-and-intercepts-2" class="slide level2">
-<h2>Different Slopes and Intercepts</h2>
+<section id="different-slopes-and-intercepts---progress-8" class="slide level2">
+<h2>Different Slopes and Intercepts - Progress 8</h2>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -235,8 +235,8 @@
 </div>
 </div>
 </section>
-<section id="different-slopes-and-intercepts-3" class="slide level2">
-<h2>Different Slopes and Intercepts</h2>
+<section id="different-slopes-and-intercepts---progress-8-1" class="slide level2">
+<h2>Different Slopes and Intercepts - Progress 8</h2>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -247,13 +247,13 @@
 </div>
 </div>
 </section>
-<section id="different-slopes-and-intercepts-4" class="slide level2">
+<section id="different-slopes-and-intercepts" class="slide level2">
 <h2>Different Slopes and Intercepts</h2>
 <ul>
 <li>Solution: can we just partition our data and run different models for different groups?</li>
-<li>Answer: Well yes, you could, but it might also be useful to explore more systematically how slopes and intercepts vary between and within groups in your data - that is also useful information</li>
+<li>Answer: Well yes, you could, but we couldn’t then answer questions about whether variation between individual schools is more important than between groups (e.g.&nbsp;local authorities or Ofsted ratings)</li>
 </ul>
-<p>In order to model these grouping factors more explicitly, we need a new type of model - a linear mixed effects model</p>
+<p>In order to model these grouping factors more explicitly and understand their general impact, we need a new type of model - a <strong><em>linear mixed effects model</em></strong></p>
 </section>
 <section id="jargon-alert" class="slide level2">
 <h2>Jargon Alert!</h2>
@@ -275,7 +275,7 @@
 <li>Fixed effects estimate the mean relationship across all groups. They represent the “fixed” part of the model that applies to every observation.
 <ul>
 <li>You estimate a single <span class="math inline">\(\beta\)</span> coefficient for a fixed effect, which represents the population average effect of that variable.</li>
-<li>Fixed effects can be either continuous (e.g., % of disadvantaged students in a school) or categorical (region, ofsted rating).</li>
+<li>Fixed effects can be either continuous (e.g., % of disadvantaged students in a school) or categorical (region, Ofsted rating).</li>
 </ul></li>
 <li>Depending on how you formulate your model, a fixed effect could be a random effect in a different context.</li>
 </ul>
@@ -292,21 +292,36 @@
 </ul></li>
 </ul>
 </section>
+<section id="random-effects-vs-dummy-variables" class="slide level2">
+<h2>Random Effects vs Dummy Variables</h2>
+<ul>
+<li>Random Effects and Dummy Variables are often exactly the same variable, they are just treated differently in a LME vs OLS model</li>
+<li>In an OLS, the Dummy variable gets a specific coefficient value</li>
+<li>In a LME, the random effect represents the overall variability that that variable brings to the explanation (i.e.&nbsp;how much variability in attainment is down to schools themselves <strong><em>generally</em></strong>, rather than a particular school <strong><em>specifically</em></strong>)</li>
+<li>Where you might have lots of Dummy categories, a random effect might be more suitable</li>
+</ul>
+</section>
 <section id="linear-mixed-effects-models" class="slide level2">
 <h2>Linear Mixed Effects Models</h2>
 <ul>
 <li>A Linear Mixed Effects (LME) model is a more general class of statistical model that features both a fixed-effects component (the population-average parameters) and a random-effects component (the group-specific deviations)</li>
-<li>A common type of LME model is the multilevel or hierarchical linear model.
+<li>A common type of LME model is the <strong><em>multilevel model</em></strong> or hierarchical linear model.
 <ul>
-<li>Multilevel models focus specifically on nested data structures, e.g.&nbsp;students in classes <span class="math inline">\(\rightarrow\)</span> classes within schools <span class="math inline">\(\rightarrow\)</span> schools within local authorities <span class="math inline">\(\rightarrow\)</span> local authorities within regions</li>
+<li><strong>Multilevel models</strong> focus specifically on <strong>nested</strong> data structures, e.g.&nbsp;students in classes <span class="math inline">\(\rightarrow\)</span> classes within schools <span class="math inline">\(\rightarrow\)</span> schools within local authorities <span class="math inline">\(\rightarrow\)</span> local authorities within regions</li>
 </ul></li>
-<li>All multilevel models are linear mixed effects models, but linear mixed effects models can handle even more types of groupings (e.g.&nbsp;longitudinal - repeated observations over time)</li>
+<li>All multilevel models are linear mixed effects models, but other types of linear mixed effects models can handle even more types of groupings (e.g.&nbsp;longitudinal - repeated observations over time)</li>
 </ul>
 </section>
 <section id="linear-mixed-effects-models-1" class="slide level2">
 <h2>Linear Mixed Effects Models</h2>
 <p><a href="L6_images/multilevel_data.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-6"><img data-src="L6_images/multilevel_data.webp"></a></p>
-<p>Multilevel Data Structures (Source:&nbsp;<a href="http://www.stat.columbia.edu/~gelman/arm/">Gelman &amp; Hill (2006)</a>) and <a href="https://paulrjohnson.net/blog/2022-11-01-multilevel-model-r-cheatsheet/" class="uri">https://paulrjohnson.net/blog/2022-11-01-multilevel-model-r-cheatsheet/</a></p>
+<ul>
+<li>In practice, LME models essentially result in varying intercepts, slopes or both.</li>
+</ul>
+<p>Multilevel Data Structures (Source:<a href="http://www.stat.columbia.edu/~gelman/arm/">Gelman &amp; Hill (2006)</a>) and <a href="https://paulrjohnson.net/blog/2022-11-01-multilevel-model-r-cheatsheet/" class="uri">https://paulrjohnson.net/blog/2022-11-01-multilevel-model-r-cheatsheet/</a></p>
+</section>
+<section id="linear-mixed-effects-models-2" class="slide level2">
+<h2>Linear Mixed Effects Models</h2>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -320,9 +335,164 @@
 <section id="the-null-model" class="slide level2">
 <h2>The Null Model</h2>
 <ul>
-<li>The first step in a linear mixed effects model is to fit what is often called a null model and is also called the Variance Components Model</li>
+<li>The first step in a linear mixed effects model is to fit what is often called a <strong><em>null model</em></strong> (otherwise know as the <strong><em>‘Variance Components’</em></strong> / <strong><em>‘Unconditional Means’</em></strong> Model)</li>
+<li>Point of the null model is to partition the total variance in the outcome variable (Progress 8 - P8MEA) into the levels or components we think are relevant.</li>
+<li>In our example, we have:
+<ul>
+<li>Schools (Level 1 - our primary unit) and
+<ul>
+<li>Local authority (level 2) - or other grouping factors e.g.&nbsp;Ofsted rating,
+<ul>
+<li>Region (level 3).</li>
+</ul></li>
+</ul></li>
+</ul></li>
 </ul>
-<p><span class="math display">\[\text{lmer}(\text{P8MEA} \sim 1 + (1|\text{OFSTEDRATING}), \text{data} = \dots)\]</span></p>
+</section>
+<section id="the-null-model---a-2-level-example" class="slide level2">
+<h2>The Null Model - a 2 Level example</h2>
+<div class="cell" data-align="center">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-12-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-12-1.png" style="width:80.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>All of the information in the two-level NULL model is contained in this plot!</li>
+</ul>
+</section>
+<section id="the-null-model---a-2-level-example-1" class="slide level2">
+<h2>The Null Model - a 2 Level example</h2>
+<p><span class="math display">\[Y_{ij} = \gamma_{00} + u_{0j} + \epsilon_{ij}\]</span> The total variability in outcome <span class="math inline">\(Y_{ij}\)</span> (Progress 8) for the <span class="math inline">\(i^{th}\)</span> school in the <span class="math inline">\(j^{th}\)</span> Ofsted rating is decomposed into:</p>
+<ul>
+<li><strong>Fixed Effect</strong>: <span class="math inline">\(\gamma_{00}\)</span> (The overall population average - <strong>grand/global mean</strong>).</li>
+<li><strong>Random Effect - Level 1</strong>: <span class="math inline">\(\epsilon_{ij}\)</span> - <strong>Within-Group Variance</strong> - the height of each individual box and the length of its whiskers. Taller boxes and longer whiskers indicate more variability among schools within that single rating category.</li>
+<li><strong>Random Effect - Level 2</strong>: <span class="math inline">\(u_{0j}\)</span> - <strong>Between-Group Variance</strong></li>
+</ul>
+</section>
+<section id="level-1---within-group-variance" class="slide level2">
+<h2>Level 1 - Within-Group Variance</h2>
+<p><span class="math display">\[
+Y_{ij} = \beta_{0j} + \epsilon_{ij}
+\]</span></p>
+<ul>
+<li><strong>The Progress 8 Outcome</strong>: <span class="math inline">\(Y_{ij}\)</span></li>
+<li><strong>The within-group intercept</strong>: <span class="math inline">\(\beta_{0j}\)</span> for the specific Ofsted rating <span class="math inline">\(j\)</span>. This represents the true mean Progress 8 for all schools within that rating.<br>
+</li>
+<li><strong>The Level 1 residual error</strong>: <span class="math inline">\(\epsilon_{ij}\)</span> (or “school-level error”). This is the deviation of the <span class="math inline">\(i^{th}\)</span> school’s P8MEA from its own Ofsted group’s mean (<span class="math inline">\(\beta_{0j}\)</span>).
+<ul>
+<li>Assumption: <span class="math inline">\(\epsilon_{ij} \sim N(0, \sigma^2_{\epsilon})\)</span> where <span class="math inline">\(\sigma^2_{\epsilon}\)</span></li>
+</ul></li>
+</ul>
+</section>
+<section id="level-1---within-group-variance-1" class="slide level2">
+<h2>Level 1 - Within-Group Variance</h2>
+<p><span class="math display">\[\epsilon_{ij} \sim N(0, \sigma^2_{\epsilon})\]</span></p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td><strong>Notation</strong></td>
+<td><strong>Meaning</strong></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\epsilon_{ij}\)</span></td>
+<td>The <strong>Level 1 Residual Error</strong> (or “within-group error”) for the <span class="math inline">\(i\)</span>-th school in the <span class="math inline">\(j\)</span>-th Ofsted rating.</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\sim\)</span></td>
+<td>“Is distributed as” or “Follows the distribution.”</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(N(\dots)\)</span></td>
+<td>The <strong><em>N</em></strong>ormal (Gaussian) Distribution.</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(0\)</span></td>
+<td>The <strong>Mean</strong> of the distribution = 0.</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\sigma^2_{\epsilon}\)</span></td>
+<td>The <strong>Within-Group Variance</strong> of the distribution.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="level-2---between-group-variance" class="slide level2">
+<h2>Level 2 - Between-Group Variance</h2>
+<p><span class="math display">\[
+\beta_{0j} = \gamma_{00} + u_{0j}
+\]</span></p>
+<ul>
+<li>Level 1 intercept <span class="math inline">\(\beta_{0j}\)</span>: The mean Progress 8 for the <span class="math inline">\(j^{th}\)</span> Ofsted rating</li>
+<li><strong>The grand mean</strong> <span class="math inline">\(\gamma_{00}\)</span>: the overall fixed intercept. This is the mean Progress 8 averaged across all Ofsted ratings. <strong><em>The dotted black line on our earlier plot</em></strong></li>
+<li><strong>Level 2 residual error</strong> <span class="math inline">\(u_{0j}\)</span>: “group-level error”. This is the deviation of the <span class="math inline">\(j^{th}\)</span> Ofsted rating’s mean (<span class="math inline">\(\beta_{0j}\)</span>) from the grand mean (<span class="math inline">\(\gamma_{00}\)</span>).
+<ul>
+<li>Assumption: <span class="math inline">\(u_{0j} \sim N(0, \sigma^2_{u_{0}})\)</span> where <span class="math inline">\(\sigma^2_{u_{0}}\)</span> is the Between-Group Variance (or Level 2 variance/Random Intercept Variance).</li>
+</ul></li>
+</ul>
+</section>
+<section id="total-variance" class="slide level2">
+<h2>Total Variance</h2>
+<ol type="1">
+<li><strong>Between-Group Variance</strong> (<span class="math inline">\(\sigma^2_{\text{Between}}\)</span> - or more generally <span class="math inline">\(\sigma^2_{u_{0}}\)</span>): The variability in average P8MEA that exists <strong><em>between</em></strong> the different Ofsted ratings.</li>
+<li><strong>Within-Group (Residual) Variance</strong> (<span class="math inline">\(\sigma^2_{\text{Within}}\)</span> - or more generally <span class="math inline">\(\sigma^2_{\epsilon}\)</span>): The variability in P8MEA that exists between schools <strong><em>within</em></strong> each rating (i.e., the school-level differences).</li>
+</ol>
+<ul>
+<li>Total Variance is simply the sum of these two</li>
+</ul>
+<p><span class="math display">\[\sigma^2_{\text{Total}} = \sigma^2_{\text{Between}} + \sigma^2_{\text{Within}}\]</span> <span class="math display">\[\sigma^2_{\text{Total}} = \sigma^2_{u_{0}} + \sigma^2_{\epsilon}\]</span></p>
+</section>
+<section id="the-intraclass-correlation-coefficient-icc" class="slide level2">
+<h2>The Intraclass Correlation Coefficient (ICC)</h2>
+<p>The ICC tells you the proportion of the total variability in the outcome that is accounted for by the grouping structure.</p>
+<ul>
+<li>It answers the question in our case: “How much of the total difference in Progress 8 is due to the school’s Ofsted rating?”</li>
+<li>It can also be interpreted as the expected correlation between any two randomly chosen schools within the same Ofsted rating.</li>
+</ul>
+</section>
+<section id="the-intraclass-correlation-coefficient-icc-1" class="slide level2">
+<h2>The Intraclass Correlation Coefficient (ICC)</h2>
+<p><span class="math display">\[\text{ICC} = \frac{\text{Between-Group Variance}}{\text{Total Variance}} = \frac{\sigma^2_{u_{0}}}{\sigma^2_{u_{0}} + \sigma^2_{\epsilon}}\]</span></p>
+<ul>
+<li>This ICC is simply the ratio between the between the between group variance and the total variance</li>
+<li>The higher the ICC (closer to 1), the more variance is due to differences between groups (i.e.&nbsp;differences between the Ofsted rating of schools) than within groups (i.e.&nbsp;between schools within Ofsted rating bands)</li>
+<li><strong>A high ICC is a strong indication that a multilevel model is a suitable modelling strategy to pursue to try and explain these group-level differences</strong></li>
+</ul>
+</section>
+<section id="the-icc" class="slide level2">
+<h2>The ICC</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-13-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-13-1.png" width="960"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>High ICC = distinct, non-overlapping humps</li>
+<li>Low ICC = density plots all overlapping on-top of each other</li>
+</ul>
+</section>
+<section id="the-null-model---syntax" class="slide level2">
+<h2>The Null Model - Syntax</h2>
+<ul>
+<li>Using Paul Johnson’s excellent guide for syntax, the null model in R follows this format: <code>y ~ 1 + (1 | g)</code></li>
+<li>In the null model, the first <code>1</code> just tells the model to use a fixed global intercept</li>
+<li>Grouping factors (random effects) are denoted to the <em>right</em> of the vertical bar or pipe symbol <code>|</code> inside the brackets. To the <em>left</em> we have the sub-model.</li>
+<li>The full model in R would like like: <span class="math display">\[\text{lme_model1} &lt;- \text{lmer}(\text{P8MEA} \sim 1 + (1|\text{OFSTEDRATING}), \text{data} = \dots)\]</span> <a href="https://paulrjohnson.net/blog/2022-11-01-multilevel-model-r-cheatsheet/" class="uri">https://paulrjohnson.net/blog/2022-11-01-multilevel-model-r-cheatsheet/</a></li>
+</ul>
+</section>
+<section id="running-the-null-model" class="slide level2">
+<h2>Running The Null Model</h2>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -334,13 +504,13 @@ Residuals:
 -1.59098 -0.24817 -0.01413  0.22867  1.83558 
 
 Coefficients:
-                                   Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)                       0.2590072  0.0161142  16.073  &lt; 2e-16 ***
-PTFSM6CLA1A                      -0.0110672  0.0005175 -21.388  &lt; 2e-16 ***
-OFSTEDRATINGOutstanding           0.5520942  0.0205478  26.869  &lt; 2e-16 ***
-OFSTEDRATINGRequires improvement -0.3822240  0.0224482 -17.027  &lt; 2e-16 ***
-OFSTEDRATINGSerious Weaknesses   -0.4958429  0.0826930  -5.996 2.27e-09 ***
-OFSTEDRATINGSpecial Measures     -0.6606618  0.0968667  -6.820 1.10e-11 ***
+                 Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)     0.0616803  0.0302448   2.039   0.0415 *  
+PTFSM6CLA1A    -0.0110672  0.0005175 -21.388  &lt; 2e-16 ***
+OFSTEDRATING.L  0.9238135  0.0676921  13.647  &lt; 2e-16 ***
+OFSTEDRATING.Q  0.2787951  0.0579493   4.811 1.58e-06 ***
+OFSTEDRATING.C  0.0699086  0.0607400   1.151   0.2498    
+OFSTEDRATING^4 -0.0500251  0.0437659  -1.143   0.2531    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -370,6 +540,22 @@ Fixed effects:
             Estimate Std. Error t value
 (Intercept)  -0.2646     0.2523  -1.049</code></pre>
 </div>
+<div class="cell-output cell-output-stdout">
+<pre><code># ICC by Group
+
+Group        |   ICC
+--------------------
+OFSTEDRATING | 0.647</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-15-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-15-1.png" width="960"></a></p>
+</figure>
+</div>
+</div>
 </div>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
@@ -397,6 +583,15 @@ PTFSM6CLA1A -0.0110830  0.0005174  -21.42
 Correlation of Fixed Effects:
             (Intr)
 PTFSM6CLA1A -0.071</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-17-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-17-1.png" width="960"></a></p>
+</figure>
+</div>
 </div>
 </div>
 
