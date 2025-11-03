@@ -484,10 +484,14 @@ Y_{ij} = \beta_{0j} + \epsilon_{ij}
 </section>
 <section id="the-null-model---syntax" class="slide level2">
 <h2>The Null Model - Syntax</h2>
+<p><code>y ~ fixed_effect_x + (random_effect_slope_term_x | random_effect_group_g)</code></p>
+</section>
+<section id="the-null-model---syntax-1" class="slide level2">
+<h2>The Null Model - Syntax</h2>
 <ul>
-<li>Using Paul Johnson’s excellent guide for syntax, the null model in R follows this format: <code>y ~ 1 + (1 | g)</code></li>
-<li>In the null model, the first <code>1</code> just tells the model to use a fixed global intercept</li>
-<li>Grouping factors (random effects) are denoted to the <em>right</em> of the vertical bar or pipe symbol <code>|</code> inside the brackets. To the <em>left</em> we have the sub-model.</li>
+<li>Using Paul Johnson’s excellent guide for syntax, the null model in R follows this format:<code>y ~ 1 + (1 | g)</code></li>
+<li>In the null model, the fixed effects appear outside of the brackets. Here the first <code>1</code> outside of the brackets just tells the model to use a fixed global intercept</li>
+<li>The random effects are in the brackets <code>(...|...)</code> are denoted to the <em>right</em> of the vertical bar or pipe symbol <code>|</code> inside the brackets. To the <em>left</em> we have the sub-model.</li>
 <li>The full model in R would like like: <span class="math display">\[\text{lme_model1} &lt;- \text{lmer}(\text{P8MEA} \sim 1 + (1|\text{OFSTEDRATING}), \text{data} = \dots)\]</span> <a href="https://paulrjohnson.net/blog/2022-11-01-multilevel-model-r-cheatsheet/" class="uri">https://paulrjohnson.net/blog/2022-11-01-multilevel-model-r-cheatsheet/</a></li>
 </ul>
 </section>
@@ -592,6 +596,203 @@ PTFSM6CLA1A -0.071</code></pre>
 <p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-17-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-17-1.png" width="960"></a></p>
 </figure>
 </div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by REML ['lmerMod']
+Formula: P8MEA ~ PTFSM6CLA1A + (PTFSM6CLA1A | OFSTEDRATING)
+   Data: england_filtered_clean
+
+REML criterion at convergence: 2702.1
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-4.1370 -0.6525 -0.0411  0.5920  4.6984 
+
+Random effects:
+ Groups       Name        Variance  Std.Dev. Corr
+ OFSTEDRATING (Intercept) 9.851e-02 0.313870     
+              PTFSM6CLA1A 3.549e-05 0.005957 1.00
+ Residual                 1.463e-01 0.382504     
+Number of obs: 2906, groups:  OFSTEDRATING, 5
+
+Fixed effects:
+             Estimate Std. Error t value
+(Intercept)  0.172412   0.142010   1.214
+PTFSM6CLA1A -0.013490   0.002723  -4.954
+
+Correlation of Fixed Effects:
+            (Intr)
+PTFSM6CLA1A 0.959 
+optimizer (nloptwrap) convergence code: 0 (OK)
+boundary (singular) fit: see help('isSingular')</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-19-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-12"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-19-1.png" width="960"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by REML ['lmerMod']
+Formula: P8MEA ~ PTFSM6CLA1A + ((1 | OFSTEDRATING) + (0 + PTFSM6CLA1A |  
+    OFSTEDRATING))
+   Data: england_filtered_clean
+
+REML criterion at convergence: 2710.8
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-4.1343 -0.6508 -0.0414  0.5938  4.6998 
+
+Random effects:
+ Groups         Name        Variance  Std.Dev.
+ OFSTEDRATING   (Intercept) 0.1175451 0.342849
+ OFSTEDRATING.1 PTFSM6CLA1A 0.0000376 0.006132
+ Residual                   0.1464578 0.382698
+Number of obs: 2906, groups:  OFSTEDRATING, 5
+
+Fixed effects:
+             Estimate Std. Error t value
+(Intercept)  0.160401   0.162253   0.989
+PTFSM6CLA1A -0.013120   0.003065  -4.280
+
+Correlation of Fixed Effects:
+            (Intr)
+PTFSM6CLA1A -0.128
+optimizer (nloptwrap) convergence code: 0 (OK)
+Model failed to converge with max|grad| = 0.0140472 (tol = 0.002, component 1)</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-21-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-13"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-21-1.png" width="960"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by REML ['lmerMod']
+Formula: P8MEA ~ 1 + (1 | gor_name/LANAME)
+   Data: england_filtered_clean
+
+REML criterion at convergence: 4095.9
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.8043 -0.6175  0.0103  0.6455  4.9912 
+
+Random effects:
+ Groups          Name        Variance Std.Dev.
+ LANAME:gor_name (Intercept) 0.02048  0.1431  
+ gor_name        (Intercept) 0.02398  0.1548  
+ Residual                    0.22015  0.4692  
+Number of obs: 2965, groups:  LANAME:gor_name, 151; gor_name, 9
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept) -0.03162    0.05403  -0.585</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by REML ['lmerMod']
+Formula: P8MEA ~ PTFSM6CLA1A + (1 | gor_name/LANAME)
+   Data: england_filtered_clean
+
+REML criterion at convergence: 3069.6
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-4.0689 -0.6109 -0.0289  0.5821  5.2137 
+
+Random effects:
+ Groups          Name        Variance Std.Dev.
+ LANAME:gor_name (Intercept) 0.03333  0.1826  
+ gor_name        (Intercept) 0.03027  0.1740  
+ Residual                    0.15054  0.3880  
+Number of obs: 2965, groups:  LANAME:gor_name, 151; gor_name, 9
+
+Fixed effects:
+              Estimate Std. Error t value
+(Intercept)  0.5558667  0.0629237   8.834
+PTFSM6CLA1A -0.0218189  0.0006112 -35.701
+
+Correlation of Fixed Effects:
+            (Intr)
+PTFSM6CLA1A -0.263</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by REML ['lmerMod']
+Formula: P8MEA ~ PTFSM6CLA1A + (1 | gor_name/LANAME) + (1 | OFSTEDRATING)
+   Data: england_filtered_clean
+
+REML criterion at convergence: 2234.5
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-4.2767 -0.6055 -0.0213  0.5820  4.8390 
+
+Random effects:
+ Groups          Name        Variance Std.Dev.
+ LANAME:gor_name (Intercept) 0.02121  0.1456  
+ gor_name        (Intercept) 0.01619  0.1272  
+ OFSTEDRATING    (Intercept) 0.16600  0.4074  
+ Residual                    0.11527  0.3395  
+Number of obs: 2906, groups:  
+LANAME:gor_name, 151; gor_name, 9; OFSTEDRATING, 5
+
+Fixed effects:
+              Estimate Std. Error t value
+(Intercept)  0.2151543  0.1897142   1.134
+PTFSM6CLA1A -0.0162784  0.0005639 -28.868
+
+Correlation of Fixed Effects:
+            (Intr)
+PTFSM6CLA1A -0.089</code></pre>
+</div>
+</div>
+<p><span class="math display">\[\texttt{lmer(P8MEA \sim PTFSM6CLA1A + (1 \mid gor\_name/LANAME) + (1 \mid OFSTEDRATING), data = england\_filtered\_clean)}\]</span> ~kitchen sink model!!</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by REML ['lmerMod']
+Formula: P8MEA ~ PTFSM6CLA1A + (1 | gor_name/LANAME) + (1 | OFSTEDRATING)
+   Data: england_filtered_clean
+
+REML criterion at convergence: 2234.5
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-4.2767 -0.6055 -0.0213  0.5820  4.8390 
+
+Random effects:
+ Groups          Name        Variance Std.Dev.
+ LANAME:gor_name (Intercept) 0.02121  0.1456  
+ gor_name        (Intercept) 0.01619  0.1272  
+ OFSTEDRATING    (Intercept) 0.16600  0.4074  
+ Residual                    0.11527  0.3395  
+Number of obs: 2906, groups:  
+LANAME:gor_name, 151; gor_name, 9; OFSTEDRATING, 5
+
+Fixed effects:
+              Estimate Std. Error t value
+(Intercept)  0.2151543  0.1897142   1.134
+PTFSM6CLA1A -0.0162784  0.0005639 -28.868
+
+Correlation of Fixed Effects:
+            (Intr)
+PTFSM6CLA1A -0.089</code></pre>
 </div>
 </div>
 
