@@ -32,6 +32,71 @@
       margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
       vertical-align: middle;
     }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
   <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-3d9a2287676b2fea48eb10fd22aaf47d.css">
   <link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
@@ -468,11 +533,11 @@ Y_{ij} = \beta_{0j} + \epsilon_{ij}
 </section>
 <section id="the-icc" class="slide level2">
 <h2>The ICC</h2>
-<div class="cell">
+<div class="cell" data-align="center">
 <div class="cell-output-display">
 <div>
 <figure>
-<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-13-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-13-1.png" width="960"></a></p>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-13-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-13-1.png" style="width:80.0%"></a></p>
 </figure>
 </div>
 </div>
@@ -482,47 +547,29 @@ Y_{ij} = \beta_{0j} + \epsilon_{ij}
 <li>Low ICC = density plots all overlapping on-top of each other</li>
 </ul>
 </section>
+<section id="linear-mixed-effects-model---general-syntax" class="slide level2">
+<h2>Linear Mixed Effects Model - General Syntax</h2>
+<p><code>y ~ fixed_effect_x1 + (random_effect_slope_term_x1 | random_effect_group_g1)</code></p>
+<p><code>y ~ fixed_effect_x1 + fixed_effect_x2 + fixed_effect_xn + (random_effect_slope_term_x1 | random_effect_group_g1) + (random_effect_slope_term_x2 | random_effect_group_g2) + (random_effect_slope_term_xn | random_effect_group_gn)</code></p>
+</section>
 <section id="the-null-model---syntax" class="slide level2">
 <h2>The Null Model - Syntax</h2>
-<p><code>y ~ fixed_effect_x + (random_effect_slope_term_x | random_effect_group_g)</code></p>
-</section>
-<section id="the-null-model---syntax-1" class="slide level2">
-<h2>The Null Model - Syntax</h2>
 <ul>
-<li>Using Paul Johnson’s excellent guide for syntax, the null model in R follows this format:<code>y ~ 1 + (1 | g)</code></li>
-<li>In the null model, the fixed effects appear outside of the brackets. Here the first <code>1</code> outside of the brackets just tells the model to use a fixed global intercept</li>
-<li>The random effects are in the brackets <code>(...|...)</code> are denoted to the <em>right</em> of the vertical bar or pipe symbol <code>|</code> inside the brackets. To the <em>left</em> we have the sub-model.</li>
-<li>The full model in R would like like: <span class="math display">\[\text{lme_model1} &lt;- \text{lmer}(\text{P8MEA} \sim 1 + (1|\text{OFSTEDRATING}), \text{data} = \dots)\]</span> <a href="https://paulrjohnson.net/blog/2022-11-01-multilevel-model-r-cheatsheet/" class="uri">https://paulrjohnson.net/blog/2022-11-01-multilevel-model-r-cheatsheet/</a></li>
+<li>Using Paul Johnson’s excellent guide for syntax, the null model in R follows this format: <code>y ~ 1 + (1 | g)</code></li>
+<li>Here the fixed effects appear outside of the brackets. The first <code>1</code> outside of the brackets just tells the model to use a fixed global intercept</li>
+<li>The random effects are inside the brackets <code>(...|...)</code>
+<ul>
+<li>To the <em>left</em> of the pipe symbol <code>|</code> we have a <code>1</code> as all slopes are fixed in the null model</li>
+<li>To the <em>right</em> of the vertical bar or pipe symbol <code>|</code> we have the grouping variable <code>g</code>.</li>
+</ul></li>
+<li>The full model in R would like like:</li>
 </ul>
+<p><code>lme_model1 &lt;- lmer(P8MEA ~ 1 + (1 | OFSTEDRATING), data = ...)</code></p>
+<p><a href="https://paulrjohnson.net/blog/2022-11-01-multilevel-model-r-cheatsheet/" class="uri">https://paulrjohnson.net/blog/2022-11-01-multilevel-model-r-cheatsheet/</a></p>
 </section>
 <section id="running-the-null-model" class="slide level2">
 <h2>Running The Null Model</h2>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-lm(formula = P8MEA ~ PTFSM6CLA1A + OFSTEDRATING, data = england_filtered_clean)
-
-Residuals:
-     Min       1Q   Median       3Q      Max 
--1.59098 -0.24817 -0.01413  0.22867  1.83558 
-
-Coefficients:
-                 Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)     0.0616803  0.0302448   2.039   0.0415 *  
-PTFSM6CLA1A    -0.0110672  0.0005175 -21.388  &lt; 2e-16 ***
-OFSTEDRATING.L  0.9238135  0.0676921  13.647  &lt; 2e-16 ***
-OFSTEDRATING.Q  0.2787951  0.0579493   4.811 1.58e-06 ***
-OFSTEDRATING.C  0.0699086  0.0607400   1.151   0.2498    
-OFSTEDRATING^4 -0.0500251  0.0437659  -1.143   0.2531    
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-Residual standard error: 0.3853 on 2900 degrees of freedom
-  (62 observations deleted due to missingness)
-Multiple R-squared:  0.4283,    Adjusted R-squared:  0.4273 
-F-statistic: 434.5 on 5 and 2900 DF,  p-value: &lt; 2.2e-16</code></pre>
-</div>
+<div class="cell" data-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>Linear mixed model fit by REML ['lmerMod']
 Formula: P8MEA ~ 1 + (1 | OFSTEDRATING)
@@ -544,6 +591,13 @@ Fixed effects:
             Estimate Std. Error t value
 (Intercept)  -0.2646     0.2523  -1.049</code></pre>
 </div>
+</div>
+</section>
+<section id="the-icc-1" class="slide level2">
+<h2>The ICC</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a><span class="fu">library</span>(performance)</span>
+<span id="cb2-2"><a></a><span class="fu">icc</span>(lme1, <span class="at">by_group =</span> T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># ICC by Group
 
@@ -552,11 +606,14 @@ Group        |   ICC
 OFSTEDRATING | 0.647</code></pre>
 </div>
 </div>
-<div class="cell">
+</section>
+<section id="null-model-visualisation" class="slide level2">
+<h2>NULL Model Visualisation</h2>
+<div class="cell" data-align="center">
 <div class="cell-output-display">
 <div>
 <figure>
-<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-15-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-15-1.png" width="960"></a></p>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-16-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-16-1.png" style="width:80.0%"></a></p>
 </figure>
 </div>
 </div>
@@ -593,7 +650,7 @@ PTFSM6CLA1A -0.071</code></pre>
 <div class="cell-output-display">
 <div>
 <figure>
-<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-17-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-17-1.png" width="960"></a></p>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-18-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-18-1.png" width="960"></a></p>
 </figure>
 </div>
 </div>
@@ -633,7 +690,7 @@ boundary (singular) fit: see help('isSingular')</code></pre>
 <div class="cell-output-display">
 <div>
 <figure>
-<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-19-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-12"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-19-1.png" width="960"></a></p>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-20-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-12"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-20-1.png" width="960"></a></p>
 </figure>
 </div>
 </div>
@@ -674,7 +731,7 @@ Model failed to converge with max|grad| = 0.0140472 (tol = 0.002, component 1)</
 <div class="cell-output-display">
 <div>
 <figure>
-<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-21-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-13"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-21-1.png" width="960"></a></p>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-22-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-13"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-22-1.png" width="960"></a></p>
 </figure>
 </div>
 </div>
@@ -763,7 +820,7 @@ Correlation of Fixed Effects:
 PTFSM6CLA1A -0.089</code></pre>
 </div>
 </div>
-<p><span class="math display">\[\texttt{lmer(P8MEA \sim PTFSM6CLA1A + (1 \mid gor\_name/LANAME) + (1 \mid OFSTEDRATING), data = england\_filtered\_clean)}\]</span> ~kitchen sink model!!</p>
+<p><span class="math display">\[\texttt{lmer(P8MEA ~ PTFSM6CLA1A + (1 | gor_name/LANAME) + (1 | OFSTEDRATING), data = england\_filtered\_clean)}\]</span> #kitchen sink model!!</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>Linear mixed model fit by REML ['lmerMod']
@@ -793,6 +850,484 @@ PTFSM6CLA1A -0.0162784  0.0005639 -28.868
 Correlation of Fixed Effects:
             (Intr)
 PTFSM6CLA1A -0.089</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+TRUE 
+2961 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+TRUE 
+2961 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+TRUE 
+2961 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+TRUE 
+2961 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 4
+   ATT8SCR PTFSM6CLA1A PERCTOT PNUMEAL
+     &lt;dbl&gt;       &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+ 1      NA          NA      NA      NA
+ 2      NA          NA      NA      NA
+ 3      NA          NA      NA      NA
+ 4      NA          NA      NA      NA
+ 5      NA          NA      NA      NA
+ 6      NA          NA      NA      NA
+ 7      NA          NA      NA      NA
+ 8      NA          NA      NA      NA
+ 9      NA          NA      NA      NA
+10      NA          NA      NA      NA</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Ord.factor w/ 5 levels "Special Measures"&lt;..: 4 4 4 4 4 4 5 4 4 3 ...</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> chr [1:2961] "London" "London" "London" "London" "London" "London" ...</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> chr [1:2961] "Camden" "Camden" "Camden" "Camden" "Camden" "Camden" ...</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> chr [1:2961] "OTHER NON SEL" "OTHER NON SEL" "OTHER NON SEL" ...</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OFSTEDRATING     gor_name       LANAME 
+          59            0            0 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by REML ['lmerMod']
+Formula: log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT) + log(PNUMEAL) +  
+    PTPRIORLO + ADMPOL_PT + (1 | OFSTEDRATING) + (1 | gor_name/LANAME)
+   Data: eng_clean_log
+
+REML criterion at convergence: -6867.1
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-5.7645 -0.5790  0.0301  0.6358  4.5633 
+
+Random effects:
+ Groups          Name        Variance  Std.Dev.
+ LANAME:gor_name (Intercept) 0.0006878 0.02623 
+ gor_name        (Intercept) 0.0002478 0.01574 
+ OFSTEDRATING    (Intercept) 0.0032801 0.05727 
+ Residual                    0.0050031 0.07073 
+Number of obs: 2902, groups:  
+LANAME:gor_name, 151; gor_name, 9; OFSTEDRATING, 5
+
+Fixed effects:
+                         Estimate Std. Error t value
+(Intercept)             4.6350167  0.0320063 144.816
+log(PTFSM6CLA1A)       -0.0753777  0.0039754 -18.961
+log(PERCTOT)           -0.2237835  0.0073213 -30.566
+log(PNUMEAL)            0.0143445  0.0017594   8.153
+PTPRIORLO              -0.0068604  0.0002199 -31.202
+ADMPOL_PTOTHER NON SEL  0.0059090  0.0089869   0.658
+ADMPOL_PTSEL            0.0748478  0.0097318   7.691
+
+Correlation of Fixed Effects:
+            (Intr) l(PTFS l(PERC l(PNUM PTPRIO ADMPNS
+l(PTFSM6CLA -0.106                                   
+lg(PERCTOT) -0.377 -0.354                            
+lg(PNUMEAL) -0.080 -0.257  0.165                     
+PTPRIORLO    0.110 -0.412 -0.208 -0.150              
+ADMPOL_PTNS -0.265 -0.044  0.016 -0.013  0.074       
+ADMPOL_PTSE -0.254  0.180  0.015 -0.215  0.286  0.554</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Special Measures   Serious Weaknesses Requires improvement 
+                  16                   22                  348 
+                Good          Outstanding 
+                2076                  440 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+           East Midlands          East of England                   London 
+                     259                      335                      431 
+              North East               North West               South East 
+                     134                      417                      448 
+              South West            West Midlands Yorkshire and the Humber 
+                     290                      356                      291 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                 LANAME
+gor_name          Barking and Dagenham Barnet Barnsley
+  East Midlands                      0      0        0
+  East of England                    0      0        0
+  London                             8     24        0
+  North East                         0      0        0
+  North West                         0      0        0
+                 LANAME
+gor_name          Bath and North East Somerset Bedford
+  East Midlands                              0       0
+  East of England                            0      12
+  London                                     0       0
+  North East                                 0       0
+  North West                                 0       0</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by REML ['lmerMod']
+Formula: log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT) + log(PNUMEAL) +  
+    PTPRIORLO + ADMPOL_PT + (1 | OFSTEDRATING) + (1 | gor_name/LANAME)
+   Data: england_filtered_clean
+
+REML criterion at convergence: -6867.1
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-5.7645 -0.5790  0.0301  0.6358  4.5633 
+
+Random effects:
+ Groups          Name        Variance  Std.Dev.
+ LANAME:gor_name (Intercept) 0.0006878 0.02623 
+ gor_name        (Intercept) 0.0002478 0.01574 
+ OFSTEDRATING    (Intercept) 0.0032801 0.05727 
+ Residual                    0.0050031 0.07073 
+Number of obs: 2902, groups:  
+LANAME:gor_name, 151; gor_name, 9; OFSTEDRATING, 5
+
+Fixed effects:
+                         Estimate Std. Error t value
+(Intercept)             4.6350167  0.0320063 144.816
+log(PTFSM6CLA1A)       -0.0753777  0.0039754 -18.961
+log(PERCTOT)           -0.2237835  0.0073213 -30.566
+log(PNUMEAL)            0.0143445  0.0017594   8.153
+PTPRIORLO              -0.0068604  0.0002199 -31.202
+ADMPOL_PTOTHER NON SEL  0.0059090  0.0089869   0.658
+ADMPOL_PTSEL            0.0748478  0.0097318   7.691
+
+Correlation of Fixed Effects:
+            (Intr) l(PTFS l(PERC l(PNUM PTPRIO ADMPNS
+l(PTFSM6CLA -0.106                                   
+lg(PERCTOT) -0.377 -0.354                            
+lg(PNUMEAL) -0.080 -0.257  0.165                     
+PTPRIORLO    0.110 -0.412 -0.208 -0.150              
+ADMPOL_PTNS -0.265 -0.044  0.016 -0.013  0.074       
+ADMPOL_PTSE -0.254  0.180  0.015 -0.215  0.286  0.554</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-30-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-14"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-30-1.png" width="960"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Pseudo R-squared (Conditional): 0.8657"</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>           R2m       R2c
+[1,] 0.7345229 0.8559252</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># R2 for Mixed Models
+
+  Conditional R2: 0.856
+     Marginal R2: 0.735</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>               df       AIC
+england_model7 20 -6783.777
+lme9_ml        11 -6910.187</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>               df       BIC
+england_model7 20 -6664.314
+lme9_ml        11 -6844.482</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-34-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-15"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-34-1.png" width="960"></a></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[2]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-34-2.png" class="lightbox" data-gallery="quarto-lightbox-gallery-16"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-34-2.png" width="960"></a></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[3]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-34-3.png" class="lightbox" data-gallery="quarto-lightbox-gallery-17"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-34-3.png" width="960"></a></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-34-4.png" class="lightbox" data-gallery="quarto-lightbox-gallery-18"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-34-4.png" width="960"></a></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[2]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-34-5.png" class="lightbox" data-gallery="quarto-lightbox-gallery-19"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-34-5.png" width="960"></a></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[3]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-34-6.png" class="lightbox" data-gallery="quarto-lightbox-gallery-20"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-34-6.png" width="960"></a></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-34-7.png" class="lightbox" data-gallery="quarto-lightbox-gallery-21"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-34-7.png" width="960"></a></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[2]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-34-8.png" class="lightbox" data-gallery="quarto-lightbox-gallery-22"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-34-8.png" width="960"></a></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[3]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-34-9.png" class="lightbox" data-gallery="quarto-lightbox-gallery-23"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-34-9.png" width="960"></a></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-34-10.png" class="lightbox" data-gallery="quarto-lightbox-gallery-24"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-34-10.png" width="960"></a></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[2]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-34-11.png" class="lightbox" data-gallery="quarto-lightbox-gallery-25"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-34-11.png" width="960"></a></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[3]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-34-12.png" class="lightbox" data-gallery="quarto-lightbox-gallery-26"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-34-12.png" width="960"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>$`LANAME:gor_name`</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-35-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-27"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-35-1.png" width="960"></a></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+$gor_name</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-35-2.png" class="lightbox" data-gallery="quarto-lightbox-gallery-28"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-35-2.png" width="960"></a></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+$OFSTEDRATING</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><a href="week8_lecture_files/figure-revealjs/unnamed-chunk-35-3.png" class="lightbox" data-gallery="quarto-lightbox-gallery-29"><img data-src="week8_lecture_files/figure-revealjs/unnamed-chunk-35-3.png" width="960"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 8
+  effect   group           level     term  estimate std.error conf.low conf.high
+  &lt;chr&gt;    &lt;chr&gt;           &lt;chr&gt;     &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+1 ran_vals LANAME:gor_name Barking … (Int…  -0.0263    0.0189 -0.0634    0.0108 
+2 ran_vals LANAME:gor_name Barnet:L… (Int…   0.0397    0.0133  0.0135    0.0658 
+3 ran_vals LANAME:gor_name Barnsley… (Int…   0.0229    0.0180 -0.0124    0.0582 
+4 ran_vals LANAME:gor_name Bath and… (Int…   0.0177    0.0161 -0.0139    0.0492 
+5 ran_vals LANAME:gor_name Bedford:… (Int…   0.0366    0.0169  0.00350   0.0698 
+6 ran_vals LANAME:gor_name Bexley:L… (Int…  -0.0381    0.0161 -0.0696   -0.00649</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Data: england_filtered_clean
+Models:
+base_ml: log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT) + log(PNUMEAL) + PTPRIORLO + ADMPOL_PT + (1 | OFSTEDRATING) + (1 | gor_name/LANAME)
+rslope_la_ml: log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT) + log(PNUMEAL) + PTPRIORLO + ADMPOL_PT + (1 | OFSTEDRATING) + (1 | gor_name/LANAME) + (0 + PTPRIORLO | gor_name:LANAME)
+             npar     AIC     BIC logLik -2*log(L)  Chisq Df Pr(&gt;Chisq)    
+base_ml        11 -6910.2 -6844.5 3466.1   -6932.2                         
+rslope_la_ml   12 -6928.7 -6857.0 3476.3   -6952.7 20.481  1  6.022e-06 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Data: england_filtered_clean
+Models:
+base_ml: log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT) + log(PNUMEAL) + PTPRIORLO + ADMPOL_PT + (1 | OFSTEDRATING) + (1 | gor_name/LANAME)
+rslope_ofsted_ml: log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT) + log(PNUMEAL) + PTPRIORLO + ADMPOL_PT + (1 + PTPRIORLO | OFSTEDRATING) + (1 | gor_name/LANAME)
+                 npar     AIC     BIC logLik -2*log(L)  Chisq Df Pr(&gt;Chisq)  
+base_ml            11 -6910.2 -6844.5 3466.1   -6932.2                       
+rslope_ofsted_ml   13 -6914.6 -6837.0 3470.3   -6940.6 8.4254  2    0.01481 *
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by maximum likelihood . t-tests use Satterthwaite's
+  method [lmerModLmerTest]
+Formula: log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT) + log(PNUMEAL) +  
+    PTPRIORLO * OFSTEDRATING + ADMPOL_PT + (1 | OFSTEDRATING) +  
+    (1 | gor_name/LANAME)
+   Data: england_filtered_clean
+
+      AIC       BIC    logLik -2*log(L)  df.resid 
+  -6929.9   -6816.4    3484.0   -6967.9      2883 
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-5.7964 -0.5822  0.0291  0.6407  4.6719 
+
+Random effects:
+ Groups          Name        Variance  Std.Dev.
+ LANAME:gor_name (Intercept) 0.0006858 0.02619 
+ gor_name        (Intercept) 0.0002153 0.01467 
+ OFSTEDRATING    (Intercept) 0.0000000 0.00000 
+ Residual                    0.0049652 0.07046 
+Number of obs: 2902, groups:  
+LANAME:gor_name, 151; gor_name, 9; OFSTEDRATING, 5
+
+Fixed effects:
+                           Estimate Std. Error         df t value Pr(&gt;|t|)    
+(Intercept)               4.624e+00  2.356e-02  1.450e+03 196.261  &lt; 2e-16 ***
+log(PTFSM6CLA1A)         -7.661e-02  3.978e-03  2.429e+03 -19.259  &lt; 2e-16 ***
+log(PERCTOT)             -2.209e-01  7.339e-03  2.893e+03 -30.104  &lt; 2e-16 ***
+log(PNUMEAL)              1.446e-02  1.753e-03  2.243e+03   8.249 2.68e-16 ***
+PTPRIORLO                -6.491e-03  5.504e-04  2.854e+03 -11.793  &lt; 2e-16 ***
+OFSTEDRATING.L            1.211e-01  3.818e-02  2.821e+03   3.172  0.00153 ** 
+OFSTEDRATING.Q           -9.121e-03  3.283e-02  2.827e+03  -0.278  0.78115    
+OFSTEDRATING.C           -3.449e-04  3.607e-02  2.829e+03  -0.010  0.99237    
+OFSTEDRATING^4            1.555e-03  2.631e-02  2.833e+03   0.059  0.95288    
+ADMPOL_PTOTHER NON SEL    4.868e-03  8.965e-03  4.800e+02   0.543  0.58735    
+ADMPOL_PTSEL              8.303e-02  1.001e-02  2.887e+03   8.291  &lt; 2e-16 ***
+PTPRIORLO:OFSTEDRATING.L  1.065e-04  1.330e-03  2.826e+03   0.080  0.93616    
+PTPRIORLO:OFSTEDRATING.Q  1.317e-03  1.143e-03  2.824e+03   1.152  0.24936    
+PTPRIORLO:OFSTEDRATING.C  4.109e-04  1.292e-03  2.824e+03   0.318  0.75050    
+PTPRIORLO:OFSTEDRATING^4 -3.972e-04  9.494e-04  2.830e+03  -0.418  0.67567    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>optimizer (nloptwrap) convergence code: 0 (OK)
+boundary (singular) fit: see help('isSingular')</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Data: england_filtered_clean
+Models:
+lme9_ml: log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT) + log(PNUMEAL) + PTPRIORLO + ADMPOL_PT + (1 | OFSTEDRATING) + (1 | gor_name/LANAME)
+lme_interact_ofsted: log(ATT8SCR) ~ log(PTFSM6CLA1A) + log(PERCTOT) + log(PNUMEAL) + PTPRIORLO * OFSTEDRATING + ADMPOL_PT + (1 | OFSTEDRATING) + (1 | gor_name/LANAME)
+                    npar     AIC     BIC logLik -2*log(L)  Chisq Df Pr(&gt;Chisq)
+lme9_ml               11 -6910.2 -6844.5 3466.1   -6932.2                     
+lme_interact_ofsted   19 -6929.9 -6816.4 3484.0   -6967.9 35.734  8  1.964e-05
+                       
+lme9_ml                
+lme_interact_ofsted ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 </div>
 
