@@ -1,3 +1,10 @@
+---
+title: "Cloned CASA0007 module repo"
+description: "Lectures and Practical Content for CASA0007"
+site: index.html   # path under the Pages root — use this when there's no working index.html
+image: https://github.com/adamdennett/QM/blob/main/sessions/L6_images/regression2.PNG     # relative path in the repo, or a full URL
+---
+
 # CASA0007 module repo
 This repo contains lecture notes and practical notebooks for CASA0007 Quantitative Methods, which is part of **CASA MSc/MRes Urban Spatial Science** programme.
 
